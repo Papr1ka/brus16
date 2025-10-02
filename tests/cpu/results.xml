@@ -1,0 +1,9 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1759445158" />
+    <testcase name="test_stack" classname="test_cpu" file="/home/kirill/dev/brus16/tests/cpu/test_cpu.py" lineno="214" time="0.042435407638549805" sim_time_ns="85.0" ratio_time="2003.0442672779473" />
+    <testcase name="test_mem" classname="test_cpu" file="/home/kirill/dev/brus16/tests/cpu/test_cpu.py" lineno="227" time="0.05338096618652344" sim_time_ns="133.0" ratio_time="2491.5247793618464" />
+    <testcase name="test_mem_mode0" classname="test_cpu" file="/home/kirill/dev/brus16/tests/cpu/test_cpu.py" lineno="240" time="0.05421257019042969" sim_time_ns="133.0" ratio_time="2453.3055623966507" />
+    <testcase name="test_game" classname="test_cpu" file="/home/kirill/dev/brus16/tests/cpu/test_cpu.py" lineno="253" time="0.5246853828430176" sim_time_ns="1201.0" ratio_time="2288.990772893956" />
+  </testsuite>
+</testsuites>
