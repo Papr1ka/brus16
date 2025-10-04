@@ -6,6 +6,7 @@ TOPLEVEL_LANG ?= verilog
 
 VERILOG_SOURCES += ../../src/defs.vh
 VERILOG_SOURCES += ../../src/alu.v
+VERILOG_SOURCES += ../../src/dsram.v
 VERILOG_SOURCES += ../../src/bsram.v
 VERILOG_SOURCES += ../../src/cpu.v
 VERILOG_SOURCES += ../../src/cpu_top.v

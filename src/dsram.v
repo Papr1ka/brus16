@@ -1,4 +1,4 @@
-module bsram
+module dsram // distributed sram with async read
 #(
     parameter WIDTH = 13,
     parameter SIZE = 8192
@@ -8,7 +8,7 @@ module bsram
 
     // read
     input wire [WIDTH-1:0] mem_dout_addr,
-    output reg [15:0] mem_dout,
+    output wire [15:0] mem_dout,
     
     // write
     input wire we,
@@ -22,8 +22,9 @@ always @(posedge clk) begin
     if (we) begin
         data[mem_din_addr] <= mem_din;
     end
-    mem_dout <= data[mem_dout_addr];
 end
+
+assign mem_dout = data[mem_dout_addr]; // async read
 
 initial begin
     for (integer i = 0; i < SIZE; i = i + 1) begin

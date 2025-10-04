@@ -3,6 +3,7 @@ import logging
 
 import cocotb
 from cocotb.triggers import RisingEdge, Timer
+from cocotb.types import Logic
 
 
 logger = logging.getLogger("test_cpu")
@@ -13,7 +14,6 @@ factorial = [533, 179, 48, 111, 65517, 65516, 170, 241, 85, 52, 65516, 65516, 97
 stack_test = [533, 469, 405, 341, 23, 277, 23, 213, 23, 23, 23, 661, 48]
 load_store_test = [367, 277, 341, 405, 469, 533, 65261, 65325, 65389, 65453, 65517, 65260, 65324, 65388, 65452, 65516, 0, 0, 0, 0, 48]
 load_store_mode_0_test = [367, 277, 341, 405, 469, 533, 21, 13, 85, 13, 149, 13, 213, 13, 277, 13, 21, 12, 85, 12, 149, 12, 213, 12, 277, 12, 0, 0, 0, 0, 48, 0]
-mem = []
 
 
 def load(filename):
@@ -94,13 +94,13 @@ async def generate_clock(dut):
     for _ in range(10000):
         if counter == 0:
             logger.debug("") # new line before EXEC phase
-        counter = (counter + 1) % 3
+        counter = (counter + 1) % 2
 
+        log_debug(dut)
         dut.clk.value = 0
         await Timer(1, unit='ns')
         dut.clk.value = 1
         await Timer(1, unit='ns')
-        log_debug(dut)
 
 
 def signed(logic_array, placeholder=-99999999):
@@ -111,6 +111,10 @@ def signed(logic_array, placeholder=-99999999):
 
 
 def unsigned(logic_array, placeholder=-99999999):
+    if isinstance(logic_array, Logic):
+        if logic_array.is_resolvable:
+            return int(logic_array)
+        return 0
     if logic_array.is_resolvable:
         return logic_array.to_unsigned()
     else:
@@ -155,18 +159,18 @@ def log_debug(dut):
     rstack, rs0, rs1 = decode_rstack(dut)
     mem = decode_mem(dut)
     state = {
-        0: "FE",
-        1: "EX",
-        2: "WB"
+        0: "FW",
+        1: "EX"
     }.get(unsigned(dut.cpu.state.value))
     reset = int(dut.reset.value)
 
     string = "state={state:<4} reset={reset} pc={pc:<4d} " \
     "fp={fp:<4d}" \
     "instr={instr:<8} mode={mode:1d} simm={simm:<10d} " \
-    "stack={stack} sp={sp:4d} s0={s0:4d} s1={s1:4d} we_stack={we_stack:1d} " \
-    "rstack={rstack} rs0={rs0} rs1={rs1} we_rstack={we_rstack:1d}" \
-    "mem={mem}".format(
+    "stack={stack} sp={sp:4d} sp_new={sp_new} s0={s0:4d} s1={s1:4d} s0_new={s0_new} we_stack={we_stack:1d} " \
+    "rstack={rstack} rs0={rs0} rs1={rs1} we_rstack={we_rstack:1d} " \
+    "mem={mem} mem_dout={mem_dout}, mem_dout_we={mem_dout_we} " \
+    "mem_din={mem_din} mem_din_addr={mem_din_addr}".format(
         state=state,
         reset=reset,
         pc=unsigned(dut.cpu.pc.value),
@@ -176,14 +180,20 @@ def log_debug(dut):
         simm=simm,
         stack=stack,
         sp=unsigned(dut.cpu.sp.value),
+        sp_new=unsigned(dut.cpu.sp_new.value),
         s0=s0,
         s1=s1,
+        s0_new=signed(dut.cpu.stack_top_new.value),
         we_stack=int(dut.cpu.write_to_stack.value),
         rstack=rstack,
         rs0=rs0,
         rs1=rs1,
         mem=mem,
         we_rstack=int(dut.cpu.write_to_rstack.value),
+        mem_dout=unsigned(dut.cpu.mem_dout.value),
+        mem_dout_we=unsigned(dut.cpu.mem_dout_we.value),
+        mem_din=unsigned(dut.cpu.mem_din.value),
+        mem_din_addr=unsigned(dut.cpu.mem_din_addr.value)
     )
     logger.debug(string)
 
@@ -214,7 +224,7 @@ async def setup(dut, log_filename, program, data, logs_folder="./logs/"):
 @cocotb.test(skip=False)
 async def test_stack(dut):
     program = stack_test
-    async with setup(dut, "test_stack.log", program, []):
+    async with setup(dut, "test_stack.log", program, [0] * 100):
         await Timer(2 * len(program) * 3, unit='ns')
         await RisingEdge(dut.clk)
 
@@ -227,7 +237,8 @@ async def test_stack(dut):
 @cocotb.test(skip=False)
 async def test_mem(dut):
     program = load_store_test
-    async with setup(dut, "load_store_test.log", program, []):
+    async with setup(dut, "load_store_test.log", program, [0] * 100):
+        await RisingEdge(dut.clk)
         await Timer(2 * len(program) * 3, unit='ns')
         await RisingEdge(dut.clk)
 
@@ -239,8 +250,8 @@ async def test_mem(dut):
 
 @cocotb.test(skip=False)
 async def test_mem_mode0(dut):
-    program = load_store_test
-    async with setup(dut, "load_store_mode0_test.log", program, []):
+    program = load_store_mode_0_test
+    async with setup(dut, "load_store_mode0_test.log", program, [0] * 100):
         await Timer(2 * len(program) * 3, unit='ns')
         await RisingEdge(dut.clk)
 
@@ -248,6 +259,17 @@ async def test_mem_mode0(dut):
         assert s0 == 30
         mem = decode_mem(dut, 5)
         assert tuple(mem) == (8, 7, 6, 5, 4)
+
+
+@cocotb.test(skip=False)
+async def test_factorial(dut):
+    program = factorial
+    async with setup(dut, "factorial.log", program, [0] * 100):
+        await Timer(2 * 83 * 2, unit='ns')
+        await RisingEdge(dut.clk)
+
+        s0 = dut.cpu.stack_top.value.to_signed()
+        assert s0 == 5040
 
 
 @cocotb.test(skip=False)
