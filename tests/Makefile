@@ -1,5 +1,6 @@
 TESTS := 	gpu \
-			cpu
+			cpu \
+			btree_mux
 
 .PHONY: $(TESTS)
 

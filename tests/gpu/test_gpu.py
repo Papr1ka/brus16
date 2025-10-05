@@ -1,4 +1,6 @@
+
 import logging
+import os
 import cocotb
 from cocotb.triggers import RisingEdge, Timer
 
@@ -645,8 +647,14 @@ expected_colors = [60589,
  14592,
  14592]
 
+logs_folder = "logs/"
 logger = logging.getLogger("test_gpu")
 logger.setLevel(logging.DEBUG)
+
+os.makedirs(logs_folder, exist_ok=True)
+fh = logging.FileHandler(logs_folder + "gpu.log")
+fh.setLevel(logging.DEBUG)
+logger.addHandler(fh)
 
 async def generate_coords(dut):
     x = 0
@@ -661,36 +669,80 @@ async def generate_coords(dut):
 
 
 async def generate_clock(dut):
+    counter = 0
     for _ in range(1000):
         dut.pixel_clk.value = 0
         await Timer(1, unit='ns')
         dut.pixel_clk.value = 1
         await Timer(1, unit='ns')
-        # logger.debug(dut.state.value)
+        log_debug(dut)
+
+def convert_array(array, size=64):
+    arr = []
+    for i in range(size):
+        arr.append(array[i].value.to_unsigned())
+    return arr
+
+def log_debug(dut):
+    rect_idx = dut.rect_idx.value
+    rect_idx = rect_idx.to_unsigned() if rect_idx.is_resolvable else "xxx"
+    
+    color = dut.color.value
+    color = color.to_unsigned() if color.is_resolvable else "xxx"
+    
+    string = "reset={reset} state={state} state_new={state_new} " \
+    "copy_state={copy_state} copy_state_new={copy_state_new} " \
+    "rect_counter={rect_counter} rect_counter_new={rect_counter_new} " \
+    "rect_idx={rect_idx} color={color} x={x} y={y} " \
+    "mem_din={mem_din} copy_start={copy_start} " \
+    "rect_lefts={rect_lefts} rect_tops={rect_tops} " \
+    "rect_rights={rect_rights} rect_bottoms={rect_bottoms} " \
+    "rect_colors={rect_colors}".format(
+        reset = int(dut.reset.value),
+        state = dut.state.value.to_unsigned(),
+        state_new = dut.state_new.value.to_unsigned(),
+        copy_state = dut.copy_state.value.to_unsigned(),
+        copy_state_new = dut.copy_state_new.value.to_unsigned(),
+        rect_counter = dut.rect_counter.value.to_unsigned(),
+        rect_counter_new = dut.rect_counter_new.value.to_unsigned(),
+        rect_idx = rect_idx,
+        color = color,
+        x = dut.x_coord.value,
+        y = dut.y_coord.value,
+        mem_din = dut.mem_din.value.to_unsigned() if dut.mem_din.value.is_resolvable else "z",
+        copy_start = dut.copy_start.value,
+        rect_lefts = convert_array(dut.rect_lefts),
+        rect_tops = convert_array(dut.rect_tops),
+        rect_rights = convert_array(dut.rect_rights),
+        rect_bottoms = convert_array(dut.rect_bottoms),
+        rect_colors = convert_array(dut.rect_colors),
+    )
+    logger.debug(string)
 
 @cocotb.test
 async def test_gpu(dut):
     cocotb.start_soon(generate_clock(dut))
-    dut.idle.value = 0
     dut.reset.value = 1
     await RisingEdge(dut.pixel_clk)
     dut.reset.value = 0
     await RisingEdge(dut.pixel_clk)
-    dut.we.value = 1
+    dut.copy_start.value = 1
     await RisingEdge(dut.pixel_clk)
-    for i in range(384):
+    dut.copy_start.value = 0
+
+    for i in range(6 * 64):
         dut.mem_din.value = rom[i]
         await RisingEdge(dut.pixel_clk)
-    dut.we.value = 0
+
     await RisingEdge(dut.pixel_clk)
     for i in range(64):
         # print(type(dut.rect_left[i]), type(dut.rect_left[i].value))
         l, t, r, b, c = (
-            dut.rect_left[i].value.to_signed(),
-            dut.rect_top[i].value.to_signed(),
-            dut.rect_right[i].value.to_signed(),
-            dut.rect_bottom[i].value.to_signed(),
-            dut.rect_color[i].value.to_unsigned()
+            dut.rect_lefts[i].value.to_signed(),
+            dut.rect_tops[i].value.to_signed(),
+            dut.rect_rights[i].value.to_signed(),
+            dut.rect_bottoms[i].value.to_signed(),
+            dut.rect_colors[i].value.to_unsigned()
         )
         logger.debug(
             "{:d} {:d} {:d} {:d} {:x}".format(
@@ -707,11 +759,10 @@ async def test_gpu(dut):
             )
         else:
             expected = (0, 0, 0, 0, 0)
-        assert (l, t, r, b, c) == expected, f"error on read, expected={expected}, actual={(l, t, r, b, c)}"
+        assert (l, t, r, b, c) == expected, f"(rect_idx={i}) error on read, expected={expected}, actual={(l, t, r, b, c)}"
     
     cocotb.start_soon(generate_coords(dut))
-    latency = 6
-    await Timer(2 * latency, "ns")
+    await RisingEdge(dut.pixel_clk)
     for i in range(256):
         out_color = dut.color.value.to_unsigned()
         expected = expected_colors[i]
