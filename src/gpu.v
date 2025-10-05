@@ -19,21 +19,6 @@ parameter RECT_COUNT = 64;
 parameter RECT_COUNT_WIDTH = 6;
 parameter DEFAULT_COLOR = 16'b1111100000000000;
 
-// rect memory
-reg [COORD_WIDTH-1:0] rect_lefts [RECT_COUNT-1:0]; // xs
-reg [COORD_WIDTH-1:0] rect_tops [RECT_COUNT-1:0]; // ys
-reg [COORD_WIDTH-1:0] rect_rights [RECT_COUNT-1:0]; // xs + widths
-reg [COORD_WIDTH-1:0] rect_bottoms [RECT_COUNT-1:0]; // ys + heights
-reg [15:0] rect_colors [RECT_COUNT-1:0]; // rect colors
-reg [RECT_COUNT_WIDTH-1:0] rect_idxs [RECT_COUNT-1:0]; // 0 to 63
-// 
-
-// if collisions[i] is 1, than rect[i] collide with (coord_x, coord_y)
-wire [RECT_COUNT-1:0] collisions;
-wire [RECT_COUNT_WIDTH-1:0] rect_idx; // index of rect to display
-wire any_collision;
-assign color = any_collision ? rect_colors[rect_idx] : DEFAULT_COLOR;
-
 // state machine to recieve data
 reg [1:0] state;
 reg [1:0] state_new; // logic
@@ -51,8 +36,97 @@ localparam READ_HEIGHT = 3'b100;
 localparam READ_COLOR = 3'b101;
 
 reg [RECT_COUNT_WIDTH-1:0] rect_counter;
-reg [RECT_COUNT_WIDTH-1:0] rect_counter_new;
+reg [RECT_COUNT_WIDTH-1:0] rect_counter_new; // logic
 //
+
+
+// rects memory
+wire [COORD_WIDTH-1:0] rect_lefts [RECT_COUNT-1:0]; // xs
+wire [COORD_WIDTH-1:0] rect_tops [RECT_COUNT-1:0]; // ys
+wire [COORD_WIDTH-1:0] rect_rights [RECT_COUNT-1:0]; // xs + widths
+wire [COORD_WIDTH-1:0] rect_bottoms [RECT_COUNT-1:0]; // ys + heights
+wire [15:0] rect_colors [RECT_COUNT-1:0]; // rect colors
+
+reg [RECT_COUNT_WIDTH-1:0] rect_idxs [RECT_COUNT-1:0]; // 0 to 63, constants
+
+// only on state=COPY copy_state can differ from READ_START
+wire we_rect_lefts = copy_state == READ_X;
+wire we_rect_tops = copy_state == READ_Y;
+wire we_rect_rights = copy_state == READ_WIDTH;
+wire we_rect_bottoms = copy_state == READ_HEIGHT;
+wire we_rect_colors = copy_state == READ_COLOR;
+
+gpu_mem #(
+    .ADDR_WIDTH(RECT_COUNT_WIDTH),
+    .SIZE(RECT_COUNT),
+    .DATA_WIDTH(COORD_WIDTH)
+)
+mem0 (
+    .clk(pixel_clk),
+    .we(we_rect_lefts),
+    .mem_din_addr(rect_counter),
+    .mem_din(mem_din),
+    .dout(rect_lefts) // xs
+);
+
+gpu_mem #(
+    .ADDR_WIDTH(RECT_COUNT_WIDTH),
+    .SIZE(RECT_COUNT),
+    .DATA_WIDTH(COORD_WIDTH)
+)
+mem1 (
+    .clk(pixel_clk),
+    .we(we_rect_tops),
+    .mem_din_addr(rect_counter),
+    .mem_din(mem_din),
+    .dout(rect_tops) // ys
+);
+
+gpu_mem #(
+    .ADDR_WIDTH(RECT_COUNT_WIDTH),
+    .SIZE(RECT_COUNT),
+    .DATA_WIDTH(COORD_WIDTH)
+)
+mem2 (
+    .clk(pixel_clk),
+    .we(we_rect_rights),
+    .mem_din_addr(rect_counter),
+    .mem_din(mem_din + rect_lefts[rect_counter]),
+    .dout(rect_rights) // xs + widths
+);
+
+gpu_mem #(
+    .ADDR_WIDTH(RECT_COUNT_WIDTH),
+    .SIZE(RECT_COUNT),
+    .DATA_WIDTH(COORD_WIDTH)
+)
+mem3 (
+    .clk(pixel_clk),
+    .we(we_rect_bottoms),
+    .mem_din_addr(rect_counter),
+    .mem_din(mem_din + rect_tops[rect_counter]),
+    .dout(rect_bottoms) // ys + heights
+);
+
+gpu_mem #(
+    .ADDR_WIDTH(RECT_COUNT_WIDTH),
+    .SIZE(RECT_COUNT),
+    .DATA_WIDTH(COORD_WIDTH)
+)
+mem4 (
+    .clk(pixel_clk),
+    .we(we_rect_colors),
+    .mem_din_addr(rect_counter),
+    .mem_din(mem_din),
+    .dout(rect_colors) // colors
+);
+//
+
+// if collisions[i] is 1, than rect[i] collide with (coord_x, coord_y)
+wire [RECT_COUNT-1:0] collisions;
+wire [RECT_COUNT_WIDTH-1:0] rect_idx; // index of rect to display
+wire any_collision;
+assign color = any_collision ? rect_colors[rect_idx] : DEFAULT_COLOR;
 
 // comparators for each rect
 generate
@@ -116,34 +190,20 @@ end
 always @(posedge pixel_clk) begin
     if (reset) begin
         state <= WAIT_FOR_COPY;
-        copy_state <= READ_X;
+        copy_state <= READ_START;
         rect_counter <= 6'b0;
     end else begin
         rect_counter <= rect_counter_new;
         state <= state_new;
         copy_state <= copy_state_new;
-        if (state == COPY) begin
-            case (copy_state)
-                READ_X: rect_lefts[rect_counter] <= COORD_WIDTH'(mem_din);
-                READ_Y: rect_tops[rect_counter] <= COORD_WIDTH'(mem_din);
-                READ_WIDTH: rect_rights[rect_counter] <= COORD_WIDTH'(mem_din) + rect_lefts[rect_counter];
-                READ_HEIGHT: rect_bottoms[rect_counter] <= COORD_WIDTH'(mem_din) + rect_tops[rect_counter];
-                READ_COLOR: rect_colors[rect_counter] <= mem_din;
-            endcase
-        end
     end
 end
 
 initial begin
     state = WAIT_FOR_COPY;
-    copy_state = READ_X;
+    copy_state = READ_START;
     rect_counter = 6'b0;
     for (integer j = 0; j < RECT_COUNT; j++) begin
-        rect_lefts[j] = 16'b0;
-        rect_tops[j] = 16'b0;
-        rect_rights[j] = 16'b0;
-        rect_bottoms[j] = 16'b0;
-        rect_colors[j] = 16'b0;
         rect_idxs[j] = 6'(j);
     end
 end

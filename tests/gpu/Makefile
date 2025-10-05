@@ -7,6 +7,7 @@ TOPLEVEL_LANG ?= verilog
 VERILOG_SOURCES += ../../src/btree_mux_layer.v
 VERILOG_SOURCES += ../../src/btree_mux.v
 VERILOG_SOURCES += ../../src/comparator.v
+VERILOG_SOURCES += ../../src/gpu_mem.v
 VERILOG_SOURCES += ../../src/gpu.v
 # use VHDL_SOURCES for VHDL files
 

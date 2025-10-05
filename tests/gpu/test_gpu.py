@@ -669,7 +669,6 @@ async def generate_coords(dut):
 
 
 async def generate_clock(dut):
-    counter = 0
     for _ in range(1000):
         dut.pixel_clk.value = 0
         await Timer(1, unit='ns')
@@ -680,7 +679,10 @@ async def generate_clock(dut):
 def convert_array(array, size=64):
     arr = []
     for i in range(size):
-        arr.append(array[i].value.to_unsigned())
+        if array[i].value.is_resolvable:
+            arr.append(array[i].value.to_unsigned())
+        else:
+            arr.append("X")
     return arr
 
 def log_debug(dut):
