@@ -13,20 +13,22 @@
 `define SHR 5'd7
 `define SHRA 5'd8
 `define EQ 5'd9
-`define LT 5'd10
-`define LTU 5'd11
-`define LOAD 5'd12
-`define STORE 5'd13
-`define LEA 5'd14
-`define SET_FP 5'd15
-`define JMP 5'd16
-`define JZ 5'd17
-`define JNZ 5'd18
-`define CALL 5'd19
-`define RET 5'd20
-`define PUSH_LO 5'd21
-`define PUSH_HI 5'd22
-`define POP 5'd23
+`define NEQ 5'd10
+`define LT 5'd11
+`define LE 5'd12
+`define GT 5'd13
+`define GE 5'd14
+`define LTU 5'd15
+`define LOAD 5'd16
+`define STORE 5'd17
+`define LOCALS 5'd18
+`define SET_FP 5'd19
+`define ICALL 5'd20
+`define RET 5'd21
+`define PUSH_INT 5'd22
+`define PUSH_MR 5'd23
+`define POP 5'd24
+`define WAIT 5'd25
 
 
 module alu(
@@ -47,9 +49,13 @@ always @(*) begin
         `SHL: out = b[4] ? 0 : a << b[3:0];
         `SHR: out = b[4] ? 0 : a >> b[3:0];
         `SHRA: out = b[4] ? 0 : $signed(a) >> b[3:0];
-        `EQ: out = 16'(a == b);
-        `LT: out = 16'($signed(a) < $signed(b));
-        `LTU: out = 16'(a < b);
+        `EQ: out = {16{(a == b)}};
+        `NEQ: out = {16{(a != b)}};
+        `LT: out = {16{($signed(a) < $signed(b))}};
+        `LE: out = {16{($signed(a) <= $signed(b))}};
+        `GT: out = {16{($signed(a) > $signed(b))}};
+        `GE: out = {16{($signed(a) >= $signed(b))}};
+        `LTU: out = {16{(a < b)}};
         default: out = 16'b0;
     endcase
 end

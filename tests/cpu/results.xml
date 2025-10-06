@@ -1,10 +1,7 @@
 <testsuites name="results">
   <testsuite name="all" package="all">
-    <property name="random_seed" value="1759602687" />
-    <testcase name="test_stack" classname="test_cpu" file="/home/kirill/dev/brus16/tests/cpu/test_cpu.py" lineno="224" time="0.05946803092956543" sim_time_ns="85.0" ratio_time="1429.339405918365" />
-    <testcase name="test_mem" classname="test_cpu" file="/home/kirill/dev/brus16/tests/cpu/test_cpu.py" lineno="237" time="0.06675934791564941" sim_time_ns="133.0" ratio_time="1992.2303640240136" />
-    <testcase name="test_mem_mode0" classname="test_cpu" file="/home/kirill/dev/brus16/tests/cpu/test_cpu.py" lineno="251" time="0.09143805503845215" sim_time_ns="199.0" ratio_time="2176.336755154243" />
-    <testcase name="test_factorial" classname="test_cpu" file="/home/kirill/dev/brus16/tests/cpu/test_cpu.py" lineno="264" time="0.17068815231323242" sim_time_ns="339.00000000000006" ratio_time="1986.0780927424653" />
-    <testcase name="test_game" classname="test_cpu" file="/home/kirill/dev/brus16/tests/cpu/test_cpu.py" lineno="275" time="0.659102201461792" sim_time_ns="1201.0" ratio_time="1822.1756767559843" />
+    <property name="random_seed" value="1759788059" />
+    <testcase name="test_factorial" classname="test_cpu" file="/home/kirill/dev/brus16/tests/cpu/test_cpu.py" lineno="225" time="0.39844632148742676" sim_time_ns="407.0" ratio_time="1021.4675805780859" />
+    <testcase name="test_game" classname="test_cpu" file="/home/kirill/dev/brus16/tests/cpu/test_cpu.py" lineno="237" time="26.164382934570312" sim_time_ns="30007.0" ratio_time="1146.8644253922969" />
   </testsuite>
 </testsuites>

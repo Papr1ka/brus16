@@ -111,7 +111,7 @@ mem3 (
 gpu_mem #(
     .ADDR_WIDTH(RECT_COUNT_WIDTH),
     .SIZE(RECT_COUNT),
-    .DATA_WIDTH(COORD_WIDTH)
+    .DATA_WIDTH(16)
 )
 mem4 (
     .clk(pixel_clk),

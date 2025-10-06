@@ -8,6 +8,7 @@ VERILOG_SOURCES += ../../src/defs.vh
 VERILOG_SOURCES += ../../src/alu.v
 VERILOG_SOURCES += ../../src/dsram.v
 VERILOG_SOURCES += ../../src/bsram.v
+VERILOG_SOURCES += ../../src/stack.v
 VERILOG_SOURCES += ../../src/cpu.v
 VERILOG_SOURCES += ../../src/cpu_top.v
 # use VHDL_SOURCES for VHDL files

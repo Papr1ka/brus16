@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 import logging
+import os
 
 import cocotb
 from cocotb.triggers import RisingEdge, Timer
@@ -9,12 +10,7 @@ from cocotb.types import Logic
 logger = logging.getLogger("test_cpu")
 logger.setLevel(logging.DEBUG)
 
-
-factorial = [533, 179, 48, 111, 65517, 65516, 170, 241, 85, 52, 65516, 65516, 97, 64947, 2, 52, 0]
-stack_test = [533, 469, 405, 341, 23, 277, 23, 213, 23, 23, 23, 661, 48]
-load_store_test = [367, 277, 341, 405, 469, 533, 65261, 65325, 65389, 65453, 65517, 65260, 65324, 65388, 65452, 65516, 0, 0, 0, 0, 48]
-load_store_mode_0_test = [367, 277, 341, 405, 469, 533, 21, 13, 85, 13, 149, 13, 213, 13, 277, 13, 21, 12, 85, 12, 149, 12, 213, 12, 277, 12, 0, 0, 0, 0, 48, 0]
-
+factorial = [18944, 65146, 19456, 23041, 40996, 23047, 49189, 57344, 17408, 23040, 65152, 17408, 23050, 65153, 17408, 23050, 65154, 17408, 23140, 65155, 17408, 23140, 65156, 17408, 57344, 16384, 23552, 65157, 17408, 57344, 16384, 23552, 23047, 17408, 25600, 32771, 22016, 18945, 17921, 16897, 23552, 11778, 41005, 23041, 22017, 16897, 23552, 16897, 23552, 1537, 49189, 2048, 22017]
 
 def load(filename):
     with open(filename, 'rb') as f:
@@ -25,9 +21,11 @@ def load(filename):
         return mem[:code_size], mem[code_size:]
 
 
-game_program, game_data = load("./game.bin")
-
-
+# game_program, game_data = load("./bug.bin")
+game_data = [0] * 8192
+game_program, game_data_new = load("./game.bin")
+for i, e in enumerate(game_data_new):
+    game_data[i] = e
 
 CMDS = [(
     lambda xs: (xs[0], int(xs[1]))
@@ -41,35 +39,44 @@ SHL = 6
 SHR = 7
 SHRA = 8
 EQ = 9
-LT = 10
-LTU = 11
-LOAD = 12
-STORE = 13
-LEA = 14
-SET_FP = 15
-JMP = 16
-JZ = 17
-JNZ = 18
-CALL = 19
-RET = 20
-PUSH_LO = 21
-PUSH_HI = 22
-POP = 23""".split("\n")]
+NEQ = 10
+LT = 11
+LE = 12
+GT = 13
+GE = 14
+LTU = 15
+LOAD = 16
+STORE = 17
+LOCALS = 18
+SET_FP = 19
+ICALL = 20
+RET = 21
+PUSH_INT = 22
+PUSH_MR = 23
+POP = 24
+WAIT = 25""".split("\n")]
 
 CMDS = {opcode: literal for literal, opcode in CMDS}
 
 
-def decode_imm(val):
-    if (val & (1 << (10 - 1))) != 0:
-        val = val - (1 << 10)
-    return val           
+def decode_imm(val, width):
+    if (val & (1 << (width - 1))) != 0:
+        val = val - (1 << width)
+    return val
 
 
 def decode_instr(instr):
-    opcode = instr & 0b11111
-    mnemo = CMDS.get(opcode, str(opcode))
-    mode = (instr >> 5) & 0b1
-    immediate = decode_imm((instr >> 6) & 0b1111111111)
+    format = (instr >> 15) & 0b1
+    if not format:
+        opcode = (instr >> 10) & 0b11111
+        mnemo = CMDS.get(opcode, str(opcode))
+        mode = (instr >> 9) & 0b1
+        immediate = decode_imm(instr & 0b111111111, 9)
+    else:
+        opcode = (instr >> 13) & 0b11
+        mnemo = {0: "JMP", 1: "JZ", 2: "CALL", 3: "PUSH_ADDR"}.get(opcode)
+        mode = 1
+        immediate = instr & 0b1111111111111
     return mnemo, mode, immediate
 
 
@@ -82,20 +89,17 @@ def setup_program(dut, program, data):
 
 
 async def generate_clock(dut):
-    counter = 0
+    dut.resume.value = 0
     dut.reset.value = 1
     for _ in range(3):
         dut.clk.value = 0
         await Timer(1, unit='ns')
         dut.clk.value = 1
         await Timer(1, unit='ns')
+        log_debug(dut)
     dut.reset.value = 0
 
-    for _ in range(10000):
-        if counter == 0:
-            logger.debug("") # new line before EXEC phase
-        counter = (counter + 1) % 2
-
+    for _ in range(100000):
         log_debug(dut)
         dut.clk.value = 0
         await Timer(1, unit='ns')
@@ -135,18 +139,15 @@ def decode_rstack(dut, size=8):
     rstack = []
     for i in range(size):
         pc = signed(dut.cpu.rstack.data[i].value)
-        fp = signed(dut.cpu.rfpstack.data[i].value)
-        rstack.append((pc, fp))
+        rstack.append(pc)
+
     rs0 = unsigned(dut.cpu.rstack_top.value)
-    rfps0 = unsigned(dut.cpu.rfpstack_top.value)
-    rs1 = unsigned(dut.cpu.rstack_pre_top.value)
-    rfps1 = unsigned(dut.cpu.rfpstack_pre_top.value)
-    return rstack, (rs0, rfps0), (rs1, rfps1)
+    return rstack, rs0
 
 
-def decode_mem(dut, size=8):
+def decode_mem(dut, start=0, end=8):
     mem = []
-    for i in range(size):
+    for i in range(start, end):
         val = unsigned(dut.memory.data[i].value)
         mem.append(val)
     return mem
@@ -156,24 +157,22 @@ def log_debug(dut):
     instr = unsigned(dut.cpu.instr.value)
     mnemo, mode, simm = decode_instr(instr)
     stack, s0, s1 = decode_stack(dut)
-    rstack, rs0, rs1 = decode_rstack(dut)
-    mem = decode_mem(dut)
-    state = {
-        0: "FW",
-        1: "EX"
-    }.get(unsigned(dut.cpu.state.value))
+    rstack, rs0 = decode_rstack(dut)
+    mem = decode_mem(dut, start=7802, end=7802+70)
     reset = int(dut.reset.value)
+    resume = int(dut.resume.value)
 
-    string = "state={state:<4} reset={reset} pc={pc:<4d} " \
-    "fp={fp:<4d}" \
-    "instr={instr:<8} mode={mode:1d} simm={simm:<10d} " \
+    string = "reset={reset} resume={resume} pc={pc:<6d} pc_new={pc_new:<6d} " \
+    "fp={fp:<6d} " \
+    "instr={instr:<8} mode={mode:1d} simm={simm:<13d} " \
     "stack={stack} sp={sp:4d} sp_new={sp_new} s0={s0:4d} s1={s1:4d} s0_new={s0_new} we_stack={we_stack:1d} " \
-    "rstack={rstack} rs0={rs0} rs1={rs1} we_rstack={we_rstack:1d} " \
+    "rsp={rsp} rstack={rstack} rs0={rs0} we_rstack={we_rstack:1d} " \
     "mem={mem} mem_dout={mem_dout}, mem_dout_we={mem_dout_we} " \
     "mem_din={mem_din} mem_din_addr={mem_din_addr}".format(
-        state=state,
         reset=reset,
+        resume=resume,
         pc=unsigned(dut.cpu.pc.value),
+        pc_new=unsigned(dut.cpu.pc_new.value),
         fp=unsigned(dut.cpu.fp.value),
         instr=mnemo,
         mode=mode,
@@ -185,9 +184,9 @@ def log_debug(dut):
         s1=s1,
         s0_new=signed(dut.cpu.stack_top_new.value),
         we_stack=int(dut.cpu.write_to_stack.value),
+        rsp=unsigned(dut.cpu.rsp.value),
         rstack=rstack,
         rs0=rs0,
-        rs1=rs1,
         mem=mem,
         we_rstack=int(dut.cpu.write_to_rstack.value),
         mem_dout=unsigned(dut.cpu.mem_dout.value),
@@ -198,15 +197,17 @@ def log_debug(dut):
     logger.debug(string)
 
 
-def dump_mem(dut):
-    mem = decode_mem(dut, 1024)
-    with open("memory.txt", 'w') as file:
-        file.write("\n".join([str(val) for val in mem]))
+def dump_mem(dut, sys=False, i=0):
+    if sys:
+        mem = decode_mem(dut, start=7802, end=8192)
+    else:
+        mem = decode_mem(dut, start=0, end=8192)
+    os.makedirs("./memory_actual", exist_ok=True)
+    with open(f"memory_actual/memory_{i}.txt", 'w') as file:
+        file.write("\n".join([str(val) for val in mem]) + "\n")
 
 @asynccontextmanager
 async def setup(dut, log_filename, program, data, logs_folder="./logs/"):
-    import os
-
     os.makedirs(logs_folder, exist_ok=True)
     fh = logging.FileHandler(logs_folder + log_filename)
     fh.setLevel(logging.DEBUG)
@@ -222,61 +223,38 @@ async def setup(dut, log_filename, program, data, logs_folder="./logs/"):
 
 
 @cocotb.test(skip=False)
-async def test_stack(dut):
-    program = stack_test
-    async with setup(dut, "test_stack.log", program, [0] * 100):
-        await Timer(2 * len(program) * 3, unit='ns')
-        await RisingEdge(dut.clk)
-
-        s0 = dut.cpu.stack_top.value.to_signed()
-        s1 = dut.cpu.stack_pre_top.value.to_signed()
-        assert s0 == 10
-        assert s1 == 8
-
-
-@cocotb.test(skip=False)
-async def test_mem(dut):
-    program = load_store_test
-    async with setup(dut, "load_store_test.log", program, [0] * 100):
-        await RisingEdge(dut.clk)
-        await Timer(2 * len(program) * 3, unit='ns')
-        await RisingEdge(dut.clk)
-
-        s0 = dut.cpu.stack_top.value.to_signed()
-        assert s0 == 30
-        mem = decode_mem(dut, 5)
-        assert tuple(mem) == (8, 7, 6, 5, 4)
-
-
-@cocotb.test(skip=False)
-async def test_mem_mode0(dut):
-    program = load_store_mode_0_test
-    async with setup(dut, "load_store_mode0_test.log", program, [0] * 100):
-        await Timer(2 * len(program) * 3, unit='ns')
-        await RisingEdge(dut.clk)
-
-        s0 = dut.cpu.stack_top.value.to_signed()
-        assert s0 == 30
-        mem = decode_mem(dut, 5)
-        assert tuple(mem) == (8, 7, 6, 5, 4)
-
-
-@cocotb.test(skip=False)
 async def test_factorial(dut):
     program = factorial
     async with setup(dut, "factorial.log", program, [0] * 100):
-        await Timer(2 * 83 * 2, unit='ns')
+        await Timer(2 * 100 * 2, unit='ns')
         await RisingEdge(dut.clk)
 
-        s0 = dut.cpu.stack_top.value.to_signed()
-        assert s0 == 5040
+        fact = dut.memory.data[7].value.to_signed()
+        # s0 = dut.cpu.stack_top.value.to_signed()
+        assert fact == 5040
 
 
 @cocotb.test(skip=False)
 async def test_game(dut):
     program = game_program
     async with setup(dut, "game.log", program, game_data):
-        await Timer(2 * len(program) * 3, unit='ns')
+        await Timer(2 * 2500, unit='ns')
         await RisingEdge(dut.clk)
+        
+        for i in range(5):
+            if i != 0:
+                dut.resume.value = 1
+                await RisingEdge(dut.clk)
+                dut.resume.value = 0
+            await Timer(2 * 2500, unit='ns')
+            dump_mem(dut, sys=False, i=i)
 
-        dump_mem(dut)
+            with open(f"./memory_reference/memory_at_{i}.txt", "r") as file:
+                ref_mem = [int(val) for val in file.read().split()]
+            
+            with open(f"./memory_actual/memory_{i}.txt", "r") as file:
+                actual_mem = [int(val) for val in file.read().split()]
+            
+            for j, (a, b) in enumerate(zip(ref_mem, actual_mem)):
+                assert a == b, f"(frame=i) (row={j}) ref mem differ from actual mem ({a} != {b})"
+            assert len(ref_mem) == len(actual_mem), "mem length mismatch"

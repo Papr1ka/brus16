@@ -3,6 +3,11 @@
 `define CODE_WIDTH 13
 `define DATA_WIDTH 13
 
+`define JMP 2'd0
+`define JZ 2'd1
+`define CALL 2'd2
+`define PUSH_ADDR 2'd3
+
 `define ADD 5'd0
 `define SUB 5'd1
 `define MUL 5'd2
@@ -13,20 +18,22 @@
 `define SHR 5'd7
 `define SHRA 5'd8
 `define EQ 5'd9
-`define LT 5'd10
-`define LTU 5'd11
-`define LOAD 5'd12
-`define STORE 5'd13
-`define LEA 5'd14
-`define SET_FP 5'd15
-`define JMP 5'd16
-`define JZ 5'd17
-`define JNZ 5'd18
-`define CALL 5'd19
-`define RET 5'd20
-`define PUSH_LO 5'd21
-`define PUSH_HI 5'd22
-`define POP 5'd23
+`define NEQ 5'd10
+`define LT 5'd11
+`define LE 5'd12
+`define GT 5'd13
+`define GE 5'd14
+`define LTU 5'd15
+`define LOAD 5'd16
+`define STORE 5'd17
+`define LOCALS 5'd18
+`define SET_FP 5'd19
+`define ICALL 5'd20
+`define RET 5'd21
+`define PUSH_INT 5'd22
+`define PUSH_MR 5'd23
+`define POP 5'd24
+`define WAIT 5'd25
 
 
 module cpu
@@ -39,117 +46,62 @@ module cpu
 (
     input wire clk,
     input wire reset,
+    input wire resume,
 
     output wire [CODE_WIDTH-1:0] code_addr, // pc (what instruction to fetch)
-    input wire [15:0] instr, // instruction from program memory
+    input wire [15:0] instruction, // instruction from program memory
 
     output wire [DATA_WIDTH-1:0] mem_din_addr, // data mem, read address
     input wire [15:0] mem_din, // data mem, data
 
-    output reg mem_dout_we, // write enable to data mem
-    output reg [DATA_WIDTH-1:0] mem_dout_addr, // data mem, write address
-    output reg [15:0] mem_dout // data mem, write data
+    output wire mem_dout_we, // write enable to data mem
+    output wire [DATA_WIDTH-1:0] mem_dout_addr, // data mem, write address
+    output wire [15:0] mem_dout // data mem, write data
 );
 
-// data stack
 /*
-meaning:
-    stack = [8, 7, 6, 5]
-representation:
-    stack=[0, 0, 8, 7, 6, 0, 0, 0] sp=4 stack_top=5 stack_pre_top=6
-
-when push:
-    current clock (execute):
-        assign sp_new = sp + 1; // 4
-        assign stack_top_new = instr_simm; // 4
-        assign write_to_stack = 1'b1;
-    clock +1 (writeback):
-        (memory write) stack_top => stack // 5
-        sp <= sp_new; // 4
-        stack_top <= stack_top_new; // 4
-        assign write_to_stack = 1'b0;
-    clock +3 (next cycle)
-        stack = [0, 0, 8, 7, 6, 5, 0, 0] sp = 5 stack_top=4 stack_pre_top=5
-
-(old stack top will be written at sp=5,
-new value will be stored at stack_top_register,
-stack_pre_top will be syncronized automatically)
-
-stack = [0, 0, 8, 7, 6, 5, 0, 0] sp = 5 stack_top=4 stack_pre_top=5
-
-when pop:
-    current clock (execute):
-        assign sp_new = sp - 1; // 4
-        assign stack_top_new = stack_pre_top; // 5
-        assign write_to_stack <= 1'b0;
-    clock +1 (writeback):
-        sp <= sp_new; // 4
-        stack_top <= stack_top_new; // 5
-    clock +3 (next cycle)
-        stack = [0, 0, 8, 7, 6, 5, 0, 0] sp = 4 stack_top=5 stack_pre_top=6
-
-stack = [0, 0, 8, 7, 6, 5, 0, 0] sp = 4 stack_top=5 stack_pre_top=6
-
-when double pop:
-    current clock (execute):
-        assign sp_new = sp - 1; // 3
-        stack_top_new <= X; // doesn't matter
-        write_to_stack <= 1'b0;
-        stack_pre_top_to_top <= 1'b1;
-        sp <= sp_new; // 3
-    clock +1 (writeback):
-        if (double_pop)
-            assign sp_new = sp - 1 // 2
-            assign stack_top_new = stack_pre_top
-            double_pop <= 0
-        else
-        sp <= sp_new; // 2
-        stack_top <= stack_top_new; // 6
-    clock +2 (next cycle):
-        stack = [0, 0, 8, 7, 6, 5, 0, 0] sp = 2 stack_top=7 stack_pre_top=8
-
-rstack, rfpstack works the same
+    data stack
 */
-
-
-reg [STACK_DEPTH-1:0] sp; // stack pointer (pointing to stack_top_prev)
-reg [15:0] stack_top; // top element of stack
-
+reg [STACK_DEPTH-1:0] sp; // stack pointer (pointing to stack_top)
 reg [STACK_DEPTH-1:0] sp_new; // (logic)
-reg [STACK_DEPTH-1:0] sp_new_execute; // (logic)
+
+wire [STACK_DEPTH-1:0] sp_plus_1 = sp + 1;
+wire [STACK_DEPTH-1:0] sp_minus_1 = sp - 1;
+
+wire [15:0] stack_top; // top element of stack
 reg [15:0] stack_top_new; // (logic)
 wire [15:0] stack_pre_top; // (top - 1) element of stack
-reg write_to_stack; //sp_new (logic) write enable to stack
 
-// pre calculations
-wire mode = instr[5]; // use immediate if mode else from stack
-wire [STACK_DEPTH-1:0] sp0_mode = mode ? sp : sp - 1;
-wire [STACK_DEPTH-1:0] sp1_mode = mode ? sp + 1 : sp;
-wire [STACK_DEPTH-1:0] sp1_neg_mode = mode ? sp - 1 : sp - 2;
+reg write_to_stack; // sp_new (logic) write enable to stack
 
-dsram #(
+stack #(
     .WIDTH(STACK_DEPTH),
     .SIZE(1 << STACK_DEPTH)
 )
 stack(
     .clk(clk),
 
-    .mem_dout_addr(sp),
-    .mem_dout(stack_pre_top),
+    .mem_dout_addr0(sp),
+    .mem_dout0(stack_top),
+
+    .mem_dout_addr1(sp - 1),
+    .mem_dout1(stack_pre_top),
 
     .we(write_to_stack),
-    .mem_din_addr(sp + 1),
-    .mem_din(stack_top_new) // was stack_top
+    .mem_din_addr(sp_new),
+    .mem_din(stack_top_new)
 );
 
-// return stack (only for pc), rfpstack for fp's
+/*
+    return stack
+*/
 
-reg [RSTACK_DEPTH-1:0] rsp; // return stack pointer
-reg [`CODE_WIDTH-1:0] rstack_top; // top element of return stack
-
+reg [RSTACK_DEPTH-1:0] rsp; // return stack pointer (pointing to rstack_top)
 reg [RSTACK_DEPTH-1:0] rsp_new; // (logic)
+
+reg [`CODE_WIDTH-1:0] rstack_top; // top element of return stack
 reg [`CODE_WIDTH-1:0] rstack_top_new; // (logic)
-wire [`CODE_WIDTH-1:0] rstack_pre_top; // (top - 1) element of return stack
+
 reg write_to_rstack; // sp_new(logic) write enable to return stack
 
 dsram #(
@@ -160,78 +112,55 @@ rstack(
     .clk(clk),
 
     .mem_dout_addr(rsp),
-    .mem_dout(rstack_pre_top),
+    .mem_dout(rstack_top),
 
     .we(write_to_rstack),
     .mem_din_addr(rsp_new),
-    .mem_din(16'(rstack_top))
+    .mem_din(rstack_top_new)
 );
 
-// return frame pointer stack (only frame pointers)
+/*
+    Command formats
 
-reg [`DATA_WIDTH-1:0] rfpstack_top; // top element of return frame pointer stack
-reg [`DATA_WIDTH-1:0] rfpstack_top_new; // logic
-wire [`DATA_WIDTH-1:0] rfpstack_pre_top; // (top - 1) element of return frame pointer stack
+F1 = [('F', 1), ('OP', 2), ('IMM', 13)]
+    JMP, JZ, CALL, PUSH_ADDR
+F2 = [('F', 1), ('OP', 5), ('I', 1), ('SIMM', 9)]
+    Other
+*/
+wire [15:0] instr = reset ? 19456 : instruction; // 19456 = SET_FP 0 = NOP
 
-dsram #(
-    .WIDTH(RSTACK_DEPTH),
-    .SIZE(1 << RSTACK_DEPTH)
-)
-rfpstack(
-    .clk(clk),
+wire cmd_type = instr[15]; // format 1 or format 2
 
-    .mem_dout_addr(rsp),
-    .mem_dout(rfpstack_pre_top),
-
-    .we(write_to_rstack),
-    .mem_din_addr(rsp_new),
-    .mem_din(16'(rfpstack_top))
-);
-
-// 
-
-wire [4:0] opcode = instr[4:0]; // opcode
-wire [15:0] instr_simm = {{6{instr[15]}}, instr[15:6]};
+wire [4:0] opcode = instr[14:10];
+wire mode = instr[9]; // use immediate if mode else from stack
+wire [15:0] instr_simm9 = {{7{instr[8]}}, instr[8:0]};
+wire [15:0] instr_imm13 = {3'b0, instr[12:0]};
 
 reg [CODE_WIDTH-1:0] pc; // program counter
 reg [DATA_WIDTH-1:0] fp; // frame pointer
 reg [CODE_WIDTH-1:0] pc_new; // (logic)
 reg [DATA_WIDTH-1:0] fp_new; // (logic)
 
-assign code_addr = pc;
+reg wait_flag;
+reg wait_flag_new; // logic
 
-reg state; // cpu state
-
-localparam FETCH_WRITEBACK = 1'b0;
-localparam EXECUTE = 1'b1;
-
-reg mem_to_stack; // need to write from memory to top of stack on fetch
-reg mem_to_stack_new; // (logic)
-reg stack_pre_top_to_top; // need to write stack (top - 1) to stack top on fetch
-reg stack_pre_top_to_top_new; // (logic)
-
+assign code_addr = pc_new;
 wire [`CODE_WIDTH-1:0] pc_plus_1 = pc + 1;
 
-// pre-calculated address to access the data memory
-wire [`DATA_WIDTH-1:0] abs_mem_addr = mode ? fp + DATA_WIDTH'(instr_simm) : DATA_WIDTH'(stack_top) + DATA_WIDTH'(instr_simm);
+wire [12:0] mem_abs_addr = mode ? fp + instr_simm9[12:0] : stack_top[12:0];
+assign mem_dout_we = (!cmd_type && opcode == `STORE) ? 1'b1 : 1'b0;
+assign mem_dout = mode ? stack_top : stack_pre_top;
+assign mem_dout_addr = mem_abs_addr;
 
-// pre-calculated address to access the program memory
-wire [`CODE_WIDTH-1:0] abs_jump_addr = mode ? pc + CODE_WIDTH'(instr_simm) : CODE_WIDTH'(stack_top) + CODE_WIDTH'(instr_simm);
-
-
-reg stack_top_on_mem;
-
-reg mem_dout_we_new; // (logic)
-reg [15:0] mem_dout_new; // (logic)
-
-assign mem_din_addr = abs_mem_addr;
-
+assign mem_din_addr = mem_abs_addr;
 // alu
 
 wire [15:0] alu_out;
 
 wire [15:0] alu_x = mode ? stack_top : stack_pre_top;
-wire [15:0] alu_y = mode ? instr_simm : stack_top;
+wire [15:0] alu_y = mode ? instr_simm9 : stack_top;
+
+wire is_alu = !cmd_type && opcode < `LOAD;
 
 alu alu(
     .opcode(opcode),
@@ -240,26 +169,20 @@ alu alu(
     .out(alu_out)
 );
 
-
-// state update logic
-always @(posedge clk) begin
-    if (!reset) begin
-        case (state)
-            FETCH_WRITEBACK: state <= EXECUTE;
-            EXECUTE: state <= FETCH_WRITEBACK;
-            default: state <= FETCH_WRITEBACK;
-        endcase
-    end
-end
+/*
+    logic
+*/
 
 // all pc logic
 always @(*) begin
-    case (opcode)
-        `JMP: pc_new = abs_jump_addr;
-        `JZ: pc_new = (~|stack_top) ? abs_jump_addr : pc_plus_1;
-        `JNZ: pc_new = (|stack_top) ? abs_jump_addr : pc_plus_1;
-        `CALL: pc_new = abs_jump_addr;
-        `RET: pc_new = rstack_top;
+    casez ({cmd_type, opcode, wait_flag, resume})
+        8'b?_??_???_?_1: pc_new = pc_plus_1;
+        8'b?_??_???_1_0: pc_new = pc;
+        {1'b0, `WAIT, 2'b0}: pc_new = pc;
+        8'b1_00_???_0_0: pc_new = instr_imm13[12:0]; // JMP
+        8'b1_01_???_0_0: pc_new = (~|stack_top) ? instr_imm13[12:0] : pc_plus_1; // JZ
+        8'b1_10_???_0_0: pc_new = instr_imm13[12:0]; // CALL
+        {1'b0, `RET, 2'b0}: pc_new = rstack_top;
         default: pc_new = pc_plus_1;
     endcase
 end
@@ -267,223 +190,112 @@ end
 // all fp logic
 always @(*) begin
     // compute all return stack logic
-    case (opcode)
-        `RET: fp_new = rfpstack_top;
-        `SET_FP: fp_new = abs_mem_addr;
+    case ({cmd_type, opcode})
+        {1'b0, `LOCALS}: fp_new = fp - instr_simm9[DATA_WIDTH-1:0];
+        {1'b0, `RET}: fp_new = fp + instr_simm9[DATA_WIDTH-1:0];
+        {1'b0, `SET_FP}: fp_new = stack_top[DATA_WIDTH-1:0];
         default: fp_new = fp;
     endcase
 end
 
 // all return stack logic
 always @(*) begin
-    case (opcode)
-        `CALL: rstack_top_new = pc + 1;
-        `RET: rstack_top_new = rstack_pre_top;
+    casez ({cmd_type, opcode})
+        6'b1_10_???, // CALL
+        {1'b0, `ICALL}: rstack_top_new = pc_plus_1;
         default: rstack_top_new = rstack_top;
     endcase
 end
 
 always @(*) begin
-    case (opcode)
-        `CALL: rfpstack_top_new = fp;
-        `RET: rfpstack_top_new = rfpstack_pre_top;
-        default: rfpstack_top_new = rfpstack_top;
-    endcase
-end
-
-always @(*) begin
-    case (opcode)
-        `CALL: rsp_new = rsp + 1;
-        `RET: rsp_new = rsp - 1;
+    casez ({cmd_type, opcode})
+        6'b1_10_???, // CALL
+        {1'b0, `ICALL}: rsp_new = rsp + 1;
+        {1'b0, `RET}: rsp_new = rsp - 1;
         default: rsp_new = rsp;
     endcase
 end
 
 always @(*) begin
-    case (opcode)
-        `CALL: write_to_rstack = 1'b1;
-        `RET: write_to_rstack = 1'b0;
+    casez ({cmd_type, opcode})
+        6'b1_10_???, // CALL
+        {1'b0, `ICALL}: write_to_rstack = 1'b1;
         default: write_to_rstack = 1'b0;
     endcase
 end
 
-always @(*) begin
-    case ({state, opcode})
-        {FETCH_WRITEBACK, `STORE}: {mem_dout_we_new, mem_dout_new} = {1'b1, mode ? stack_top : stack_pre_top};
-        default: mem_dout_we_new = 1'b0;
-    endcase
-end
-
-
 // all stack logic
 always @(*) begin
-    case (opcode)
-        `LOAD,
-        `LEA: sp_new = sp1_mode;
-        `STORE,
-        `JZ,
-        `JNZ: sp_new = sp - 1; // was sp1_neg_mode
-        `ADD,
-        `SUB,
-        `MUL,
-        `AND,
-        `OR,
-        `XOR,
-        `SHL,
-        `SHR,
-        `SHRA,
-        `EQ,
-        `LT,
-        `LTU,
-        `SET_FP,
-        `JMP,
-        `CALL,
-        `RET: sp_new = sp0_mode;
-        `PUSH_LO,
-        `PUSH_HI: sp_new = sp + 1;
-        `POP: sp_new = sp - 1;
-        default: sp_new = sp;
+    casez ({cmd_type, is_alu, opcode})
+        {2'b00, `LOAD}: sp_new = mode ? sp : sp_minus_1;
+
+        {2'b00, `STORE}: sp_new = mode ? sp_minus_1 : sp - 2;
+
+        7'b01?????: sp_new = mode ? sp : sp_minus_1; // format 1 + alu + any
+        {2'b00, `SET_FP}: sp_new = sp_minus_1;
+        {2'b00, `ICALL}: sp_new = sp_minus_1;
+        {2'b00, `POP}: sp_new = sp_minus_1;
+        {7'b10_01_???}: sp_new = sp_minus_1; // JZ
+
+        {2'b00, `PUSH_INT}: sp_new = sp_plus_1;
+        {2'b00, `PUSH_MR}: sp_new = sp_plus_1;
+        7'b10_11_???: sp_new = sp_plus_1; // PUSH_ADDR
+
+        default: sp_new = sp; // LOCALS, RET, WAIT, JMP, CALL, ANY
     endcase
 end
 
 always @(*) begin
-    case ({mode, opcode})
-        {1'b0, `STORE}: sp_new_execute = sp - 1;
-        default: sp_new_execute = sp;
-    endcase
-end
-
-always @(*) begin
-    case ({state, opcode})
-        {EXECUTE, `STORE}: stack_pre_top_to_top_new = 1'b1;
-        {EXECUTE, `JZ}: stack_pre_top_to_top_new = 1'b1;
-        {EXECUTE, `JNZ}: stack_pre_top_to_top_new = 1'b1;
-        default: stack_pre_top_to_top_new = 1'b0;
-    endcase
-end
-
-always @(*) begin
-    case (opcode)
-        `ADD,
-        `SUB,
-        `MUL,
-        `AND,
-        `OR,
-        `XOR,
-        `SHL,
-        `SHR,
-        `SHRA,
-        `EQ,
-        `LT,
-        `LTU: stack_top_new = alu_out;
-        `LOAD: stack_top_new = mem_din;
-        `STORE,
-        `JZ,
-        `JNZ: stack_top_new = stack_pre_top;
-        `LEA: stack_top_new = 16'(abs_mem_addr);
-        `SET_FP,
-        `JMP,
-        `CALL,
-        `RET: stack_top_new = mode ? stack_top : stack_pre_top;
-        `PUSH_LO: stack_top_new = instr_simm;
-        `PUSH_HI: stack_top_new = instr_simm << 6;
-        `POP: stack_top_new = stack_pre_top;
+    casez ({cmd_type, is_alu, opcode})
+        7'b01?????: stack_top_new = alu_out; // format 1 + alu + any
+        {2'b00, `PUSH_INT}: stack_top_new = instr_simm9;
+        {2'b00, `PUSH_MR}: stack_top_new = mem_din;
+        7'b10_11_???: stack_top_new = instr_imm13; // PUSH_ADDR
         default: stack_top_new = stack_top;
     endcase
 end
 
 always @(*) begin
-    case ({state, opcode})
-        {EXECUTE, `LOAD}: write_to_stack = 1'b1; // was mode ? 1'b1 : 1'b0
-        {EXECUTE, `PUSH_LO},
-        {EXECUTE, `PUSH_HI}: write_to_stack = 1'b1;
+    casez ({cmd_type, is_alu, opcode})
+        7'b01?????: write_to_stack = 1'b1; // format 1 + alu + any
+        {2'b00, `PUSH_INT}: write_to_stack = 1'b1;
+        {2'b00, `PUSH_MR}: write_to_stack = 1'b1;
+        7'b10_11_???: write_to_stack = 1'b1; // PUSH_ADDR
         default: write_to_stack = 1'b0;
     endcase
 end
 
 always @(*) begin
-    case ({state, opcode})
-        {EXECUTE, `LOAD}: mem_to_stack_new = 1'b1;
-        default: mem_to_stack_new = 1'b0;
+    casez({cmd_type, opcode, resume})
+        {1'b0, `WAIT, 1'b0}: wait_flag_new = 1'b1;
+        {7'b?_?????_1}: wait_flag_new = 1'b0;
+        default: wait_flag_new = wait_flag;
     endcase
 end
 
 // calculation logic
 always @(posedge clk) begin
     if (reset) begin
-        state <= FETCH_WRITEBACK;
-        pc <= (CODE_WIDTH)'(0);
+        pc <= (CODE_WIDTH)'(13'b1111111111111);
         sp <= (STACK_DEPTH)'(0);
         rsp <= (RSTACK_DEPTH)'(0);
         fp <= (DATA_WIDTH)'(0);
-        
-        stack_top <= 16'b0;
-        rstack_top <= (CODE_WIDTH)'(0);
-        rfpstack_top <= (DATA_WIDTH)'(0);
+        wait_flag = 1'b0;
     end else begin
-        case (state)
-            FETCH_WRITEBACK: begin
-                if (mem_to_stack) begin
-                    stack_top <= mem_din;
-                end
-                if (stack_pre_top_to_top) begin
-                    stack_top <= stack_pre_top;
-                end
-
-                pc <= pc_new;
-                sp <= sp_new;
-                rsp <= rsp_new;
-                fp <= fp_new;
-                stack_top <= stack_top_new;
-                rstack_top <= rstack_top_new;
-                rfpstack_top <= rfpstack_top_new;
-
-
-                // test
-                mem_dout_addr <= abs_mem_addr;
-                mem_dout_we <= mem_dout_we_new;
-                mem_dout <= mem_dout_new;
-            end
-            EXECUTE: begin
-                mem_dout_addr <= abs_mem_addr;
-                mem_dout_we <= mem_dout_we_new;
-                mem_dout <= mem_dout_new;
-
-                sp <= sp_new_execute;
-                mem_to_stack <= mem_to_stack_new;
-                stack_pre_top_to_top <= stack_pre_top_to_top_new;
-
-                if (opcode == `STORE && mode == 1'b0) begin
-                    stack_top <= stack_top_new;
-                end
-                if (opcode == `JMP && mode == 1'b0) begin
-                    stack_top <= stack_top_new;
-                end
-                if (opcode == `JNZ && mode == 1'b0) begin
-                    stack_top <= stack_top_new;
-                end
-
-                if (opcode == `LOAD) begin
-                    stack_top <= stack_top_new;
-                end
-            end
-        endcase
+        pc <= pc_new;
+        sp <= sp_new;
+        rsp <= rsp_new;
+        fp <= fp_new;
+        wait_flag <= wait_flag_new;
     end
 end
 
 initial begin
-    state = FETCH_WRITEBACK;
     pc = (CODE_WIDTH)'(0);
     sp = (STACK_DEPTH)'(0);
     rsp = (RSTACK_DEPTH)'(0);
     fp = (DATA_WIDTH)'(0);
-    
-    stack_top = 16'b0;
-    rstack_top = (CODE_WIDTH)'(0);
-    rfpstack_top = (DATA_WIDTH)'(0);
-    
-    mem_to_stack = 1'b0;
-    stack_pre_top_to_top = 1'b0;
+    wait_flag = 1'b0;
 end
 
 endmodule

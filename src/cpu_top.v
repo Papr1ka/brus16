@@ -1,6 +1,7 @@
 module cpu_top(
     input wire clk,
-    input wire reset
+    input wire reset,
+    input wire resume
 );
 
 parameter CODE_WIDTH = 13;
@@ -18,9 +19,10 @@ wire [15:0] cpu_mem_din;
 
 cpu cpu(
     .clk(clk),
+    .resume(resume),
     .reset(reset),
     .code_addr(code_addr),
-    .instr(instr),
+    .instruction(instr),
     .mem_din_addr(cpu_mem_din_addr),
     .mem_din(cpu_mem_din),
     .mem_dout_we(cpu_mem_dout_we),
