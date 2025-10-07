@@ -1,5 +1,13 @@
 // `include "~/dev/brus16/src/defs.vh"
 
+/*
+    CPU
+    works in a single cycle
+
+    after work, WAIT cmd sets the wait flag, frozing computations
+    after resule, cmd continues work, setting wait flag to 0
+*/
+
 `define CODE_WIDTH 13
 `define DATA_WIDTH 13
 
@@ -45,8 +53,8 @@ module cpu
 )
 (
     input wire clk,
-    input wire reset,
-    input wire resume,
+    input wire reset, // reset cpu, start from scratch
+    input wire resume, // continue work after wait
 
     output wire [CODE_WIDTH-1:0] code_addr, // pc (what instruction to fetch)
     input wire [15:0] instruction, // instruction from program memory
@@ -106,7 +114,8 @@ reg write_to_rstack; // sp_new(logic) write enable to return stack
 
 dsram #(
     .WIDTH(RSTACK_DEPTH),
-    .SIZE(1 << RSTACK_DEPTH)
+    .SIZE(1 << RSTACK_DEPTH),
+    .DATA_WIDTH(`CODE_WIDTH)
 )
 rstack(
     .clk(clk),
@@ -280,7 +289,7 @@ always @(posedge clk) begin
         sp <= (STACK_DEPTH)'(0);
         rsp <= (RSTACK_DEPTH)'(0);
         fp <= (DATA_WIDTH)'(0);
-        wait_flag = 1'b0;
+        wait_flag <= 1'b0;
     end else begin
         pc <= pc_new;
         sp <= sp_new;

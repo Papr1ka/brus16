@@ -1,6 +1,6 @@
 <testsuites name="results">
   <testsuite name="all" package="all">
-    <property name="random_seed" value="1759744490" />
-    <testcase name="test_gpu" classname="test_gpu" file="/home/kirill/dev/brus16/tests/gpu/test_gpu.py" lineno="724" time="3.4118854999542236" sim_time_ns="1289.0" ratio_time="377.7969688658351" />
+    <property name="random_seed" value="1759854263" />
+    <testcase name="test_gpu" classname="test_gpu" file="/home/kirill/dev/brus16/tests/gpu/test_gpu.py" lineno="724" time="3.500657320022583" sim_time_ns="1289.0" ratio_time="368.2165611090675" />
   </testsuite>
 </testsuites>

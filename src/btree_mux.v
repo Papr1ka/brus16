@@ -1,14 +1,20 @@
+/*
+    binary tree of mux-es
+    64x1 (6 layers) (read gpu introduction)
+*/
 module btree_mux
 #(
     parameter INPUT_COUNT = 64,
     parameter INPUT_WIDTH = 6
 )
 (
-    input wire clk,
-    input wire [INPUT_COUNT-1:0] flags_in,
-    input wire [INPUT_WIDTH-1:0] data_in [INPUT_COUNT-1:0],
-    output wire flag_out,
-    output wire [INPUT_WIDTH-1:0] data_out
+    /* verilator lint_off UNUSEDSIGNAL */
+    input wire clk, // needed for testing
+    /* verilator lint_on UNUSEDSIGNAL */
+    input wire [INPUT_COUNT-1:0] flags_in, // mux controls
+    input wire [INPUT_WIDTH-1:0] data_in [INPUT_COUNT-1:0], // mux data
+    output wire flag_out, // any mux control ?
+    output wire [INPUT_WIDTH-1:0] data_out // mux output
 );
 
 // layer1 64x32

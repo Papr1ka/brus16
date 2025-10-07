@@ -1,7 +1,14 @@
-module stack // distributed sram with async read
+/*
+    2*READ 1*WRITE stack
+    intended to be implemented as distributed ram
+    small in size
+    async read, sync write
+*/
+
+module stack
 #(
-    parameter WIDTH = 13,
-    parameter SIZE = 8192
+    parameter WIDTH = 6, // pointer width
+    parameter SIZE = 64
 )
 (
     input wire clk,
@@ -28,8 +35,8 @@ always @(posedge clk) begin
     end
 end
 
-assign mem_dout0 = data[mem_dout_addr0]; // async read
-assign mem_dout1 = data[mem_dout_addr1]; // async read
+assign mem_dout0 = data[mem_dout_addr0]; // async read port 0
+assign mem_dout1 = data[mem_dout_addr1]; // async read port 1
 
 initial begin
     for (integer i = 0; i < SIZE; i = i + 1) begin

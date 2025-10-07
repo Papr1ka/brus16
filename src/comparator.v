@@ -1,3 +1,11 @@
+/*
+    Comparator
+    check's that point (coord_x, coord_y)
+    collide with rect (rect_left, rect_top, rect_right, rect_bottom)
+
+    async
+*/
+
 module comparator
 #(
     parameter COORD_WIDTH = 16

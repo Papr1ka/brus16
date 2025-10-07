@@ -49,7 +49,7 @@ def setup_mem(dut, mem, start=8192-6*64):
         dut.memory.data[i].value = val
 
 def log_debug(dut):
-    string = "copy_start={copy_start} gpu_reset={gpu_reset} mem_din={mem_din:<6d} " \
+    string = "copy_start={copy_start} mem_din={mem_din:<6d} " \
     "mem_dout={mem_dout:<6d} " \
     "addr={addr:<6d} addr_new={addr_new:<6d} " \
     "state={state:<2d} state_new={state_new:<2d} " \
@@ -57,7 +57,6 @@ def log_debug(dut):
     "cursor_x={cursor_x:<6d} cursor_x_new={cursor_x_new:<6d} " \
     "cursor_y={cursor_y:<6d} cursor_y_new={cursor_y_new:<6d} ".format(
         copy_start=int(dut.copy_start.value),
-        gpu_reset=int(dut.gpu_reset.value),
         mem_din=dut.controller.mem_din.value.to_signed(),
         mem_dout=dut.controller.mem_dout.value.to_signed(),
         state=dut.controller.state.value.to_unsigned(),
@@ -80,7 +79,6 @@ async def tect_rect_copy_controller(dut):
     setup_mem(dut, mem)
     await RisingEdge(dut.clk)
     dut.copy_start.value = 1
-    assert int(dut.gpu_reset.value) == 0
     await RisingEdge(dut.clk)
     dut.copy_start.value = 0
     cursor_x = 0
@@ -117,10 +115,9 @@ async def tect_rect_copy_controller(dut):
     dut.reset.value = 0
     await RisingEdge(dut.clk)
 
-    # double chech after reset to be sure
+    # double check after reset to be sure
 
     dut.copy_start.value = 1
-    assert int(dut.gpu_reset.value) == 0
     await RisingEdge(dut.clk)
     dut.copy_start.value = 0
     cursor_x = 0

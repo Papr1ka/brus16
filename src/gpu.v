@@ -1,4 +1,33 @@
-// latency = 6 clocks (when x = 0, color for x = 0 will be at x = 6)
+/*
+    GPU
+
+    implemented for 64 rects
+    step 0: recieve abs rect data from rect_copy_controller
+        there are 6 arrays of memory for
+        (rect_x, rect_y, rect_x+rect_width, rect_y+rect_height, color, rect_idx)
+    step 1: 64 parallel comparators, checking that (x_coord, y_coord) collide with rect_{i},
+        forming 64-bit array of collision flags
+    step 2: 6-layer binary tree of mux-es
+        one layer multiplex each pair of previous
+        layer outputs according to collision flag of rect with highier z-index
+        (It is assumed that rect_0 with rect_idx=0 has z_index=0)
+
+        If RECT_COUNT == 2:
+            rect_a = 0
+            rect_b = 1
+            collisions = [x, y]
+            out = rect_b if y else rect_a
+            (if y is 1, we must prefer rect_b (it has higher z-index) else rect_a)
+        
+        compose 6 layers: 64x32, 32x16, 16x8, 8x4, 4x2, 2x1
+        now we get rect_idx that has the highest z-index and collide with (coord_x, coord_y)
+        (if there was a collision at all)
+        in parallel we maintain the any_collison = (collision[0] | collision[1] ...)
+    step 3:
+        if there was a collision (any_collision flag), color = colors[rect_idx] else default color
+    All steps works asynchronously
+    (if the multiplexers logic doesn't fit in one cycle => pipiline mux-es).
+*/
 
 module gpu
 #(
@@ -12,12 +41,12 @@ module gpu
     input wire [COORD_WIDTH-1:0] x_coord,
     input wire [COORD_WIDTH-1:0] y_coord,
     input wire [15:0] mem_din, // abs rect data from copy controller
-    output wire [15:0] color
+    output wire [15:0] color // out color
 );
 
 parameter RECT_COUNT = 64;
 parameter RECT_COUNT_WIDTH = 6;
-parameter DEFAULT_COLOR = 16'b1111100000000000;
+parameter DEFAULT_COLOR = 16'b0;
 
 // state machine to recieve data
 reg [1:0] state;

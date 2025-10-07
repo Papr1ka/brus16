@@ -1,3 +1,9 @@
+/*
+    Button handler
+    counter to 255 prevent button jarring
+    counter resets to 0 when button_in signal is zero
+    if counter reaches 255, set the button reg to 1 and do not change it until reset
+*/
 module button_handler
 #(
     parameter COUNTER_SIZE = 8,

@@ -1,4 +1,6 @@
-// `include "~/dev/brus16/src/defs.vh"
+/*
+    Async alu, according to the ISA
+*/
 
 `define CODE_WIDTH 13
 `define DATA_WIDTH 13

@@ -1,4 +1,11 @@
-module gpu_mem // distributed sram with async read
+/*
+    64*READ 1*WRITE memory
+    intended to be implemented as distributed ram
+    async read, sync write
+*/
+
+
+module gpu_mem
 #(
     parameter ADDR_WIDTH = 6,
     parameter SIZE = 64,

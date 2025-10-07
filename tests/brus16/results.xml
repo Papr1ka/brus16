@@ -1,0 +1,8 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1759855497" />
+    <testcase name="test_game" classname="test_brus16" file="/home/kirill/dev/brus16/tests/brus16/test_brus16.py" lineno="132" time="23.56090259552002" sim_time_ns="200006.0" ratio_time="8488.893801463704">
+      <failure error_type="SimFailure" error_msg="Simulator shut down prematurely" />
+    </testcase>
+  </testsuite>
+</testsuites>

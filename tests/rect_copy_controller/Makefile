@@ -6,7 +6,7 @@ TOPLEVEL_LANG ?= verilog
 
 VERILOG_SOURCES += ../../src/bsram.v
 VERILOG_SOURCES += ../../src/rect_copy_controller.v
-VERILOG_SOURCES += ../../src/rect_copy_controller_tb.v
+VERILOG_SOURCES += ../../src/tb/rect_copy_controller_tb.v
 # use VHDL_SOURCES for VHDL files
 
 # COCOTB_TOPLEVEL is the name of the toplevel module in your Verilog or VHDL file

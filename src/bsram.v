@@ -1,3 +1,8 @@
+/*
+    1*READ 1*WRITE sync memory
+    intended to be implemented as block ram
+    sync read, sync write
+*/
 module bsram
 #(
     parameter WIDTH = 13,

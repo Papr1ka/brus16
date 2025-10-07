@@ -1,3 +1,10 @@
+/*
+    DMA Button controller
+    Contains BUTTON_COUNT buttons, after copy_start, writes button values to memory
+    It works in assumption that after copy_start, it is connected to the data memory 
+*/
+
+
 module button_controller
 #(
     parameter BUTTON_COUNT = 6,
@@ -6,10 +13,10 @@ module button_controller
 )
 (
     input wire clk,
-    input wire reset,
-    input wire copy_start,
+    input wire reset, // reset button values
+    input wire copy_start, // start copy button values?
 
-    input wire [BUTTON_COUNT-1:0] buttons_in,
+    input wire [BUTTON_COUNT-1:0] buttons_in, // button async raw signals
 
     output reg mem_dout_we,
     output wire [ADDR_WIDTH-1:0] mem_dout_addr,
@@ -82,8 +89,8 @@ always @(posedge clk) begin
 end
 
 initial begin
-    state <= WAIT;
-    addr <= BUTTON_ADDR;
+    state = WAIT;
+    addr = BUTTON_ADDR;
 end
 
 endmodule
