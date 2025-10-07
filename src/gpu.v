@@ -11,7 +11,7 @@ module gpu
 
     input wire [COORD_WIDTH-1:0] x_coord,
     input wire [COORD_WIDTH-1:0] y_coord,
-    input wire [15:0] mem_din, // rect data from cpu
+    input wire [15:0] mem_din, // abs rect data from copy controller
     output wire [15:0] color
 );
 

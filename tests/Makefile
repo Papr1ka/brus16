@@ -1,6 +1,7 @@
 TESTS := 	gpu \
 			cpu \
-			btree_mux
+			btree_mux \
+			rect_copy_controller
 
 .PHONY: $(TESTS)
 
