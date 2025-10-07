@@ -29,8 +29,8 @@ def generate_rect(i):
         abs = 1
     else:
         abs = randint(0, 1)
-    x = randint(0, 2 ** 10 - 1)
-    y = randint(0, 2 ** 10 - 1)
+    x = randint(-1000, 2 ** 10 - 1)
+    y = randint(-1000, 2 ** 10 - 1)
     width = randint(0, 2 ** 10 - 1)
     height = randint(0, 2 ** 10 - 1)
     color = randint(0, 2 ** 16 - 1)
@@ -95,10 +95,10 @@ async def tect_rect_copy_controller(dut):
         assert dut.controller.mem_dout.value.to_unsigned() == (0)
         await RisingEdge(dut.clk)
         # print(dut.controller.mem_dout.value.to_unsigned(), x)
-        assert dut.controller.mem_dout.value.to_unsigned() == x
+        assert dut.controller.mem_dout.value.to_signed() == x
         await RisingEdge(dut.clk)
         # print(dut.controller.mem_dout.value.to_unsigned(), y)
-        assert dut.controller.mem_dout.value.to_unsigned() == y
+        assert dut.controller.mem_dout.value.to_signed() == y
         await RisingEdge(dut.clk)
         # print(dut.controller.mem_dout.value.to_unsigned(), w)
         assert dut.controller.mem_dout.value.to_unsigned() == w
@@ -134,10 +134,10 @@ async def tect_rect_copy_controller(dut):
         assert dut.controller.mem_dout.value.to_unsigned() == (0)
         await RisingEdge(dut.clk)
         # print(dut.controller.mem_dout.value.to_unsigned(), x)
-        assert dut.controller.mem_dout.value.to_unsigned() == x
+        assert dut.controller.mem_dout.value.to_signed() == x
         await RisingEdge(dut.clk)
         # print(dut.controller.mem_dout.value.to_unsigned(), y)
-        assert dut.controller.mem_dout.value.to_unsigned() == y
+        assert dut.controller.mem_dout.value.to_signed() == y
         await RisingEdge(dut.clk)
         # print(dut.controller.mem_dout.value.to_unsigned(), w)
         assert dut.controller.mem_dout.value.to_unsigned() == w

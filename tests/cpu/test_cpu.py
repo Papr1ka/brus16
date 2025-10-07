@@ -26,6 +26,7 @@ game_data = [0] * 8192
 game_program, game_data_new = load("./game.bin")
 for i, e in enumerate(game_data_new):
     game_data[i] = e
+game_data[7802-6 + 2] = 1
 
 CMDS = [(
     lambda xs: (xs[0], int(xs[1]))
@@ -238,15 +239,15 @@ async def test_factorial(dut):
 async def test_game(dut):
     program = game_program
     async with setup(dut, "game.log", program, game_data):
-        await Timer(2 * 2500, unit='ns')
+        await Timer(2 * 3000, unit='ns')
         await RisingEdge(dut.clk)
         
-        for i in range(5):
+        for i in range(11):
             if i != 0:
                 dut.resume.value = 1
                 await RisingEdge(dut.clk)
                 dut.resume.value = 0
-            await Timer(2 * 2500, unit='ns')
+            await Timer(2 * 3000, unit='ns')
             dump_mem(dut, sys=False, i=i)
 
             with open(f"./memory_reference/memory_at_{i}.txt", "r") as file:
@@ -256,5 +257,5 @@ async def test_game(dut):
                 actual_mem = [int(val) for val in file.read().split()]
             
             for j, (a, b) in enumerate(zip(ref_mem, actual_mem)):
-                assert a == b, f"(frame=i) (row={j}) ref mem differ from actual mem ({a} != {b})"
+                assert a == b, f"(frame={i}) (row={j}) ref mem differ from actual mem ({a} != {b})"
             assert len(ref_mem) == len(actual_mem), "mem length mismatch"

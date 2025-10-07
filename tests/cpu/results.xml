@@ -1,7 +1,7 @@
 <testsuites name="results">
   <testsuite name="all" package="all">
-    <property name="random_seed" value="1759854333" />
-    <testcase name="test_factorial" classname="test_cpu" file="/home/kirill/dev/brus16/tests/cpu/test_cpu.py" lineno="225" time="0.3529181480407715" sim_time_ns="407.0" ratio_time="1153.2419124929236" />
-    <testcase name="test_game" classname="test_cpu" file="/home/kirill/dev/brus16/tests/cpu/test_cpu.py" lineno="237" time="26.25961399078369" sim_time_ns="30007.0" ratio_time="1142.705296830773" />
+    <property name="random_seed" value="1759862218" />
+    <testcase name="test_factorial" classname="test_cpu" file="/home/kirill/dev/brus16/tests/cpu/test_cpu.py" lineno="226" time="0.3793821334838867" sim_time_ns="407.0" ratio_time="1072.7969613711034" />
+    <testcase name="test_game" classname="test_cpu" file="/home/kirill/dev/brus16/tests/cpu/test_cpu.py" lineno="238" time="64.28740048408508" sim_time_ns="72007.0" ratio_time="1120.079509480648" />
   </testsuite>
 </testsuites>

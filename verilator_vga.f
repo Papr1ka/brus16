@@ -1,0 +1,21 @@
+--cc --exe simulator.cpp
+./src/alu.v
+./src/brus16_controller.v
+./src/brus16_top.v
+./src/bsram.v
+./src/btree_mux_layer.v
+./src/btree_mux.v
+./src/button_handler.v
+./src/button_controller.v
+./src/comparator.v
+./src/cpu.v
+./src/dsram.v
+./src/gpu_mem.v
+./src/gpu.v
+./src/rect_copy_controller.v
+./src/stack.v
+./src/vga_controller.v
+--top brus16_top
+-Wall
+-LDFLAGS -lglut -LDFLAGS -lGLU -LDFLAGS -lGL
+-Wno-fatal

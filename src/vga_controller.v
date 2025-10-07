@@ -1,66 +1,70 @@
-/*
-Video sync generator, used to drive a VGA monitor.
-Timing from: https://en.wikipedia.org/wiki/Video_Graphics_Array
-To use:
-- Wire the hsync and vsync signals to top level outputs
-- Add a 3-bit (or more) "rgb" output to the top level
-*/
+module vga_controller(
+    input wire clk,
+    input wire reset,
+    
+    output reg hsync,
+    output reg vsync,
+    output reg display_on,
+    output reg [9:0] hpos,
+    output reg [9:0] vpos
+);
+    // 640X480 VGA sync parameters
+    localparam LEFT_PORCH		= 	48;
+    localparam ACTIVE_WIDTH		= 	640;
+    localparam RIGHT_PORCH		= 	16;
+    localparam HORIZONTAL_SYNC	=	96;
+    localparam TOTAL_WIDTH		=	800;
+    
+    localparam TOP_PORCH		= 	33;
+    localparam ACTIVE_HEIGHT	= 	480;
+    localparam BOTTOM_PORCH		= 	10;
+    localparam VERTICAL_SYNC	=	2;
+    localparam TOTAL_HEIGHT		=	525;
 
-module vga_controller(clk, reset, hsync, vsync, display_on, hpos, vpos);
+    // next state regs
+    reg hsync_next;
+    reg vsync_next;
+    reg [9:0] hpos_next;
+    reg [9:0] vpos_next;
+    reg display_on_next;
+    
+    // sequential logic
+    always @(posedge clk) begin
+        if(reset) begin
+            hsync <= 0;
+            vsync <= 0;
+            hpos <= 0;
+            vpos <= 0;
+            display_on <= 0;
+        end else begin
+            hsync <= hsync_next;
+            vsync <= vsync_next;
+            hpos <= hpos_next;
+            vpos <= vpos_next;
+            display_on <= display_on_next;
+        end
+    end
+    
+    // combinational logic
+    always @(*) begin
+        hsync_next = hpos >= RIGHT_PORCH + ACTIVE_WIDTH && 
+                      hpos < RIGHT_PORCH + ACTIVE_WIDTH + HORIZONTAL_SYNC;
+        vsync_next	= vpos >= TOP_PORCH + ACTIVE_HEIGHT && 
+                      vpos < TOP_PORCH + ACTIVE_HEIGHT + VERTICAL_SYNC;
+        
+        
+        if(hpos == TOTAL_WIDTH - 1) begin
+            hpos_next = 0;
+            if(vpos == TOTAL_HEIGHT - 1)
+                vpos_next = 0;
+            else
+                vpos_next = vpos + 1;
+        end else begin
+            hpos_next = hpos + 1;
+            vpos_next = vpos;
+        end
+        display_on_next = hpos < ACTIVE_WIDTH && vpos < ACTIVE_HEIGHT;
+    end
 
-  input clk;
-  input reset;
-  output reg hsync, vsync;
-  output display_on;
-  output reg [9:0] hpos;
-  output reg [9:0] vpos;
-
-  // declarations for TV-simulator sync parameters
-  
-  // horizontal constants
-  parameter H_DISPLAY       = 640; // horizontal display width
-  parameter H_BACK          =  48; // horizontal left border (back porch)
-  parameter H_FRONT         =  16; // horizontal right border (front porch)
-  parameter H_SYNC          =  96; // horizontal sync width
-  // vertical constants
-  parameter V_DISPLAY       = 480; // vertical display height
-  parameter V_TOP           =  33; // vertical top border
-  parameter V_BOTTOM        =  10; // vertical bottom border
-  parameter V_SYNC          =   2; // vertical sync # lines
-
-  // derived constants
-  parameter H_SYNC_START    = H_DISPLAY + H_FRONT;
-  parameter H_SYNC_END      = H_DISPLAY + H_FRONT + H_SYNC - 1;
-  parameter H_MAX           = H_DISPLAY + H_BACK + H_FRONT + H_SYNC - 1;
-  parameter V_SYNC_START    = V_DISPLAY + V_BOTTOM;
-  parameter V_SYNC_END      = V_DISPLAY + V_BOTTOM + V_SYNC - 1;
-  parameter V_MAX           = V_DISPLAY + V_TOP + V_BOTTOM + V_SYNC - 1;
-
-  wire hmaxxed = (hpos == H_MAX) || reset;	// set when hpos is maximum
-  wire vmaxxed = (vpos == V_MAX) || reset;	// set when vpos is maximum
-  
-  // horizontal position counter
-  always @(posedge clk)
-  begin
-    hsync <= (hpos>=H_SYNC_START && hpos<=H_SYNC_END);
-    if(hmaxxed)
-      hpos <= 0;
-    else
-      hpos <= hpos + 1;
-  end
-
-  // vertical position counter
-  always @(posedge clk)
-  begin
-    vsync <= (vpos>=V_SYNC_START && vpos<=V_SYNC_END);
-    if(hmaxxed)
-      if (vmaxxed)
-        vpos <= 0;
-      else
-        vpos <= vpos + 1;
-  end
-  
-  // display_on is set when beam is in "safe" visible frame
-  assign display_on = (hpos<H_DISPLAY) && (vpos<V_DISPLAY);
 
 endmodule

@@ -6,19 +6,25 @@ module brus16_top(
     input wire clk,
     input wire reset,
 
+    input wire up,
+    input wire down,
+    input wire left,
+    input wire right,
+
     output wire hsync,
     output wire vsync,
-    input wire [7:0] switches_p1, // button inputs from 8bitworkshop IDE
-    input wire [7:0] switches_p2, 
-    output wire [2:0] rgb // for 8bitworkshop IDE (We have rgb 565 color)
+    output wire [15:0] rgb, // colorful rgb 5 6 5 color !
+    output wire test
 );
+
+assign test = memory.data[7796][0];
 
 parameter CODE_WIDTH = 13;
 parameter DATA_WIDTH = 13;
-parameter DEFAULT_COLOR = 3'b0;
+parameter DEFAULT_COLOR = 16'b0;
 
 /*
-    VGA (CRT for 8-bitworkshop IDE)
+    VGA 640x480
 */
 
 wire display_on;
@@ -72,7 +78,8 @@ button_controller(
     .clk(clk),
     .reset(resume),
     .copy_start(copy_start),
-    .buttons_in({switches_p1[5:0], switches_p2[5:0]}),
+    // .buttons_in({up, down, left, right, 8'b0}),
+    .buttons_in(12'b101000101000),
 
     .mem_dout_we(bc_mem_dout_we),
     .mem_dout_addr(bc_mem_dout_addr),
@@ -166,7 +173,7 @@ rect_copy_controller rect_copy_controller(
 */
 
 wire [15:0] pixel_color; // rgb 5 6 5
-assign rgb = display_on ? {pixel_color[11], pixel_color[5], pixel_color[0]} : DEFAULT_COLOR;
+assign rgb = display_on ? pixel_color : DEFAULT_COLOR;
 
 gpu gpu(
     .pixel_clk(clk),
