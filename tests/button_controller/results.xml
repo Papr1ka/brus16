@@ -1,0 +1,6 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1759801035" />
+    <testcase name="tect_rect_copy_controller" classname="test_button_controller" file="/home/kirill/dev/brus16/tests/button_controller/test_button_controller.py" lineno="51" time="0.05575990676879883" sim_time_ns="547.0" ratio_time="9809.91597184809" />
+  </testsuite>
+</testsuites>
