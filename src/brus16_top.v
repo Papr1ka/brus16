@@ -9,6 +9,7 @@ module brus16_top(
     output wire hsync,
     output wire vsync,
     input wire [7:0] switches_p1, // button inputs from 8bitworkshop IDE
+    input wire [7:0] switches_p2, 
     output wire [2:0] rgb // for 8bitworkshop IDE (We have rgb 565 color)
 );
 
@@ -63,11 +64,15 @@ wire bc_mem_dout_we;
 wire [DATA_WIDTH-1:0] bc_mem_dout_addr;
 wire [15:0] bc_mem_dout;
 
-button_controller button_controller(
+button_controller #(
+    .BUTTON_COUNT(12),
+    .BUTTON_ADDR(7796) // 8192 - 6 * 64 - 12
+)
+button_controller(
     .clk(clk),
     .reset(resume),
     .copy_start(copy_start),
-    .buttons_in(switches_p1[7:2]),
+    .buttons_in({switches_p1[5:0], switches_p2[5:0]}),
 
     .mem_dout_we(bc_mem_dout_we),
     .mem_dout_addr(bc_mem_dout_addr),
@@ -115,7 +120,10 @@ assign data_memory_write_we_bus = copy ? bc_mem_dout_we : cpu_mem_dout_we;
 assign data_memory_write_addr_bus = copy ? bc_mem_dout_addr : cpu_mem_dout_addr;
 assign data_memory_write_data_bus = copy ? bc_mem_dout : cpu_mem_dout;
 
-bsram memory(
+bsram #(
+    .PROGRAM(0)
+)
+memory(
     .clk(clk),
     .mem_dout_addr(data_memory_read_addr_bus),
     .mem_dout(data_memory_read_data_bus),
