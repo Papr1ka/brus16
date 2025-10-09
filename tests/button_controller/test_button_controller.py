@@ -15,6 +15,7 @@ fh = logging.FileHandler("./logs/test_button_controller.log")
 fh.setLevel(logging.DEBUG)
 logger.addHandler(fh)
 
+BUTTON_COUNT = 16
 
 async def generate_clock(dut):
     for _ in range(10000):
@@ -27,7 +28,7 @@ async def generate_clock(dut):
 
 def log_debug(dut):
     buttons = []
-    for i in range(6):
+    for i in range(BUTTON_COUNT):
         buttons.append(int(dut.buttons_data[i].value))
     
     string = "reset={reset} copy_start={copy_start} " \
@@ -49,24 +50,29 @@ def log_debug(dut):
     logger.debug(string)
 
 @cocotb.test(skip=False)
-async def tect_rect_copy_controller(dut):
+async def tect_button_controller(dut):
     dut.reset.value = 0
     dut.copy_start.value = 0
-    dut.buttons_in.value = 0b000000
+    dut.buttons_in.value = 0b0000000000000000
     cocotb.start_soon(generate_clock(dut))
 
     await RisingEdge(dut.clk)
-
-    dut.buttons_in.value = 0b010110
+    button_values = [0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1]
+    dut.buttons_in.value = 0b0101100010000011
     await Timer(2 * 260, 'ns')
 
     await RisingEdge(dut.clk)
     dut.copy_start.value = 1
     await RisingEdge(dut.clk)
     dut.copy_start.value = 0
-    for i in range(6):
-        print(dut.mem_dout)
+    for i in range(BUTTON_COUNT):
         await RisingEdge(dut.clk)
+        button_i = int(int(dut.mem_dout.value) > 0)
+        addr_i = dut.mem_dout_addr.value.to_unsigned()
+        we_i = int(dut.mem_dout_we.value)
+        assert we_i == 1
+        assert addr_i == (8192 - 6*64 - BUTTON_COUNT) + i
+        assert button_i == button_values[i]
     
     dut.reset.value = 1
     await RisingEdge(dut.clk)

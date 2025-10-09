@@ -7,8 +7,8 @@
 
 module button_controller
 #(
-    parameter BUTTON_COUNT = 6,
-    parameter BUTTON_ADDR = 7802,
+    parameter BUTTON_COUNT = 16,
+    parameter BUTTON_ADDR = 7792,
     parameter ADDR_WIDTH = 13
 )
 (
@@ -23,6 +23,8 @@ module button_controller
     output reg [15:0] mem_dout
 );
 
+localparam LAST_BUTTON_ADDR = BUTTON_ADDR + BUTTON_COUNT - 1;
+
 wire buttons_data [BUTTON_COUNT-1:0];
 
 generate
@@ -31,7 +33,7 @@ for (i = 0; i < BUTTON_COUNT; i = i + 1) begin
     button_handler button(
         .clk(clk),
         .reset(reset),
-        .button_in(buttons_in[i]),
+        .button_in(buttons_in[BUTTON_COUNT - 1 - i]),
         .button_out(buttons_data[i])
     );
 end
@@ -45,11 +47,13 @@ assign mem_dout_addr = addr;
 reg state;
 reg state_new; // logic
 
+wire is_last_button_addr = addr == LAST_BUTTON_ADDR;
+
 localparam WAIT = 1'b0;
 localparam COPY = 1'b1;
 
 always @(*) begin
-    case ({state, copy_start, addr == BUTTON_ADDR + BUTTON_COUNT - 1})
+    case ({state, copy_start, is_last_button_addr})
         {WAIT, 1'b1, 1'b0}: state_new = COPY;
         {COPY, 1'b0, 1'b1}: state_new = WAIT;
         {COPY, 1'b0, 1'b0}: state_new = COPY;
@@ -58,7 +62,7 @@ always @(*) begin
 end
 
 always @(*) begin
-    case ({state, copy_start, addr == BUTTON_ADDR + BUTTON_COUNT - 1})
+    case ({state, copy_start, is_last_button_addr})
         {WAIT, 2'b00},
         {WAIT, 2'b01},
         {WAIT, 2'b10},

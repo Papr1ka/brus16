@@ -20,6 +20,8 @@ module button_handler
 reg [COUNTER_SIZE-1:0] counter;
 reg button_out_new; // logic
 
+wire [COUNTER_SIZE-1:0] counter_new = button_in ? counter + 1 : COUNTER_SIZE'(0);
+
 always @(*) begin
     case (counter)
         COUNTER_VALUE: button_out_new = 1'b1;
@@ -31,11 +33,8 @@ always @(posedge clk) begin
     if (reset) begin
         counter <= COUNTER_SIZE'(0);
         button_out <= 1'b0;
-    end else if (!button_in) begin
-        counter <= COUNTER_SIZE'(0);
-        button_out <= button_out_new;
     end else begin
-        counter <= counter + 1;
+        counter <= counter_new;
         button_out <= button_out_new;
     end
 end

@@ -6,18 +6,12 @@ module brus16_top(
     input wire clk,
     input wire reset,
 
-    input wire up,
-    input wire down,
-    input wire left,
-    input wire right,
+    input wire [15:0] buttons_in, // async raw signals from controller
 
     output wire hsync,
     output wire vsync,
-    output wire [15:0] rgb, // colorful rgb 5 6 5 color !
-    output wire test
+    output wire [15:0] rgb // colorful rgb 5 6 5 color !
 );
-
-assign test = memory.data[7796][0];
 
 parameter CODE_WIDTH = 13;
 parameter DATA_WIDTH = 13;
@@ -71,15 +65,14 @@ wire [DATA_WIDTH-1:0] bc_mem_dout_addr;
 wire [15:0] bc_mem_dout;
 
 button_controller #(
-    .BUTTON_COUNT(12),
-    .BUTTON_ADDR(7796) // 8192 - 6 * 64 - 12
+    .BUTTON_COUNT(16),
+    .BUTTON_ADDR(7792) // 8192 - 6 * 64 - 16
 )
 button_controller(
     .clk(clk),
     .reset(resume),
     .copy_start(copy_start),
-    // .buttons_in({up, down, left, right, 8'b0}),
-    .buttons_in(12'b101000101000),
+    .buttons_in(buttons_in),
 
     .mem_dout_we(bc_mem_dout_we),
     .mem_dout_addr(bc_mem_dout_addr),

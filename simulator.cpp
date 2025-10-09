@@ -60,7 +60,7 @@ void glutTimer(int t) {
 }
 
 // handle up/down/left/right arrow keys
-int keys[4] = {};
+int keys[4] = {0, 0, 0, 0};
 void Special_input(int key, int x, int y) {
     switch(key) {
         case GLUT_KEY_UP:
@@ -84,7 +84,7 @@ void graphics_loop(int argc, char** argv) {
     glutInitDisplayMode(GLUT_SINGLE);
     glutInitWindowSize(ACTIVE_WIDTH, ACTIVE_HEIGHT);
     glutInitWindowPosition(100, 100);
-    glutCreateWindow("VGA Simulator");
+    glutCreateWindow("Brus 16 Verilator simulation");
     glutDisplayFunc(render);
     glutSpecialFunc(Special_input);
     
@@ -103,17 +103,20 @@ bool pre_v_sync = 0;
 
 // set Verilog module inputs based on arrow key inputs
 void apply_input() {
-    display->up = keys[0];
-    display->down = keys[1];
-    display->left = keys[2];
-    display->right = keys[3];
+    uint16_t buttons = 0;
+    buttons |= keys[0] << 15; // up
+    buttons |= keys[1] << 14; // down
+    buttons |= keys[2] << 13; // left
+    buttons |= keys[3] << 12; // right
+    display->buttons_in = buttons;
 }
 
 void discard_input() {
-    display->up = 0;
-    display->down = 0;
-    display->left = 0;
-    display->right = 0;
+    display->buttons_in = (uint16_t) 0;
+    for (int i = 0; i < 4; i++)
+    {
+        keys[i] = 0;
+    }
 }
 
 void from_rgb565(uint16_t color, uint8_t *r, uint8_t *g, uint8_t *b) {
@@ -195,9 +198,6 @@ int main(int argc, char** argv) {
     // cycle accurate simulation loop
     while (!Verilated::gotFinish()) {
         tick();
-        // tick();
-        // the clock frequency of VGA is half of that of the whole model
-        // so we sample from VGA every other clock
         sample_pixel();
     }
 
