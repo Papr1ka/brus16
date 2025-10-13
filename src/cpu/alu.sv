@@ -20,9 +20,9 @@ always_comb begin
         `AND: out = a & b;
         `OR: out = a | b;
         `XOR: out = a ^ b;
-        `SHL: out = b[4] ? 16'b0 : a << b[3:0];
-        `SHR: out = b[4] ? 16'b0 : a >> b[3:0];
-        `SHRA: out = b[4] ? 16'b0 : $signed(a) >> b[3:0];
+        `SHL: out = (|b[15:4]) ? 16'b0 : a << b[3:0];
+        `SHR: out = (|b[15:4]) ? 16'b0 : a >> b[3:0];
+        `SHRA: out = (|b[15:4]) ? 16'b0 : $signed(a) >> b[3:0];
         `EQ: out = {16{(a == b)}};
         `NEQ: out = {16{(a != b)}};
         `LT: out = {16{($signed(a) < $signed(b))}};
