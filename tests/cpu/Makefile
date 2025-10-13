@@ -4,14 +4,15 @@
 SIM ?= icarus
 TOPLEVEL_LANG ?= verilog
 
-VERILOG_SOURCES += ../../src/defs.vh
-VERILOG_SOURCES += ../../src/alu.v
-VERILOG_SOURCES += ../../src/dsram.v
-VERILOG_SOURCES += ../../src/bsram.v
-VERILOG_SOURCES += ../../src/stack.v
-VERILOG_SOURCES += ../../src/cpu.v
-VERILOG_SOURCES += ../../src/tb/cpu_tb.v
-# use VHDL_SOURCES for VHDL files
+# sources
+VERILOG_SOURCES += ../../src/cpu/alu.sv
+VERILOG_SOURCES += ../../src/cpu/rstack.sv
+VERILOG_SOURCES += ../../src/cpu/stack.sv
+VERILOG_SOURCES += ../../src/cpu/cpu.sv
+VERILOG_SOURCES += ../../src/bsram.sv
+VERILOG_SOURCES += ../../src/tb/cpu_tb.sv
+
+VERILOG_INCLUDE_DIRS += ../../src/
 
 # COCOTB_TOPLEVEL is the name of the toplevel module in your Verilog or VHDL file
 COCOTB_TOPLEVEL = cpu_tb
@@ -21,4 +22,3 @@ COCOTB_TEST_MODULES = test_cpu
 
 # include cocotb's make rules to take care of the simulator setup
 include $(shell cocotb-config --makefiles)/Makefile.sim
-

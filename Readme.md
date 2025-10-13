@@ -49,7 +49,7 @@ make -j -C obj_dir -f Vbrus16_top.mk Vbrus16_top
 
 Зависимости:
 - cocotb
-- icarus verilog
+- icarus verilog >= 13.0
 - make
 
 Запуск:

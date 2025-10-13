@@ -662,7 +662,7 @@ async def generate_coords(dut):
     dut.x_coord.value = x
     dut.y_coord.value = y
     for _ in range(256):
-        await RisingEdge(dut.pixel_clk)
+        await RisingEdge(dut.clk)
         x += 1
         dut.x_coord.value = x
         dut.y_coord.value = y
@@ -670,9 +670,9 @@ async def generate_coords(dut):
 
 async def generate_clock(dut):
     for _ in range(1000):
-        dut.pixel_clk.value = 0
+        dut.clk.value = 0
         await Timer(1, unit='ns')
-        dut.pixel_clk.value = 1
+        dut.clk.value = 1
         await Timer(1, unit='ns')
         log_debug(dut)
 
@@ -725,18 +725,18 @@ def log_debug(dut):
 async def test_gpu(dut):
     cocotb.start_soon(generate_clock(dut))
     dut.reset.value = 1
-    await RisingEdge(dut.pixel_clk)
+    await RisingEdge(dut.clk)
     dut.reset.value = 0
-    await RisingEdge(dut.pixel_clk)
+    await RisingEdge(dut.clk)
     dut.copy_start.value = 1
-    await RisingEdge(dut.pixel_clk)
+    await RisingEdge(dut.clk)
     dut.copy_start.value = 0
 
     for i in range(6 * 64):
         dut.mem_din.value = rom[i]
-        await RisingEdge(dut.pixel_clk)
+        await RisingEdge(dut.clk)
 
-    await RisingEdge(dut.pixel_clk)
+    await RisingEdge(dut.clk)
     for i in range(64):
         # print(type(dut.rect_left[i]), type(dut.rect_left[i].value))
         l, t, r, b, c = (
@@ -764,9 +764,9 @@ async def test_gpu(dut):
         assert (l, t, r, b, c) == expected, f"(rect_idx={i}) error on read, expected={expected}, actual={(l, t, r, b, c)}"
     
     cocotb.start_soon(generate_coords(dut))
-    await RisingEdge(dut.pixel_clk)
+    await RisingEdge(dut.clk)
     for i in range(256):
         out_color = dut.color.value.to_unsigned()
         expected = expected_colors[i]
         assert out_color == expected, f"collor mismatch {out_color} != {expected}"
-        await RisingEdge(dut.pixel_clk)
+        await RisingEdge(dut.clk)

@@ -2,20 +2,67 @@
     Brus 16 top module
 */
 
-module brus16_top(
+`include "constants.svh"
+
+
+module brus16_top #(
+    parameter CODE_ADDR_WIDTH = `CODE_ADDR_WIDTH,
+    parameter DATA_ADDR_WIDTH = `DATA_ADDR_WIDTH,
+    parameter DEFAULT_COLOR = `DEFAULT_COLOR,
+    parameter BUTTON_COUNT = `KEY_NUM,
+    parameter BUTTON_ADDR = `KEY_MEM
+)
+(
     input wire clk,
     input wire reset,
 
     input wire [15:0] buttons_in, // async raw signals from controller
 
-    output wire hsync,
-    output wire vsync,
-    output wire [15:0] rgb // colorful rgb 5 6 5 color !
+    // explisit output buffer (registers instead of wires)
+    output reg hsync_out,
+    output reg vsync_out,
+    output reg [15:0] rgb_out // colorful rgb 5 6 5 color !
 );
 
-parameter CODE_WIDTH = 13;
-parameter DATA_WIDTH = 13;
-parameter DEFAULT_COLOR = 16'b0;
+/*
+    PLL
+*/
+
+wire system_clk;
+
+`ifdef SIM
+
+assign system_clk = clk;
+
+`endif
+
+`ifdef GOWIN
+
+wire vga_x5;
+
+Gowin_rPLL rPLL(
+    .clkout(vga_x5), //output clkout
+    .clkin(clk) //input clkin
+);
+
+Gowin_CLKDIV CLKDIV(
+    .clkout(system_clk), //output clkout
+    .hclkin(vga_x5), //input hclkin
+    .resetn(1'b0) //input resetn
+);
+
+`endif
+
+`ifdef VIVADO
+
+pll pll (
+   // Clock out ports
+   .clk_out1(system_clk),
+   // Clock in ports
+   .clk_in1(clk)
+);
+
+`endif
 
 /*
     VGA 640x480
@@ -24,9 +71,11 @@ parameter DEFAULT_COLOR = 16'b0;
 wire display_on;
 wire [9:0] hpos;
 wire [9:0] vpos;
+wire hsync;
+wire vsync;
 
 vga_controller vga_controller(
-    .clk(clk),
+    .clk(system_clk),
     .reset(reset),
 
     .hsync(hsync),
@@ -36,6 +85,11 @@ vga_controller vga_controller(
     .hpos(hpos),
     .vpos(vpos)
 );
+
+always_ff @(posedge system_clk) begin
+    hsync_out <= hsync;
+    vsync_out <= vsync;
+end
 
 /*
     Main controller
@@ -47,7 +101,7 @@ wire resume; // signal to continue cpu work
 wire gpu_reset; // signal to reset gpu state to wait for copy
 
 brus16_controller brus16_controller(
-    .clk(clk),
+    .clk(system_clk),
     .reset(reset),
     .vsync(vsync),
     .copy_start(copy_start),
@@ -61,15 +115,15 @@ brus16_controller brus16_controller(
 */
 
 wire bc_mem_dout_we;
-wire [DATA_WIDTH-1:0] bc_mem_dout_addr;
+wire [DATA_ADDR_WIDTH-1:0] bc_mem_dout_addr;
 wire [15:0] bc_mem_dout;
 
 button_controller #(
-    .BUTTON_COUNT(16),
-    .BUTTON_ADDR(7792) // 8192 - 6 * 64 - 16
+    .BUTTON_COUNT(BUTTON_COUNT),
+    .BUTTON_ADDR(BUTTON_ADDR)
 )
 button_controller(
-    .clk(clk),
+    .clk(system_clk),
     .reset(resume),
     .copy_start(copy_start),
     .buttons_in(buttons_in),
@@ -83,23 +137,23 @@ button_controller(
     cpu
 */
 
-wire [CODE_WIDTH-1:0] program_memory_addr_bus;
+wire [CODE_ADDR_WIDTH-1:0] program_memory_addr_bus;
 wire [15:0] program_memory_data_bus;
 wire data_memory_write_we_bus;
-wire [DATA_WIDTH-1:0] data_memory_write_addr_bus;
+wire [DATA_ADDR_WIDTH-1:0] data_memory_write_addr_bus;
 wire [15:0] data_memory_write_data_bus;
-wire [DATA_WIDTH-1:0] data_memory_read_addr_bus;
+wire [DATA_ADDR_WIDTH-1:0] data_memory_read_addr_bus;
 wire [15:0] data_memory_read_data_bus;
 
 wire cpu_mem_dout_we;
-wire [DATA_WIDTH-1:0] cpu_mem_dout_addr;
+wire [DATA_ADDR_WIDTH-1:0] cpu_mem_dout_addr;
 wire [15:0] cpu_mem_dout;
-wire [DATA_WIDTH-1:0] cpu_mem_din_addr;
+wire [DATA_ADDR_WIDTH-1:0] cpu_mem_din_addr;
 
-wire [DATA_WIDTH-1:0] rc_controller_mem_din_addr;
+wire [DATA_ADDR_WIDTH-1:0] rc_controller_mem_din_addr;
 
 cpu cpu(
-    .clk(clk),
+    .clk(system_clk),
     .resume(resume),
     .reset(reset),
     .code_addr(program_memory_addr_bus),
@@ -121,10 +175,10 @@ assign data_memory_write_addr_bus = copy ? bc_mem_dout_addr : cpu_mem_dout_addr;
 assign data_memory_write_data_bus = copy ? bc_mem_dout : cpu_mem_dout;
 
 bsram #(
-    .PROGRAM(0)
+    .LOAD_PROGRAM(0)
 )
 memory(
-    .clk(clk),
+    .clk(system_clk),
     .mem_dout_addr(data_memory_read_addr_bus),
     .mem_dout(data_memory_read_data_bus),
 
@@ -139,7 +193,7 @@ memory(
 
 /* verilator lint_off PINMISSING */
 bsram program_memory(
-    .clk(clk),
+    .clk(system_clk),
     .mem_dout_addr(program_memory_addr_bus),
     .mem_dout(program_memory_data_bus)
 );
@@ -151,7 +205,7 @@ bsram program_memory(
 wire [15:0] gpu_data;
 
 rect_copy_controller rect_copy_controller(
-    .clk(clk),
+    .clk(system_clk),
     .reset(!vsync),
     .copy_start(copy_start),
     
@@ -166,10 +220,10 @@ rect_copy_controller rect_copy_controller(
 */
 
 wire [15:0] pixel_color; // rgb 5 6 5
-assign rgb = display_on ? pixel_color : DEFAULT_COLOR;
+wire [15:0] rgb = display_on ? pixel_color : DEFAULT_COLOR;
 
 gpu gpu(
-    .pixel_clk(clk),
+    .clk(system_clk),
     .copy_start(copy_start),
     .reset(gpu_reset),
     
@@ -179,5 +233,14 @@ gpu gpu(
     .color(pixel_color)
 );
 
+always_ff @(posedge system_clk) begin
+    rgb_out <= rgb;
+end
+
+initial begin
+    hsync_out = 1'b0;
+    vsync_out = 1'b0;
+    rgb_out = 16'b0;
+end
 
 endmodule

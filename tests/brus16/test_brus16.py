@@ -133,6 +133,6 @@ async def setup(dut, log_filename, program, data, logs_folder="./logs/"):
 async def test_game(dut):
     program = game_program
     async with setup(dut, "brus16_game.log", program, game_data):
-        await Timer(2 * 100_000, unit='ns')
+        await Timer(2 * 20_000, unit='ns')
         await RisingEdge(dut.clk)
         

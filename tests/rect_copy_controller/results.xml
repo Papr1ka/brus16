@@ -1,6 +1,6 @@
 <testsuites name="results">
   <testsuite name="all" package="all">
-    <property name="random_seed" value="1759860616" />
-    <testcase name="tect_rect_copy_controller" classname="test_rect_copy_controller" file="/home/kirill/dev/brus16/tests/rect_copy_controller/test_rect_copy_controller.py" lineno="75" time="0.19321656227111816" sim_time_ns="1549.0" ratio_time="8016.911085637005" />
+    <property name="random_seed" value="1760373455" />
+    <testcase name="tect_rect_copy_controller" classname="test_rect_copy_controller" file="/mnt/c/Users/Joe/dev/brus16/tests/rect_copy_controller/test_rect_copy_controller.py" lineno="75" time="0.36299777030944824" sim_time_ns="1549.0" ratio_time="4267.243841964949" />
   </testsuite>
 </testsuites>

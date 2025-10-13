@@ -4,23 +4,27 @@
 SIM ?= icarus
 TOPLEVEL_LANG ?= verilog
 
-VERILOG_SOURCES += ../../src/alu.v
-VERILOG_SOURCES += ../../src/brus16_controller.v
-VERILOG_SOURCES += ../../src/brus16_top.v
-VERILOG_SOURCES += ../../src/bsram.v
-VERILOG_SOURCES += ../../src/btree_mux_layer.v
-VERILOG_SOURCES += ../../src/btree_mux.v
-VERILOG_SOURCES += ../../src/button_handler.v
-VERILOG_SOURCES += ../../src/button_controller.v
-VERILOG_SOURCES += ../../src/comparator.v
-VERILOG_SOURCES += ../../src/cpu.v
-VERILOG_SOURCES += ../../src/dsram.v
-VERILOG_SOURCES += ../../src/gpu_mem.v
-VERILOG_SOURCES += ../../src/gpu.v
-VERILOG_SOURCES += ../../src/rect_copy_controller.v
-VERILOG_SOURCES += ../../src/stack.v
-VERILOG_SOURCES += ../../src/vga_controller.v
-# use VHDL_SOURCES for VHDL files
+# sources
+VERILOG_SOURCES += ../../src/cpu/alu.sv
+VERILOG_SOURCES += ../../src/cpu/cpu.sv
+VERILOG_SOURCES += ../../src/cpu/rstack.sv
+VERILOG_SOURCES += ../../src/cpu/stack.sv
+
+VERILOG_SOURCES += ../../src/gpu/btree_mux_layer.sv
+VERILOG_SOURCES += ../../src/gpu/btree_mux.sv
+VERILOG_SOURCES += ../../src/gpu/comparator.sv
+VERILOG_SOURCES += ../../src/gpu/gpu_mem.sv
+VERILOG_SOURCES += ../../src/gpu/gpu.sv
+
+VERILOG_SOURCES += ../../src/brus16_controller.sv
+VERILOG_SOURCES += ../../src/brus16_top.sv
+VERILOG_SOURCES += ../../src/bsram.sv
+VERILOG_SOURCES += ../../src/button_handler.sv
+VERILOG_SOURCES += ../../src/button_controller.sv
+VERILOG_SOURCES += ../../src/rect_copy_controller.sv
+VERILOG_SOURCES += ../../src/vga_controller.sv
+
+VERILOG_INCLUDE_DIRS += ../../src/
 
 # COCOTB_TOPLEVEL is the name of the toplevel module in your Verilog or VHDL file
 COCOTB_TOPLEVEL = brus16_top
@@ -30,4 +34,3 @@ COCOTB_TEST_MODULES = test_brus16
 
 # include cocotb's make rules to take care of the simulator setup
 include $(shell cocotb-config --makefiles)/Makefile.sim
-

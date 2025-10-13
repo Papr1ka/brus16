@@ -134,13 +134,13 @@ void sample_pixel() {
     
     coord_x = (coord_x + 1) % TOTAL_WIDTH;
 
-    if(!display->hsync && pre_h_sync){ // on negative edge of h_sync
+    if(!display->hsync_out && pre_h_sync){ // on negative edge of h_sync
         // re-sync horizontal counter
         coord_x = RIGHT_PORCH + ACTIVE_WIDTH + HORIZONTAL_SYNC;
         coord_y = (coord_y + 1) % TOTAL_HEIGHT;
     }
 
-    if(!display->vsync && pre_v_sync){ // on negative edge of v_sync
+    if(!display->vsync_out && pre_v_sync){ // on negative edge of v_sync
         // re-sync vertical counter
         coord_y = TOP_PORCH + ACTIVE_HEIGHT + VERTICAL_SYNC;
         discard_input(); // inputs are pulsed once each new frame
@@ -148,14 +148,14 @@ void sample_pixel() {
 
     if(coord_x < ACTIVE_WIDTH && coord_y < ACTIVE_HEIGHT){
         uint8_t r, g, b;
-        from_rgb565(display->rgb, &r, &g, &b);
+        from_rgb565(display->rgb_out, &r, &g, &b);
         graphics_buffer[coord_x][coord_y][0] = r;
         graphics_buffer[coord_x][coord_y][1] = g;
         graphics_buffer[coord_x][coord_y][2] = b;
     }
 
-    pre_h_sync = display->hsync;
-    pre_v_sync = display->vsync;
+    pre_h_sync = display->hsync_out;
+    pre_v_sync = display->vsync_out;
 }
 
 // simulate for a single clock

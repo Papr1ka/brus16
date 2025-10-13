@@ -20,7 +20,7 @@ async def generate_clock(dut):
 
 
 @cocotb.test(skip=False)
-async def test_encoder(dut):
+async def test_btree_mux(dut):
     cocotb.start_soon(generate_clock(dut))
 
     dut.flags_in.value = 0
