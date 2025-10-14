@@ -5,7 +5,7 @@
     works in a single cycle
 
     after work, WAIT cmd sets the wait flag, frozing computations
-    after resule, cmd continues work, setting wait flag to 0
+    after resume, cpu continues to work, setting wait flag to 0
 */
 
 `include "constants.svh"
@@ -114,11 +114,11 @@ wire [15:0] instr_imm13 = {3'b0, instr[12:0]};
 
 reg [CODE_WIDTH-1:0] pc; // program counter
 reg [DATA_WIDTH-1:0] fp; // frame pointer
-reg [CODE_WIDTH-1:0] pc_new; // (logic)
-reg [DATA_WIDTH-1:0] fp_new; // (logic)
+logic [CODE_WIDTH-1:0] pc_new;
+logic [DATA_WIDTH-1:0] fp_new;
 
 reg wait_flag;
-reg wait_flag_new; // logic
+logic wait_flag_new;
 
 assign code_addr = pc_new;
 wire [CODE_WIDTH-1:0] pc_plus_1 = pc + 1;
