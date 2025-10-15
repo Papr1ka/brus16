@@ -1,9 +1,9 @@
 `ifndef CONSTANTS
 `define CONSTANTS
 
-//`define GOWIN // Uncomment for gowin
+`define GOWIN // Uncomment for gowin
 // `define VIVADO // Uncomment for vivado
-`define SIM // Uncomment for simulation (Icarus/Verilator)
+// `define SIM // Uncomment for simulation (Icarus/Verilator)
 
 // memory
 `define CODE_ADDR_WIDTH 13

@@ -102,22 +102,22 @@ bool pre_h_sync = 0;
 bool pre_v_sync = 0;
 
 // set Verilog module inputs based on arrow key inputs
-void apply_input() {
-    uint16_t buttons = 0;
-    buttons |= keys[0] << 15; // up
-    buttons |= keys[1] << 14; // down
-    buttons |= keys[2] << 13; // left
-    buttons |= keys[3] << 12; // right
-    display->buttons_in = buttons;
-}
+// void apply_input() {
+//     uint16_t buttons = 0;
+//     buttons |= keys[0] << 15; // up
+//     buttons |= keys[1] << 14; // down
+//     buttons |= keys[2] << 13; // left
+//     buttons |= keys[3] << 12; // right
+//     display->buttons_in = buttons;
+// }
 
-void discard_input() {
-    display->buttons_in = (uint16_t) 0;
-    for (int i = 0; i < 4; i++)
-    {
-        keys[i] = 0;
-    }
-}
+// void discard_input() {
+//     display->buttons_in = (uint16_t) 0;
+//     for (int i = 0; i < 4; i++)
+//     {
+//         keys[i] = 0;
+//     }
+// }
 
 void from_rgb565(uint16_t color, uint8_t *r, uint8_t *g, uint8_t *b) {
     uint8_t r5 = (color >> 11) & 0x1f;
@@ -130,7 +130,7 @@ void from_rgb565(uint16_t color, uint8_t *r, uint8_t *g, uint8_t *b) {
 
 // read VGA outputs and update graphics buffer
 void sample_pixel() {
-    apply_input();
+    // apply_input();
     
     coord_x = (coord_x + 1) % TOTAL_WIDTH;
 
@@ -143,7 +143,7 @@ void sample_pixel() {
     if(!display->vsync_out && pre_v_sync){ // on negative edge of v_sync
         // re-sync vertical counter
         coord_y = TOP_PORCH + ACTIVE_HEIGHT + VERTICAL_SYNC;
-        discard_input(); // inputs are pulsed once each new frame
+        // discard_input(); // inputs are pulsed once each new frame
     }
 
     if(coord_x < ACTIVE_WIDTH && coord_y < ACTIVE_HEIGHT){
@@ -173,13 +173,13 @@ void tick() {
 }
 
 // globally reset the model
-void reset() {
-    display->reset = 1;
-    display->clk = 0;
-    display->eval();
-    tick();
-    display->reset = 0;
-}
+// void reset() {
+//     display->reset = 1;
+//     display->clk = 0;
+//     display->eval();
+//     tick();
+//     display->reset = 0;
+// }
 
 int main(int argc, char** argv) {
     // create a new thread for graphics handling
@@ -193,7 +193,7 @@ int main(int argc, char** argv) {
     display = new Vbrus16_top;
 
     // reset the model
-    reset();
+    // reset();
 
     // cycle accurate simulation loop
     while (!Verilated::gotFinish()) {

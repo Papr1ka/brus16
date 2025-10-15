@@ -7,6 +7,6 @@ type=clock_clkdiv
 version=1.0
 
 [Config]
-Calibration=false
+Calibration=true
 Division_Factor=5
 Language=0

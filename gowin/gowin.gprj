@@ -7,22 +7,24 @@
     <FileList>
         <File path="src/gowin_clkdiv/gowin_clkdiv.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_rpll/gowin_rpll.v" type="file.verilog" enable="1"/>
-        <File path="../src/brus16_controller.sv" type="file.verilog" enable="1"/>
-        <File path="../src/brus16_top.sv" type="file.verilog" enable="1"/>
-        <File path="../src/bsram.sv" type="file.verilog" enable="1"/>
-        <File path="../src/button_controller.sv" type="file.verilog" enable="1"/>
-        <File path="../src/button_handler.sv" type="file.verilog" enable="1"/>
-        <File path="../src/cpu/alu.sv" type="file.verilog" enable="1"/>
-        <File path="../src/cpu/cpu.sv" type="file.verilog" enable="1"/>
-        <File path="../src/cpu/rstack.sv" type="file.verilog" enable="1"/>
-        <File path="../src/cpu/stack.sv" type="file.verilog" enable="1"/>
-        <File path="../src/gpu/btree_mux.sv" type="file.verilog" enable="1"/>
-        <File path="../src/gpu/btree_mux_layer.sv" type="file.verilog" enable="1"/>
-        <File path="../src/gpu/comparator.sv" type="file.verilog" enable="1"/>
-        <File path="../src/gpu/gpu.sv" type="file.verilog" enable="1"/>
-        <File path="../src/gpu/gpu_mem.sv" type="file.verilog" enable="1"/>
-        <File path="../src/rect_copy_controller.sv" type="file.verilog" enable="1"/>
-        <File path="../src/vga_controller.sv" type="file.verilog" enable="1"/>
-        <File path="../src/constants.svh" type="file.other" enable="1"/>
+        <File path="C:/Users/Joe/dev/brus16/src/brus16_controller.sv" type="file.verilog" enable="1"/>
+        <File path="C:/Users/Joe/dev/brus16/src/brus16_top.sv" type="file.verilog" enable="1"/>
+        <File path="C:/Users/Joe/dev/brus16/src/bsram.sv" type="file.verilog" enable="1"/>
+        <File path="C:/Users/Joe/dev/brus16/src/button_controller.sv" type="file.verilog" enable="1"/>
+        <File path="C:/Users/Joe/dev/brus16/src/button_handler.sv" type="file.verilog" enable="1"/>
+        <File path="C:/Users/Joe/dev/brus16/src/cpu/alu.sv" type="file.verilog" enable="1"/>
+        <File path="C:/Users/Joe/dev/brus16/src/cpu/cpu.sv" type="file.verilog" enable="1"/>
+        <File path="C:/Users/Joe/dev/brus16/src/cpu/rstack.sv" type="file.verilog" enable="1"/>
+        <File path="C:/Users/Joe/dev/brus16/src/cpu/stack.sv" type="file.verilog" enable="1"/>
+        <File path="C:/Users/Joe/dev/brus16/src/gpu/btree_mux.sv" type="file.verilog" enable="1"/>
+        <File path="C:/Users/Joe/dev/brus16/src/gpu/btree_mux_layer.sv" type="file.verilog" enable="1"/>
+        <File path="C:/Users/Joe/dev/brus16/src/gpu/comparator.sv" type="file.verilog" enable="1"/>
+        <File path="C:/Users/Joe/dev/brus16/src/gpu/gpu.sv" type="file.verilog" enable="1"/>
+        <File path="C:/Users/Joe/dev/brus16/src/gpu/gpu_mem.sv" type="file.verilog" enable="1"/>
+        <File path="C:/Users/Joe/dev/brus16/src/hdmi.sv" type="file.verilog" enable="1"/>
+        <File path="C:/Users/Joe/dev/brus16/src/rect_copy_controller.sv" type="file.verilog" enable="1"/>
+        <File path="C:/Users/Joe/dev/brus16/src/vga_controller.sv" type="file.verilog" enable="1"/>
+        <File path="src/gowin.cst" type="file.cst" enable="1"/>
+        <File path="C:/Users/Joe/dev/brus16/src/constants.svh" type="file.other" enable="1"/>
     </FileList>
 </Project>

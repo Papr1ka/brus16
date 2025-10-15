@@ -1,0 +1,158 @@
+GowinSynthesis start
+Running parser ...
+Analyzing Verilog file 'C:\Users\Joe\dev\brus16\src\brus16_controller.sv'
+Analyzing Verilog file 'C:\Users\Joe\dev\brus16\src\brus16_top.sv'
+Analyzing included file 'C:\Users\Joe\dev\brus16\src\constants.svh'("C:\Users\Joe\dev\brus16\src\brus16_top.sv":5)
+Back to file 'C:\Users\Joe\dev\brus16\src\brus16_top.sv'("C:\Users\Joe\dev\brus16\src\brus16_top.sv":5)
+Analyzing Verilog file 'C:\Users\Joe\dev\brus16\src\bsram.sv'
+Analyzing Verilog file 'C:\Users\Joe\dev\brus16\src\button_controller.sv'
+Analyzing included file 'C:\Users\Joe\dev\brus16\src\constants.svh'("C:\Users\Joe\dev\brus16\src\button_controller.sv":7)
+Back to file 'C:\Users\Joe\dev\brus16\src\button_controller.sv'("C:\Users\Joe\dev\brus16\src\button_controller.sv":7)
+Analyzing Verilog file 'C:\Users\Joe\dev\brus16\src\button_handler.sv'
+Analyzing Verilog file 'C:\Users\Joe\dev\brus16\src\cpu\alu.sv'
+Analyzing included file 'C:\Users\Joe\dev\brus16\src\constants.svh'("C:\Users\Joe\dev\brus16\src\cpu\alu.sv":5)
+Back to file 'C:\Users\Joe\dev\brus16\src\cpu\alu.sv'("C:\Users\Joe\dev\brus16\src\cpu\alu.sv":5)
+Analyzing Verilog file 'C:\Users\Joe\dev\brus16\src\cpu\cpu.sv'
+Analyzing included file 'C:\Users\Joe\dev\brus16\src\constants.svh'("C:\Users\Joe\dev\brus16\src\cpu\cpu.sv":11)
+Back to file 'C:\Users\Joe\dev\brus16\src\cpu\cpu.sv'("C:\Users\Joe\dev\brus16\src\cpu\cpu.sv":11)
+Analyzing Verilog file 'C:\Users\Joe\dev\brus16\src\cpu\rstack.sv'
+Analyzing Verilog file 'C:\Users\Joe\dev\brus16\src\cpu\stack.sv'
+Analyzing Verilog file 'C:\Users\Joe\dev\brus16\src\gpu\btree_mux.sv'
+Analyzing included file 'C:\Users\Joe\dev\brus16\src\constants.svh'("C:\Users\Joe\dev\brus16\src\gpu\btree_mux.sv":6)
+Back to file 'C:\Users\Joe\dev\brus16\src\gpu\btree_mux.sv'("C:\Users\Joe\dev\brus16\src\gpu\btree_mux.sv":6)
+Analyzing Verilog file 'C:\Users\Joe\dev\brus16\src\gpu\btree_mux_layer.sv'
+Analyzing included file 'C:\Users\Joe\dev\brus16\src\constants.svh'("C:\Users\Joe\dev\brus16\src\gpu\btree_mux_layer.sv":5)
+Back to file 'C:\Users\Joe\dev\brus16\src\gpu\btree_mux_layer.sv'("C:\Users\Joe\dev\brus16\src\gpu\btree_mux_layer.sv":5)
+Analyzing Verilog file 'C:\Users\Joe\dev\brus16\src\gpu\comparator.sv'
+Analyzing included file 'C:\Users\Joe\dev\brus16\src\constants.svh'("C:\Users\Joe\dev\brus16\src\gpu\comparator.sv":9)
+Back to file 'C:\Users\Joe\dev\brus16\src\gpu\comparator.sv'("C:\Users\Joe\dev\brus16\src\gpu\comparator.sv":9)
+Analyzing Verilog file 'C:\Users\Joe\dev\brus16\src\gpu\gpu.sv'
+Analyzing included file 'C:\Users\Joe\dev\brus16\src\constants.svh'("C:\Users\Joe\dev\brus16\src\gpu\gpu.sv":32)
+Back to file 'C:\Users\Joe\dev\brus16\src\gpu\gpu.sv'("C:\Users\Joe\dev\brus16\src\gpu\gpu.sv":32)
+Analyzing Verilog file 'C:\Users\Joe\dev\brus16\src\gpu\gpu_mem.sv'
+Analyzing included file 'C:\Users\Joe\dev\brus16\src\constants.svh'("C:\Users\Joe\dev\brus16\src\gpu\gpu_mem.sv":7)
+Back to file 'C:\Users\Joe\dev\brus16\src\gpu\gpu_mem.sv'("C:\Users\Joe\dev\brus16\src\gpu\gpu_mem.sv":7)
+Analyzing Verilog file 'C:\Users\Joe\dev\brus16\src\hdmi.sv'
+Analyzing Verilog file 'C:\Users\Joe\dev\brus16\src\rect_copy_controller.sv'
+Analyzing included file 'C:\Users\Joe\dev\brus16\src\constants.svh'("C:\Users\Joe\dev\brus16\src\rect_copy_controller.sv":12)
+Back to file 'C:\Users\Joe\dev\brus16\src\rect_copy_controller.sv'("C:\Users\Joe\dev\brus16\src\rect_copy_controller.sv":12)
+Analyzing Verilog file 'C:\Users\Joe\dev\brus16\src\vga_controller.sv'
+Analyzing Verilog file 'C:\Users\Joe\dev\brus16\gowin\src\gowin_rpll\gowin_rpll.v'
+Analyzing Verilog file 'C:\Users\Joe\dev\brus16\gowin\src\gowin_clkdiv\gowin_clkdiv.v'
+WARN  (EX3073) : Port 'we' remains unconnected for this instance("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+Compiling module 'brus16_top'("C:\Users\Joe\dev\brus16\src\brus16_top.sv":8)
+Compiling module 'Gowin_rPLL'("C:\Users\Joe\dev\brus16\gowin\src\gowin_rpll\gowin_rpll.v":10)
+Compiling module 'Gowin_CLKDIV'("C:\Users\Joe\dev\brus16\gowin\src\gowin_clkdiv\gowin_clkdiv.v":10)
+Compiling module 'vga_controller'("C:\Users\Joe\dev\brus16\src\vga_controller.sv":1)
+WARN  (EX3791) : Expression size 11 truncated to fit in target size 10("C:\Users\Joe\dev\brus16\src\vga_controller.sv":62)
+WARN  (EX3791) : Expression size 11 truncated to fit in target size 10("C:\Users\Joe\dev\brus16\src\vga_controller.sv":64)
+Compiling module 'brus16_controller'("C:\Users\Joe\dev\brus16\src\brus16_controller.sv":17)
+Compiling module 'button_controller(BUTTON_ADDR=7792)'("C:\Users\Joe\dev\brus16\src\button_controller.sv":10)
+Compiling module 'button_handler'("C:\Users\Joe\dev\brus16\src\button_handler.sv":8)
+WARN  (EX3791) : Expression size 9 truncated to fit in target size 8("C:\Users\Joe\dev\brus16\src\button_handler.sv":24)
+WARN  (EX3791) : Expression size 14 truncated to fit in target size 13("C:\Users\Joe\dev\brus16\src\button_controller.sv":73)
+Compiling module 'cpu'("C:\Users\Joe\dev\brus16\src\cpu\cpu.sv":14)
+WARN  (EX3791) : Expression size 7 truncated to fit in target size 6("C:\Users\Joe\dev\brus16\src\cpu\cpu.sv":43)
+WARN  (EX3791) : Expression size 32 truncated to fit in target size 6("C:\Users\Joe\dev\brus16\src\cpu\cpu.sv":44)
+Compiling module 'stack'("C:\Users\Joe\dev\brus16\src\cpu\stack.sv":8)
+Extracting RAM for identifier 'data'("C:\Users\Joe\dev\brus16\src\cpu\stack.sv":30)
+WARN  (EX3780) : Using initial value of 'i' since it is never assigned("C:\Users\Joe\dev\brus16\src\cpu\stack.sv":42)
+Compiling module 'rstack(WIDTH=5,SIZE=32,DATA_WIDTH=13)'("C:\Users\Joe\dev\brus16\src\cpu\rstack.sv":8)
+Extracting RAM for identifier 'data'("C:\Users\Joe\dev\brus16\src\cpu\rstack.sv":27)
+WARN  (EX3780) : Using initial value of 'i' since it is never assigned("C:\Users\Joe\dev\brus16\src\cpu\rstack.sv":38)
+WARN  (EX3791) : Expression size 14 truncated to fit in target size 13("C:\Users\Joe\dev\brus16\src\cpu\cpu.sv":124)
+Compiling module 'alu'("C:\Users\Joe\dev\brus16\src\cpu\alu.sv":8)
+WARN  (EX3791) : Expression size 6 truncated to fit in target size 5("C:\Users\Joe\dev\brus16\src\cpu\cpu.sv":191)
+WARN  (EX3791) : Expression size 32 truncated to fit in target size 5("C:\Users\Joe\dev\brus16\src\cpu\cpu.sv":192)
+WARN  (EX3791) : Expression size 32 truncated to fit in target size 6("C:\Users\Joe\dev\brus16\src\cpu\cpu.sv":210)
+Compiling module 'bsram(LOAD_PROGRAM=0)'("C:\Users\Joe\dev\brus16\src\bsram.sv":7)
+Extracting RAM for identifier 'data'("C:\Users\Joe\dev\brus16\src\bsram.sv":26)
+WARN  (EX3780) : Using initial value of 'i' since it is never assigned("C:\Users\Joe\dev\brus16\src\bsram.sv":36)
+Compiling module 'bsram'("C:\Users\Joe\dev\brus16\src\bsram.sv":7)
+Extracting RAM for identifier 'data'("C:\Users\Joe\dev\brus16\src\bsram.sv":26)
+WARN  (EX3780) : Using initial value of 'i' since it is never assigned("C:\Users\Joe\dev\brus16\src\bsram.sv":36)
+Compiling module 'rect_copy_controller'("C:\Users\Joe\dev\brus16\src\rect_copy_controller.sv":15)
+WARN  (EX3791) : Expression size 14 truncated to fit in target size 13("C:\Users\Joe\dev\brus16\src\rect_copy_controller.sv":71)
+Compiling module 'gpu'("C:\Users\Joe\dev\brus16\src\gpu\gpu.sv":35)
+WARN  (EX3780) : Using initial value of 'j' since it is never assigned("C:\Users\Joe\dev\brus16\src\gpu\gpu.sv":237)
+WARN  (EX3780) : Using initial value of 'rect_idxs' since it is never assigned("C:\Users\Joe\dev\brus16\src\gpu\gpu.sv":240)
+Compiling module 'gpu_mem(SIZE=64)'("C:\Users\Joe\dev\brus16\src\gpu\gpu_mem.sv":10)
+WARN  (EX3780) : Using initial value of 'i' since it is never assigned("C:\Users\Joe\dev\brus16\src\gpu\gpu_mem.sv":38)
+Compiling module 'comparator'("C:\Users\Joe\dev\brus16\src\gpu\comparator.sv":12)
+Compiling module 'btree_mux'("C:\Users\Joe\dev\brus16\src\gpu\btree_mux.sv":8)
+Compiling module 'btree_mux_layer'("C:\Users\Joe\dev\brus16\src\gpu\btree_mux_layer.sv":8)
+Compiling module 'btree_mux_layer(INPUT_COUNT=32)'("C:\Users\Joe\dev\brus16\src\gpu\btree_mux_layer.sv":8)
+Compiling module 'btree_mux_layer(INPUT_COUNT=16)'("C:\Users\Joe\dev\brus16\src\gpu\btree_mux_layer.sv":8)
+Compiling module 'btree_mux_layer(INPUT_COUNT=8)'("C:\Users\Joe\dev\brus16\src\gpu\btree_mux_layer.sv":8)
+Compiling module 'btree_mux_layer(INPUT_COUNT=4)'("C:\Users\Joe\dev\brus16\src\gpu\btree_mux_layer.sv":8)
+Compiling module 'btree_mux_layer(INPUT_COUNT=2)'("C:\Users\Joe\dev\brus16\src\gpu\btree_mux_layer.sv":8)
+WARN  (EX3791) : Expression size 7 truncated to fit in target size 6("C:\Users\Joe\dev\brus16\src\gpu\gpu.sv":203)
+Compiling module 'hdmi'("C:\Users\Joe\dev\brus16\src\hdmi.sv":224)
+Compiling module 'tmds_encoder'("C:\Users\Joe\dev\brus16\src\hdmi.sv":5)
+WARN  (EX2565) : Input 'we' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+WARN  (EX2565) : Input 'mem_din_addr[12]' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+WARN  (EX2565) : Input 'mem_din_addr[11]' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+WARN  (EX2565) : Input 'mem_din_addr[10]' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+WARN  (EX2565) : Input 'mem_din_addr[9]' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+WARN  (EX2565) : Input 'mem_din_addr[8]' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+WARN  (EX2565) : Input 'mem_din_addr[7]' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+WARN  (EX2565) : Input 'mem_din_addr[6]' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+WARN  (EX2565) : Input 'mem_din_addr[5]' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+WARN  (EX2565) : Input 'mem_din_addr[4]' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+WARN  (EX2565) : Input 'mem_din_addr[3]' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+WARN  (EX2565) : Input 'mem_din_addr[2]' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+WARN  (EX2565) : Input 'mem_din_addr[1]' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+WARN  (EX2565) : Input 'mem_din_addr[0]' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+WARN  (EX2565) : Input 'mem_din[15]' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+WARN  (EX2565) : Input 'mem_din[14]' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+WARN  (EX2565) : Input 'mem_din[13]' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+WARN  (EX2565) : Input 'mem_din[12]' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+WARN  (EX2565) : Input 'mem_din[11]' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+WARN  (EX2565) : Input 'mem_din[10]' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+WARN  (EX2565) : Input 'mem_din[9]' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+WARN  (EX2565) : Input 'mem_din[8]' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+WARN  (EX2565) : Input 'mem_din[7]' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+WARN  (EX2565) : Input 'mem_din[6]' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+WARN  (EX2565) : Input 'mem_din[5]' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+WARN  (EX2565) : Input 'mem_din[4]' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+WARN  (EX2565) : Input 'mem_din[3]' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+WARN  (EX2565) : Input 'mem_din[2]' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+WARN  (EX2565) : Input 'mem_din[1]' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+WARN  (EX2565) : Input 'mem_din[0]' on this instance is undriven. Assigning to 0, simulation mismatch possible. Please assign the input or remove the declaration("C:\Users\Joe\dev\brus16\src\brus16_top.sv":220)
+NOTE  (EX0101) : Current top module is "brus16_top"
+[5%] Running netlist conversion ...
+Running device independent optimization ...
+[10%] Optimizing Phase 0 completed
+[15%] Optimizing Phase 1 completed
+[25%] Optimizing Phase 2 completed
+Running inference ...
+[30%] Inferring Phase 0 completed
+[40%] Inferring Phase 1 completed
+[50%] Inferring Phase 2 completed
+[55%] Inferring Phase 3 completed
+Running technical mapping ...
+[60%] Tech-Mapping Phase 0 completed
+[65%] Tech-Mapping Phase 1 completed
+[75%] Tech-Mapping Phase 2 completed
+[80%] Tech-Mapping Phase 3 completed
+[90%] Tech-Mapping Phase 4 completed
+WARN  (NL0002) : The module "button_handler" instantiated to "[0].button" is swept in optimizing("C:\Users\Joe\dev\brus16\src\button_controller.sv":41)
+WARN  (NL0002) : The module "button_handler" instantiated to "[10].button" is swept in optimizing("C:\Users\Joe\dev\brus16\src\button_controller.sv":41)
+WARN  (NL0002) : The module "button_handler" instantiated to "[11].button" is swept in optimizing("C:\Users\Joe\dev\brus16\src\button_controller.sv":41)
+WARN  (NL0002) : The module "button_handler" instantiated to "[12].button" is swept in optimizing("C:\Users\Joe\dev\brus16\src\button_controller.sv":41)
+WARN  (NL0002) : The module "button_handler" instantiated to "[13].button" is swept in optimizing("C:\Users\Joe\dev\brus16\src\button_controller.sv":41)
+WARN  (NL0002) : The module "button_handler" instantiated to "[14].button" is swept in optimizing("C:\Users\Joe\dev\brus16\src\button_controller.sv":41)
+WARN  (NL0002) : The module "button_handler" instantiated to "[15].button" is swept in optimizing("C:\Users\Joe\dev\brus16\src\button_controller.sv":41)
+WARN  (NL0002) : The module "button_handler" instantiated to "[1].button" is swept in optimizing("C:\Users\Joe\dev\brus16\src\button_controller.sv":41)
+WARN  (NL0002) : The module "button_handler" instantiated to "[2].button" is swept in optimizing("C:\Users\Joe\dev\brus16\src\button_controller.sv":41)
+WARN  (NL0002) : The module "button_handler" instantiated to "[3].button" is swept in optimizing("C:\Users\Joe\dev\brus16\src\button_controller.sv":41)
+WARN  (NL0002) : The module "button_handler" instantiated to "[4].button" is swept in optimizing("C:\Users\Joe\dev\brus16\src\button_controller.sv":41)
+WARN  (NL0002) : The module "button_handler" instantiated to "[5].button" is swept in optimizing("C:\Users\Joe\dev\brus16\src\button_controller.sv":41)
+WARN  (NL0002) : The module "button_handler" instantiated to "[6].button" is swept in optimizing("C:\Users\Joe\dev\brus16\src\button_controller.sv":41)
+WARN  (NL0002) : The module "button_handler" instantiated to "[7].button" is swept in optimizing("C:\Users\Joe\dev\brus16\src\button_controller.sv":41)
+WARN  (NL0002) : The module "button_handler" instantiated to "[8].button" is swept in optimizing("C:\Users\Joe\dev\brus16\src\button_controller.sv":41)
+WARN  (NL0002) : The module "button_handler" instantiated to "[9].button" is swept in optimizing("C:\Users\Joe\dev\brus16\src\button_controller.sv":41)
+WARN  (NL0002) : The module "btree_mux_layer" instantiated to "layer1" is swept in optimizing("C:\Users\Joe\dev\brus16\src\gpu\btree_mux.sv":33)
+[95%] Generate netlist file "C:\Users\Joe\dev\brus16\gowin\impl\gwsynthesis\gowin.vg" completed
+[100%] Generate report file "C:\Users\Joe\dev\brus16\gowin\impl\gwsynthesis\gowin_syn.rpt.html" completed
+GowinSynthesis finish

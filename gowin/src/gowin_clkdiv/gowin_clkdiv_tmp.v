@@ -5,7 +5,7 @@
 //Part Number: GW1NR-LV9QN88PC6/I5
 //Device: GW1NR-9
 //Device Version: C
-//Created Time: Mon Oct 13 18:53:45 2025
+//Created Time: Wed Oct 15 22:50:10 2025
 
 //Change the instance name and port connections to the signal names
 //--------Copy here to design--------
@@ -13,7 +13,8 @@
     Gowin_CLKDIV your_instance_name(
         .clkout(clkout), //output clkout
         .hclkin(hclkin), //input hclkin
-        .resetn(resetn) //input resetn
+        .resetn(resetn), //input resetn
+        .calib(calib) //input calib
     );
 
 //--------Copy end-------------------

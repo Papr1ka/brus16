@@ -5,23 +5,20 @@
 //Part Number: GW1NR-LV9QN88PC6/I5
 //Device: GW1NR-9
 //Device Version: C
-//Created Time: Mon Oct 13 18:53:45 2025
+//Created Time: Wed Oct 15 22:50:10 2025
 
-module Gowin_CLKDIV (clkout, hclkin, resetn);
+module Gowin_CLKDIV (clkout, hclkin, resetn, calib);
 
 output clkout;
 input hclkin;
 input resetn;
-
-wire gw_gnd;
-
-assign gw_gnd = 1'b0;
+input calib;
 
 CLKDIV clkdiv_inst (
     .CLKOUT(clkout),
     .HCLKIN(hclkin),
     .RESETN(resetn),
-    .CALIB(gw_gnd)
+    .CALIB(calib)
 );
 
 defparam clkdiv_inst.DIV_MODE = "5";

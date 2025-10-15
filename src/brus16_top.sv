@@ -14,15 +14,32 @@ module brus16_top #(
 )
 (
     input wire clk,
-    input wire reset,
+    // input wire reset,
 
-    input wire [15:0] buttons_in, // async raw signals from controller
+    // input wire [15:0] buttons_in, // async raw signals from controller
 
     // explisit output buffer (registers instead of wires)
-    output reg hsync_out,
-    output reg vsync_out,
-    output reg [15:0] rgb_out // colorful rgb 5 6 5 color !
+`ifdef SIM
+    output wire hsync_out,
+    output wire vsync_out,
+    output wire [15:0] rgb_out, // colorful rgb 5 6 5 color !
+`endif
+    output [3:0] hdmi_tx_n,
+    output [3:0] hdmi_tx_p
 );
+
+wire reset = 1'b0;
+
+reg display_on_reg;
+reg hsync_reg;
+reg vsync_reg;
+reg [15:0] rgb_reg;
+
+`ifdef SIM
+assign hsync_out = hsync_reg;
+assign vsync_out = vsync_reg;
+assign rgb_out = rgb_reg;
+`endif
 
 /*
     PLL
@@ -39,16 +56,19 @@ assign system_clk = clk;
 `ifdef GOWIN
 
 wire vga_x5;
+wire lock;
 
 Gowin_rPLL rPLL(
     .clkout(vga_x5), //output clkout
+    .lock(lock), //output lock
     .clkin(clk) //input clkin
 );
 
-Gowin_CLKDIV CLKDIV(
+Gowin_CLKDIV clkDIV(
     .clkout(system_clk), //output clkout
     .hclkin(vga_x5), //input hclkin
-    .resetn(1'b0) //input resetn
+    .resetn(lock), //input resetn
+    .calib(1'b1) //input calib
 );
 
 `endif
@@ -87,8 +107,9 @@ vga_controller vga_controller(
 );
 
 always_ff @(posedge system_clk) begin
-    hsync_out <= hsync;
-    vsync_out <= vsync;
+    hsync_reg <= hsync;
+    vsync_reg <= vsync;
+    display_on_reg <= display_on;
 end
 
 /*
@@ -126,7 +147,7 @@ button_controller(
     .clk(system_clk),
     .reset(resume),
     .copy_start(copy_start),
-    .buttons_in(buttons_in),
+    .buttons_in(16'b0),
 
     .mem_dout_we(bc_mem_dout_we),
     .mem_dout_addr(bc_mem_dout_addr),
@@ -234,13 +255,28 @@ gpu gpu(
 );
 
 always_ff @(posedge system_clk) begin
-    rgb_out <= rgb;
+    rgb_reg <= rgb;
 end
 
-initial begin
-    hsync_out = 1'b0;
-    vsync_out = 1'b0;
-    rgb_out = 16'b0;
-end
+`ifdef GOWIN
+
+hdmi hdmi(
+    .reset(~lock),
+    .hdmi_clk(system_clk),
+    .hdmi_clk_5x(vga_x5),
+    .hve({display_on_reg, vsync_reg, hsync_reg}),
+    .rgb({rgb_reg[15:11], rgb_reg[15:13], rgb_reg[10:5], rgb_reg[10:9], rgb_reg[4:0], rgb_reg[4:2]}),
+//    .rgb({{8{|rgb}}, 16'b0}),
+    .hdmi_tx_n(hdmi_tx_n),
+    .hdmi_tx_p(hdmi_tx_p)
+);
+
+`endif
+
+//initial begin
+//    hsync_out = 1'b0;
+//    vsync_out = 1'b0;
+//    rgb_out = 16'b0;
+//end
 
 endmodule
