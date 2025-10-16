@@ -13,7 +13,7 @@
 
 `define RECT_COUNT_WIDTH 6
 `define RECT_COUNT (1 << `RECT_COUNT_WIDTH)
-`define COORD_WIDTH 16
+`define COORD_WIDTH 10
 `define DEFAULT_COLOR 16'b0
 
 `define KEY_NUM 16

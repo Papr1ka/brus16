@@ -14,7 +14,7 @@
 
 module rect_copy_controller
 #(
-    parameter COORD_WIDTH = `COORD_WIDTH,
+    parameter COORD_WIDTH = 16,
     parameter RECT_ADDR = `RECT_MEM,
     parameter ADDR_WIDTH = `DATA_ADDR_WIDTH
 )

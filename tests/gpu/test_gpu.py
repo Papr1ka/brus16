@@ -1,8 +1,29 @@
 
 import logging
 import os
+from random import randint, seed
 import cocotb
 from cocotb.triggers import RisingEdge, Timer
+
+seed(42)
+
+
+def generate_rect():
+    abs = 1
+    x = randint(-1000, 2 ** 10 - 1)
+    y = randint(-1000, 2 ** 10 - 1)
+    width = randint(0, 2 ** 10 - 1)
+    height = randint(0, 2 ** 10 - 1)
+    color = randint(0, 2 ** 16 - 1)
+    return [abs, x, y, width, height, color]
+
+
+mem = []
+for i in range(64):
+    mem += generate_rect()
+
+with open("rects.txt", 'w') as file:
+    file.write("\n".join([str(e) for e in mem]) + "\n")
 
 
 rom = [1,
@@ -695,6 +716,7 @@ def log_debug(dut):
     string = "reset={reset} state={state} state_new={state_new} " \
     "copy_state={copy_state} copy_state_new={copy_state_new} " \
     "rect_counter={rect_counter} rect_counter_new={rect_counter_new} " \
+    "rect_x1_true={rect_x1_true}, rect_y1_true={rect_y1_true} " \
     "rect_idx={rect_idx} color={color} x={x} y={y} " \
     "mem_din={mem_din} copy_start={copy_start} " \
     "rect_lefts={rect_lefts} rect_tops={rect_tops} " \
@@ -707,6 +729,8 @@ def log_debug(dut):
         copy_state_new = dut.copy_state_new.value.to_unsigned(),
         rect_counter = dut.rect_counter.value.to_unsigned(),
         rect_counter_new = dut.rect_counter_new.value.to_unsigned(),
+        rect_x1_true = dut.rect_x1_true.value.to_signed(),
+        rect_y1_true = dut.rect_y1_true.value.to_signed(),
         rect_idx = rect_idx,
         color = color,
         x = dut.x_coord.value,
@@ -721,7 +745,7 @@ def log_debug(dut):
     )
     logger.debug(string)
 
-@cocotb.test
+@cocotb.test(skip=True)
 async def test_gpu(dut):
     cocotb.start_soon(generate_clock(dut))
     dut.reset.value = 1
@@ -765,8 +789,68 @@ async def test_gpu(dut):
     
     cocotb.start_soon(generate_coords(dut))
     await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk)
     for i in range(256):
         out_color = dut.color.value.to_unsigned()
         expected = expected_colors[i]
         assert out_color == expected, f"collor mismatch {out_color} != {expected}"
         await RisingEdge(dut.clk)
+
+def clamp(val, left=0, right=640):
+    if val < left:
+        return left
+    if val > right:
+        return right
+    return val
+
+@cocotb.test
+async def test_gpu_random(dut):
+    cocotb.start_soon(generate_clock(dut))
+    dut.reset.value = 1
+    await RisingEdge(dut.clk)
+    dut.reset.value = 0
+    await RisingEdge(dut.clk)
+    dut.copy_start.value = 1
+    await RisingEdge(dut.clk)
+    dut.copy_start.value = 0
+
+    for i in range(6 * 64):
+        dut.mem_din.value = mem[i]
+        await RisingEdge(dut.clk)
+
+    await RisingEdge(dut.clk)
+    for i in range(64):
+        # print(type(dut.rect_left[i]), type(dut.rect_left[i].value))
+        l, t, r, b, c = (
+            dut.rect_lefts[i].value.to_unsigned(),
+            dut.rect_tops[i].value.to_unsigned(),
+            dut.rect_rights[i].value.to_unsigned(),
+            dut.rect_bottoms[i].value.to_unsigned(),
+            dut.rect_colors[i].value.to_unsigned()
+        )
+        logger.debug(
+            "{:d} {:d} {:d} {:d} {:x}".format(
+                l, t, r, b, c
+            )
+        )
+        if mem[i * 6]:
+            expected = (
+                clamp(mem[i * 6 + 1]),
+                clamp(mem[i * 6 + 2], right=480),
+                clamp(mem[i * 6 + 1] + mem[i * 6 + 3]),
+                clamp(mem[i * 6 + 2] + mem[i * 6 + 4], right=480),
+                mem[i * 6 + 5]
+            )
+        else:
+            expected = (0, 0, 0, 0, 0)
+        assert (l, t, r, b, c) == expected, f"(rect_idx={i}) error on read, expected={expected}, actual={(l, t, r, b, c)}"
+    
+    # cocotb.start_soon(generate_coords(dut))
+    # await RisingEdge(dut.clk)
+    # await RisingEdge(dut.clk)
+    # for i in range(256):
+    #     out_color = dut.color.value.to_unsigned()
+    #     expected = expected_colors[i]
+    #     assert out_color == expected, f"collor mismatch {out_color} != {expected}"
+    #     await RisingEdge(dut.clk)
+

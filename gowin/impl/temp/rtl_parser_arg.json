@@ -2,6 +2,14 @@
  "Device" : "GW1NR-9C",
  "Files" : [
   {
+   "Path" : "C:/Users/Joe/dev/brus16/gowin/src/gowin_clkdiv/gowin_clkdiv.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/gowin/src/gowin_rpll/gowin_rpll.v",
+   "Type" : "verilog"
+  },
+  {
    "Path" : "C:/Users/Joe/dev/brus16/src/brus16_controller.sv",
    "Type" : "verilog"
   },
@@ -62,6 +70,10 @@
    "Type" : "verilog"
   },
   {
+   "Path" : "C:/Users/Joe/dev/brus16/src/prom.sv",
+   "Type" : "verilog"
+  },
+  {
    "Path" : "C:/Users/Joe/dev/brus16/src/rect_copy_controller.sv",
    "Type" : "verilog"
   },
@@ -70,11 +82,11 @@
    "Type" : "verilog"
   },
   {
-   "Path" : "C:/Users/Joe/dev/brus16/gowin/src/gowin_rpll/gowin_rpll.v",
+   "Path" : "C:/Users/Joe/dev/brus16/gowin/src/gowin_prom/gowin_prom.v",
    "Type" : "verilog"
   },
   {
-   "Path" : "C:/Users/Joe/dev/brus16/gowin/src/gowin_clkdiv/gowin_clkdiv.v",
+   "Path" : "C:/Users/Joe/dev/brus16/gowin/src/gowin_sdpb/gowin_sdpb.v",
    "Type" : "verilog"
   }
  ],

@@ -6,7 +6,9 @@
     <Device name="GW1NR-9C" pn="GW1NR-LV9QN88PC6/I5">gw1nr9c-004</Device>
     <FileList>
         <File path="src/gowin_clkdiv/gowin_clkdiv.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_prom/gowin_prom.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_rpll/gowin_rpll.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_sdpb/gowin_sdpb.v" type="file.verilog" enable="1"/>
         <File path="C:/Users/Joe/dev/brus16/src/brus16_controller.sv" type="file.verilog" enable="1"/>
         <File path="C:/Users/Joe/dev/brus16/src/brus16_top.sv" type="file.verilog" enable="1"/>
         <File path="C:/Users/Joe/dev/brus16/src/bsram.sv" type="file.verilog" enable="1"/>
@@ -22,9 +24,13 @@
         <File path="C:/Users/Joe/dev/brus16/src/gpu/gpu.sv" type="file.verilog" enable="1"/>
         <File path="C:/Users/Joe/dev/brus16/src/gpu/gpu_mem.sv" type="file.verilog" enable="1"/>
         <File path="C:/Users/Joe/dev/brus16/src/hdmi.sv" type="file.verilog" enable="1"/>
+        <File path="C:/Users/Joe/dev/brus16/src/prom.sv" type="file.verilog" enable="1"/>
         <File path="C:/Users/Joe/dev/brus16/src/rect_copy_controller.sv" type="file.verilog" enable="1"/>
         <File path="C:/Users/Joe/dev/brus16/src/vga_controller.sv" type="file.verilog" enable="1"/>
         <File path="src/gowin.cst" type="file.cst" enable="1"/>
+        <File path="src/gowin.sdc" type="file.sdc" enable="1"/>
+        <File path="src/data.mi" type="file.other" enable="1"/>
+        <File path="src/program.hex.mi" type="file.other" enable="1"/>
         <File path="C:/Users/Joe/dev/brus16/src/constants.svh" type="file.other" enable="1"/>
     </FileList>
 </Project>

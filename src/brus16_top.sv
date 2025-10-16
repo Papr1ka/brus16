@@ -10,7 +10,8 @@ module brus16_top #(
     parameter DATA_ADDR_WIDTH = `DATA_ADDR_WIDTH,
     parameter DEFAULT_COLOR = `DEFAULT_COLOR,
     parameter BUTTON_COUNT = `KEY_NUM,
-    parameter BUTTON_ADDR = `KEY_MEM
+    parameter BUTTON_ADDR = `KEY_MEM,
+    parameter COORD_WIDTH = `COORD_WIDTH
 )
 (
     input wire clk,
@@ -30,14 +31,13 @@ module brus16_top #(
 
 wire reset = 1'b0;
 
-reg display_on_reg;
-reg hsync_reg;
-reg vsync_reg;
+reg [2:0] dvh_delay;
+reg [2:0] dvh; // vsync, display_on_reg, hsync
 reg [15:0] rgb_reg;
 
 `ifdef SIM
-assign hsync_out = hsync_reg;
-assign vsync_out = vsync_reg;
+assign hsync_out = dvh_delay[0];
+assign vsync_out = dvh_delay[1];
 assign rgb_out = rgb_reg;
 `endif
 
@@ -107,9 +107,8 @@ vga_controller vga_controller(
 );
 
 always_ff @(posedge system_clk) begin
-    hsync_reg <= hsync;
-    vsync_reg <= vsync;
-    display_on_reg <= display_on;
+    dvh <= {display_on, vsync, hsync};
+    dvh_delay <= dvh;
 end
 
 /*
@@ -135,24 +134,24 @@ brus16_controller brus16_controller(
     button_controller
 */
 
-wire bc_mem_dout_we;
-wire [DATA_ADDR_WIDTH-1:0] bc_mem_dout_addr;
-wire [15:0] bc_mem_dout;
+wire bc_mem_dout_we = 1'b0;
+wire [DATA_ADDR_WIDTH-1:0] bc_mem_dout_addr = DATA_ADDR_WIDTH'(0);
+wire [15:0] bc_mem_dout = 16'b0;
 
-button_controller #(
-    .BUTTON_COUNT(BUTTON_COUNT),
-    .BUTTON_ADDR(BUTTON_ADDR)
-)
-button_controller(
-    .clk(system_clk),
-    .reset(resume),
-    .copy_start(copy_start),
-    .buttons_in(16'b0),
+// button_controller #(
+//     .BUTTON_COUNT(BUTTON_COUNT),
+//     .BUTTON_ADDR(BUTTON_ADDR)
+// )
+// button_controller(
+//     .clk(system_clk),
+//     .reset(resume),
+//     .copy_start(copy_start),
+//     .buttons_in(16'b0),
 
-    .mem_dout_we(bc_mem_dout_we),
-    .mem_dout_addr(bc_mem_dout_addr),
-    .mem_dout(bc_mem_dout)
-);
+//     .mem_dout_we(bc_mem_dout_we),
+//     .mem_dout_addr(bc_mem_dout_addr),
+//     .mem_dout(bc_mem_dout)
+// );
 
 /*
     cpu
@@ -195,10 +194,7 @@ assign data_memory_write_we_bus = copy ? bc_mem_dout_we : cpu_mem_dout_we;
 assign data_memory_write_addr_bus = copy ? bc_mem_dout_addr : cpu_mem_dout_addr;
 assign data_memory_write_data_bus = copy ? bc_mem_dout : cpu_mem_dout;
 
-bsram #(
-    .LOAD_PROGRAM(0)
-)
-memory(
+bsram memory(
     .clk(system_clk),
     .mem_dout_addr(data_memory_read_addr_bus),
     .mem_dout(data_memory_read_data_bus),
@@ -212,13 +208,11 @@ memory(
     program memory
 */
 
-/* verilator lint_off PINMISSING */
-bsram program_memory(
+prom program_memory(
     .clk(system_clk),
     .mem_dout_addr(program_memory_addr_bus),
     .mem_dout(program_memory_data_bus)
 );
-/* verilator lint_on PINMISSING */
 
 /*
     rect copy controller
@@ -248,8 +242,8 @@ gpu gpu(
     .copy_start(copy_start),
     .reset(gpu_reset),
     
-    .x_coord({6'b0, hpos}),
-    .y_coord({6'b0, vpos}),
+    .x_coord({{COORD_WIDTH-10{1'b0}}, hpos}),
+    .y_coord({{COORD_WIDTH-10{1'b0}}, vpos}),
     .mem_din(gpu_data),
     .color(pixel_color)
 );
@@ -264,7 +258,7 @@ hdmi hdmi(
     .reset(~lock),
     .hdmi_clk(system_clk),
     .hdmi_clk_5x(vga_x5),
-    .hve({display_on_reg, vsync_reg, hsync_reg}),
+    .hve(dvh_delay),
     .rgb({rgb_reg[15:11], rgb_reg[15:13], rgb_reg[10:5], rgb_reg[10:9], rgb_reg[4:0], rgb_reg[4:2]}),
 //    .rgb({{8{|rgb}}, 16'b0}),
     .hdmi_tx_n(hdmi_tx_n),

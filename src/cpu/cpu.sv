@@ -103,7 +103,7 @@ F1 = [('F', 1), ('OP', 2), ('IMM', 13)]
 F2 = [('F', 1), ('OP', 5), ('I', 1), ('SIMM', 9)]
     Other
 */
-wire [15:0] instr = reset ? 19456 : instruction; // 19456 = SET_FP 0 = NOP
+wire [15:0] instr = reset ? 18944 : instruction; // 19456 = LOCALS 0 (MODE 1) = NOP
 
 wire cmd_type = instr[15]; // format 1 or format 2
 
@@ -258,7 +258,7 @@ always_ff @(posedge clk) begin
         sp <= {STACK_DEPTH{1'b1}};
         rsp <= {RSTACK_DEPTH{1'b1}};
         fp <= (DATA_WIDTH)'(1'b0);
-        wait_flag <= 1'b0;
+        wait_flag <= 1'b1;
     end else begin
         pc <= pc_new;
         sp <= sp_new;
@@ -273,7 +273,7 @@ initial begin
     sp = {STACK_DEPTH{1'b1}};
     rsp = {RSTACK_DEPTH{1'b1}};
     fp = (DATA_WIDTH)'(1'b0);
-    wait_flag = 1'b0;
+    wait_flag = 1'b1;
 end
 
 endmodule

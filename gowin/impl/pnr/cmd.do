@@ -3,6 +3,7 @@
 -pn GW1NR-LV9QN88PC6/I5
 -cst C:\Users\Joe\dev\brus16\gowin\src\gowin.cst
 -cfg C:\Users\Joe\dev\brus16\gowin\impl\pnr\device.cfg
+-sdc C:\Users\Joe\dev\brus16\gowin\src\gowin.sdc
 -bit
 -tr
 -ph

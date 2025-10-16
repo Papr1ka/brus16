@@ -92,7 +92,7 @@ layer5(
     .data_out(layer5_data)
 );
 
-// layer5 2x1
+// layer6 2x1
 
 wire [INPUT_WIDTH-1:0] layer6_data [INPUT_COUNT/64-1:0];
 wire [INPUT_COUNT/64-1:0] layer6_flags;

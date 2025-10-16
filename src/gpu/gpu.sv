@@ -87,6 +87,54 @@ wire we_rect_rights = copy_state == READ_WIDTH;
 wire we_rect_bottoms = copy_state == READ_HEIGHT;
 wire we_rect_colors = copy_state == READ_COLOR;
 
+reg [15:0] rect_x1_true;
+reg [15:0] rect_y1_true;
+
+logic [COORD_WIDTH-1:0] rect_x1;
+logic [COORD_WIDTH-1:0] rect_y1;
+logic [COORD_WIDTH-1:0] rect_x2;
+logic [COORD_WIDTH-1:0] rect_y2;
+
+always_comb begin
+    casez ({mem_din[15], $signed(mem_din) > 640})
+        2'b1?: rect_x1 = 0;
+        2'b01: rect_x1 = 640;
+        default: rect_x1 = mem_din[9:0];
+    endcase
+end
+
+always_comb begin
+    casez ({mem_din[15], $signed(mem_din) > 480})
+        2'b1?: rect_y1 = 0;
+        2'b01: rect_y1 = 480;
+        default: rect_y1 = mem_din[9:0];
+    endcase
+end
+
+wire [15:0] rect_x2_true = rect_x1_true + mem_din;
+wire [15:0] rect_y2_true = rect_y1_true + mem_din;
+
+always_comb begin
+    casez ({rect_x2_true[15], $signed(rect_x2_true[15:7]) > 5}) // > 640
+        2'b1?: rect_x2 = 0;
+        2'b01: rect_x2 = 640;
+        default: rect_x2 = rect_x2_true[9:0];
+    endcase
+end
+
+always_comb begin
+    casez ({rect_y2_true[15], $signed(rect_y2_true[15:5]) > 15}) // > 480
+        2'b1?: rect_y2 = 0;
+        2'b01: rect_y2 = 480;
+        default: rect_y2 = rect_y2_true[9:0];
+    endcase
+end
+
+always_ff @(posedge clk) begin
+    rect_x1_true <= we_rect_lefts ? mem_din : rect_x1_true;
+    rect_y1_true <= we_rect_tops ? mem_din : rect_y1_true;
+end
+
 gpu_mem #(
     .ADDR_WIDTH(RECT_COUNT_WIDTH),
     .SIZE(RECT_COUNT),
@@ -96,7 +144,7 @@ mem0 (
     .clk(clk),
     .we(we_rect_lefts),
     .mem_din_addr(rect_counter),
-    .mem_din(mem_din),
+    .mem_din(rect_x1),
     .dout(rect_lefts) // xs
 );
 
@@ -109,7 +157,7 @@ mem1 (
     .clk(clk),
     .we(we_rect_tops),
     .mem_din_addr(rect_counter),
-    .mem_din(mem_din),
+    .mem_din(rect_y1),
     .dout(rect_tops) // ys
 );
 
@@ -122,7 +170,7 @@ mem2 (
     .clk(clk),
     .we(we_rect_rights),
     .mem_din_addr(rect_counter),
-    .mem_din(mem_din + rect_lefts[rect_counter]),
+    .mem_din(rect_x2),
     .dout(rect_rights) // xs + widths
 );
 
@@ -135,7 +183,7 @@ mem3 (
     .clk(clk),
     .we(we_rect_bottoms),
     .mem_din_addr(rect_counter),
-    .mem_din(mem_din + rect_tops[rect_counter]),
+    .mem_din(rect_y2),
     .dout(rect_bottoms) // ys + heights
 );
 
@@ -155,6 +203,7 @@ mem4 (
 
 // if collisions[i] is 1, than rect[i] collide with (coord_x, coord_y)
 wire [RECT_COUNT-1:0] collisions;
+reg [RECT_COUNT-1:0] collisions_buffer; // for pipilining
 wire [RECT_COUNT_WIDTH-1:0] rect_idx; // index of rect to display
 wire any_collision;
 assign color = any_collision ? rect_colors[rect_idx] : DEFAULT_COLOR;
@@ -178,7 +227,7 @@ endgenerate
 // binary tree of 6 mux layers
 btree_mux btree_mux(
     .clk(clk),
-    .flags_in(collisions),
+    .flags_in(collisions_buffer),
     .data_in(rect_idxs),
     .flag_out(any_collision),
     .data_out(rect_idx)
@@ -223,10 +272,12 @@ always_ff @(posedge clk) begin
         state <= WAIT_FOR_COPY;
         copy_state <= READ_START;
         rect_counter <= RECT_COUNT_WIDTH'(0);
+        collisions_buffer <= RECT_COUNT'(0);
     end else begin
         rect_counter <= rect_counter_new;
         state <= state_new;
         copy_state <= copy_state_new;
+        collisions_buffer <= collisions; 
     end
 end
 
@@ -237,6 +288,9 @@ initial begin
     for (integer j = 0; j < RECT_COUNT; j++) begin
         rect_idxs[j] = RECT_COUNT_WIDTH'(j);
     end
+    collisions_buffer = RECT_COUNT'(0);
+    rect_x1_true = 16'b0;
+    rect_y1_true = 16'b0;
 end
 
 endmodule

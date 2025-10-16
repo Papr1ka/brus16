@@ -27,12 +27,12 @@ module comparator
 always_comb begin
     collision = (
         (
-            ($signed(rect_left) <= $signed(coord_x)) &&
-            ($signed(coord_x) < $signed(rect_right))
+            (rect_left <= coord_x) &&
+            (coord_x < rect_right)
         ) &&
         (
-            ($signed(rect_top) <= $signed(coord_y)) &&
-            ($signed(coord_y) < $signed(rect_bottom))
+            (rect_top <= coord_y) &&
+            (coord_y < rect_bottom)
         )
     );
 end

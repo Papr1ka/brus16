@@ -28,6 +28,12 @@ for i, e in enumerate(game_data_new):
     game_data[i] = e
 game_data[7802-6 + 2] = 1
 
+
+grass_data = [0] * 8192
+grass_program, grass_data_new = load("./grass.bin")
+for i, e in enumerate(grass_data_new):
+    grass_data[i] = e
+
 CMDS = [(
     lambda xs: (xs[0], int(xs[1]))
  ) (string.split(" = ")) for string in """ADD = 0
@@ -216,6 +222,9 @@ async def setup(dut, log_filename, program, data, logs_folder="./logs/"):
     setup_program(dut, program, data)
     task = cocotb.start_soon(generate_clock(dut))
     await Timer(6, 'ns')
+    dut.resume.value = 1
+    await RisingEdge(dut.clk)
+    dut.resume.value = 0
     try:
         yield
     finally:
@@ -234,8 +243,14 @@ async def test_factorial(dut):
         # s0 = dut.cpu.stack_top.value.to_signed()
         assert fact == 5040
 
-
 @cocotb.test(skip=False)
+async def test_grass(dut):
+    program = grass_program
+    async with setup(dut, "grass.log", program, grass_data):
+        await Timer(2 * 1024 * 2, unit='ns')
+        await RisingEdge(dut.clk)
+
+@cocotb.test(skip=True)
 async def test_game(dut):
     program = game_program
     async with setup(dut, "game.log", program, game_data):
