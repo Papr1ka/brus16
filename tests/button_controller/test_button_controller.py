@@ -51,10 +51,12 @@ def log_debug(dut):
 
 @cocotb.test(skip=False)
 async def tect_button_controller(dut):
-    dut.reset.value = 0
+    dut.reset.value = 1
     dut.copy_start.value = 0
     dut.buttons_in.value = 0b0000000000000000
     cocotb.start_soon(generate_clock(dut))
+    await RisingEdge(dut.clk)
+    dut.reset.value = 0
 
     await RisingEdge(dut.clk)
     button_values = [0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1]

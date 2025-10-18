@@ -1,9 +1,7 @@
 <testsuites name="results">
   <testsuite name="all" package="all">
-    <property name="random_seed" value="1760614903" />
-    <testcase name="test_gpu" classname="test_gpu" file="/mnt/c/Users/Joe/dev/brus16/tests/gpu/test_gpu.py" lineno="748" time="0" sim_time_ns="0" ratio_time="0">
-      <skipped />
-    </testcase>
-    <testcase name="test_gpu_random" classname="test_gpu" file="/mnt/c/Users/Joe/dev/brus16/tests/gpu/test_gpu.py" lineno="806" time="1.6994736194610596" sim_time_ns="775.0" ratio_time="456.02355407303673" />
+    <property name="random_seed" value="1760797194" />
+    <testcase name="test_gpu" classname="test_gpu" file="/mnt/c/Users/Joe/dev/brus16/tests/gpu/test_gpu.py" lineno="751" time="2.8810818195343018" sim_time_ns="1291.0" ratio_time="448.0955699511086" />
+    <testcase name="test_gpu_random" classname="test_gpu" file="/mnt/c/Users/Joe/dev/brus16/tests/gpu/test_gpu.py" lineno="809" time="1.6453285217285156" sim_time_ns="775.0000000000002" ratio_time="471.0305508992311" />
   </testsuite>
 </testsuites>

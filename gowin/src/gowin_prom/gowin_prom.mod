@@ -15,4 +15,4 @@
 -width 16
 -read_mode bypass
 -reset_mode sync
--init_file C:\Users\Joe\dev\brus16\gowin\src\program.hex.mi
+-init_file C:\Users\Joe\dev\Brus-16\random\random_code.mi

@@ -10,8 +10,8 @@ seed(42)
 
 def generate_rect():
     abs = 1
-    x = randint(-1000, 2 ** 10 - 1)
-    y = randint(-1000, 2 ** 10 - 1)
+    x = randint(-10000, 2 ** 10 - 1)
+    y = randint(-10000, 2 ** 10 - 1)
     width = randint(0, 2 ** 10 - 1)
     height = randint(0, 2 ** 10 - 1)
     color = randint(0, 2 ** 16 - 1)
@@ -717,6 +717,7 @@ def log_debug(dut):
     "copy_state={copy_state} copy_state_new={copy_state_new} " \
     "rect_counter={rect_counter} rect_counter_new={rect_counter_new} " \
     "rect_x1_true={rect_x1_true}, rect_y1_true={rect_y1_true} " \
+    "rect_x2_true={rect_x2_true}, rect_y2_true={rect_y2_true} " \
     "rect_idx={rect_idx} color={color} x={x} y={y} " \
     "mem_din={mem_din} copy_start={copy_start} " \
     "rect_lefts={rect_lefts} rect_tops={rect_tops} " \
@@ -731,6 +732,8 @@ def log_debug(dut):
         rect_counter_new = dut.rect_counter_new.value.to_unsigned(),
         rect_x1_true = dut.rect_x1_true.value.to_signed(),
         rect_y1_true = dut.rect_y1_true.value.to_signed(),
+        rect_x2_true = dut.rect_x2_true.value.to_signed() if dut.rect_x2_true.value.is_resolvable else "X",
+        rect_y2_true = dut.rect_y2_true.value.to_signed() if dut.rect_y2_true.value.is_resolvable else "X",
         rect_idx = rect_idx,
         color = color,
         x = dut.x_coord.value,
@@ -745,7 +748,7 @@ def log_debug(dut):
     )
     logger.debug(string)
 
-@cocotb.test(skip=True)
+@cocotb.test(skip=False)
 async def test_gpu(dut):
     cocotb.start_soon(generate_clock(dut))
     dut.reset.value = 1

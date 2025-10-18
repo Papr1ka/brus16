@@ -23,10 +23,10 @@ module bsram
     input wire we,
     input wire [WIDTH-1:0] mem_din_addr,
     input wire [15:0] mem_din
-) /*synthesis syn_ramstyle="block_ram"*/;
+);
 
+/* ONLY FOR VERILATOR SIMULATION */
 `ifdef SIM
-
 reg [15:0] data [SIZE-1:0];
 
 always_ff @(posedge clk) begin
@@ -40,13 +40,13 @@ initial begin
     for (integer i = 0; i < SIZE; i = i + 1) begin
         data[i] = 16'b0;
     end
-    // game data
     $readmemh("data.txt", data);
 end
 `endif
+/* END */
 
+/* ONLY FOR GOWIN */
 `ifdef GOWIN
-
 Gowin_SDPB SDPB(
     .dout(mem_dout), //output [15:0] dout
     .clka(clk), //input clka
@@ -60,7 +60,24 @@ Gowin_SDPB SDPB(
     .din(mem_din), //input [15:0] din
     .adb(mem_dout_addr) //input [12:0] adb
 );
-
 `endif
+/* END */
+
+
+/* ONLY FOR VIVADO */
+`ifdef VIVADO
+memory mem(
+    .clka(clk),
+    .ena(1'b1),
+    .wea(we),
+    .addra(mem_din_addr),
+    .dina(mem_din),
+    .clkb(clk),
+    .enb(1'b1),
+    .addrb(mem_dout_addr),
+    .doutb(mem_dout)
+);
+`endif
+/* END */
 
 endmodule

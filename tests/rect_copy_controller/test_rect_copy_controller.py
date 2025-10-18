@@ -17,20 +17,21 @@ logger.addHandler(fh)
 
 
 async def generate_clock(dut):
-    for _ in range(10000):
+    for i in range(10000):
         dut.clk.value = 0
         await Timer(1, unit='ns')
         dut.clk.value = 1
         await Timer(1, unit='ns')
-        log_debug(dut)
+        if i > 0:
+            log_debug(dut)
 
 def generate_rect(i):
     if i == 0:
         abs = 1
     else:
         abs = randint(0, 1)
-    x = randint(-1000, 2 ** 10 - 1)
-    y = randint(-1000, 2 ** 10 - 1)
+    x = randint(-10000, 2 ** 10 - 1)
+    y = randint(-10000, 2 ** 10 - 1)
     width = randint(0, 2 ** 10 - 1)
     height = randint(0, 2 ** 10 - 1)
     color = randint(0, 2 ** 16 - 1)
@@ -75,8 +76,11 @@ def log_debug(dut):
 @cocotb.test(skip=False)
 async def tect_rect_copy_controller(dut):
     dut.copy_start.value = 0
+    dut.reset.value = 1
     cocotb.start_soon(generate_clock(dut))
     setup_mem(dut, mem)
+    await RisingEdge(dut.clk)
+    dut.reset.value = 0
     await RisingEdge(dut.clk)
     dut.copy_start.value = 1
     await RisingEdge(dut.clk)

@@ -13,8 +13,8 @@
 
 module cpu
 #(
-    parameter CODE_WIDTH = `CODE_ADDR_WIDTH,
-    parameter DATA_WIDTH = `DATA_ADDR_WIDTH,
+    parameter CODE_ADDR_WIDTH = `CODE_ADDR_WIDTH,
+    parameter DATA_ADDR_WIDTH = `DATA_ADDR_WIDTH,
     parameter STACK_DEPTH = `STACK_DEPTH,
     parameter RSTACK_DEPTH = `RSTACK_DEPTH
 )
@@ -23,14 +23,14 @@ module cpu
     input wire reset, // reset cpu, start from scratch
     input wire resume, // continue work after wait
 
-    output wire [CODE_WIDTH-1:0] code_addr, // pc (what instruction to fetch)
+    output wire [CODE_ADDR_WIDTH-1:0] code_addr, // pc (what instruction to fetch)
     input wire [15:0] instruction, // instruction from program memory
 
-    output wire [DATA_WIDTH-1:0] mem_din_addr, // data mem, read address
+    output wire [DATA_ADDR_WIDTH-1:0] mem_din_addr, // data mem, read address
     input wire [15:0] mem_din, // data mem, data
 
     output wire mem_dout_we, // write enable to data mem
-    output wire [DATA_WIDTH-1:0] mem_dout_addr, // data mem, write address
+    output wire [DATA_ADDR_WIDTH-1:0] mem_dout_addr, // data mem, write address
     output wire [15:0] mem_dout // data mem, write data
 );
 
@@ -74,15 +74,15 @@ stack(
 reg [RSTACK_DEPTH-1:0] rsp; // return stack pointer (pointing to rstack_top)
 logic [RSTACK_DEPTH-1:0] rsp_new;
 
-reg [CODE_WIDTH-1:0] rstack_top; // top element of return stack
-logic [CODE_WIDTH-1:0] rstack_top_new;
+reg [CODE_ADDR_WIDTH-1:0] rstack_top; // top element of return stack
+logic [CODE_ADDR_WIDTH-1:0] rstack_top_new;
 
 logic write_to_rstack; // write enable to return stack
 
 rstack #(
     .WIDTH(RSTACK_DEPTH),
     .SIZE(1 << RSTACK_DEPTH),
-    .DATA_WIDTH(CODE_WIDTH)
+    .DATA_WIDTH(CODE_ADDR_WIDTH)
 )
 rstack(
     .clk(clk),
@@ -112,16 +112,16 @@ wire mode = instr[9]; // use immediate if mode else from stack
 wire [15:0] instr_simm9 = {{7{instr[8]}}, instr[8:0]};
 wire [15:0] instr_imm13 = {3'b0, instr[12:0]};
 
-reg [CODE_WIDTH-1:0] pc; // program counter
-reg [DATA_WIDTH-1:0] fp; // frame pointer
-logic [CODE_WIDTH-1:0] pc_new;
-logic [DATA_WIDTH-1:0] fp_new;
+reg [CODE_ADDR_WIDTH-1:0] pc; // program counter
+reg [DATA_ADDR_WIDTH-1:0] fp; // frame pointer
+logic [CODE_ADDR_WIDTH-1:0] pc_new;
+logic [DATA_ADDR_WIDTH-1:0] fp_new;
 
 reg wait_flag;
 logic wait_flag_new;
 
 assign code_addr = pc_new;
-wire [CODE_WIDTH-1:0] pc_plus_1 = pc + 1;
+wire [CODE_ADDR_WIDTH-1:0] pc_plus_1 = pc + 1;
 
 wire [12:0] mem_abs_addr = mode ? fp + instr_simm9[12:0] : stack_top[12:0];
 assign mem_dout_we = (!cmd_type && opcode == `STORE) ? 1'b1 : 1'b0;
@@ -169,9 +169,9 @@ end
 always_comb begin
     // compute all return stack logic
     case ({cmd_type, opcode})
-        {1'b0, `LOCALS}: fp_new = fp - instr_simm9[DATA_WIDTH-1:0];
-        {1'b0, `RET}: fp_new = fp + instr_simm9[DATA_WIDTH-1:0];
-        {1'b0, `SET_FP}: fp_new = stack_top[DATA_WIDTH-1:0];
+        {1'b0, `LOCALS}: fp_new = fp - instr_simm9[DATA_ADDR_WIDTH-1:0];
+        {1'b0, `RET}: fp_new = fp + instr_simm9[DATA_ADDR_WIDTH-1:0];
+        {1'b0, `SET_FP}: fp_new = stack_top[DATA_ADDR_WIDTH-1:0];
         default: fp_new = fp;
     endcase
 end
@@ -254,10 +254,10 @@ end
 // sequence logic
 always_ff @(posedge clk) begin
     if (reset) begin
-        pc <= {CODE_WIDTH{1'b1}};
+        pc <= {CODE_ADDR_WIDTH{1'b1}};
         sp <= {STACK_DEPTH{1'b1}};
         rsp <= {RSTACK_DEPTH{1'b1}};
-        fp <= (DATA_WIDTH)'(1'b0);
+        fp <= (DATA_ADDR_WIDTH)'(1'b0);
         wait_flag <= 1'b1;
     end else begin
         pc <= pc_new;
@@ -268,12 +268,5 @@ always_ff @(posedge clk) begin
     end
 end
 
-initial begin
-    pc = {CODE_WIDTH{1'b1}};
-    sp = {STACK_DEPTH{1'b1}};
-    rsp = {RSTACK_DEPTH{1'b1}};
-    fp = (DATA_WIDTH)'(1'b0);
-    wait_flag = 1'b1;
-end
 
 endmodule

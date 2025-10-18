@@ -1,6 +1,6 @@
 <testsuites name="results">
   <testsuite name="all" package="all">
-    <property name="random_seed" value="1760373454" />
-    <testcase name="test_btree_mux" classname="test_btree_mux" file="/mnt/c/Users/Joe/dev/brus16/tests/btree_mux/test_btree_mux.py" lineno="22" time="0.03007793426513672" sim_time_ns="129.0" ratio_time="4288.858365832779" />
+    <property name="random_seed" value="1760797143" />
+    <testcase name="test_btree_mux" classname="test_btree_mux" file="/mnt/c/Users/Joe/dev/brus16/tests/btree_mux/test_btree_mux.py" lineno="22" time="0.031197547912597656" sim_time_ns="129.0" ratio_time="4134.940360101488" />
   </testsuite>
 </testsuites>

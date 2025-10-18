@@ -1,6 +1,5 @@
 /*
     2*READ 1*WRITE stack
-    intended to be implemented as distributed ram
     small in size
     async read, sync write
 */
@@ -38,11 +37,14 @@ end
 assign mem_dout0 = data[mem_dout_addr0]; // async read port 0
 assign mem_dout1 = data[mem_dout_addr1]; // async read port 1
 
+/* ONLY FOR VERILATOR SIMULATION */
+`ifdef SIM
 initial begin
     for (integer i = 0; i < SIZE; i = i + 1) begin
         data[i] = 16'b0;
     end
 end
-
+`endif
+/* END */
 
 endmodule

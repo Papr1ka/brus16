@@ -3,3 +3,4 @@ obj_dir/
 sim_build/
 logs/
 results.xml
+vivado/

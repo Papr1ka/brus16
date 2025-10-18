@@ -1,6 +1,0 @@
-<testsuites name="results">
-  <testsuite name="all" package="all">
-    <property name="random_seed" value="1760373457" />
-    <testcase name="tect_button_controller" classname="test_button_controller" file="/mnt/c/Users/Joe/dev/brus16/tests/button_controller/test_button_controller.py" lineno="52" time="0.12360310554504395" sim_time_ns="567.0" ratio_time="4587.26338225678" />
-  </testsuite>
-</testsuites>

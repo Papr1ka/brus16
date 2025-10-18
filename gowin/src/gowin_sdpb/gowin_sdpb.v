@@ -5,7 +5,7 @@
 //Part Number: GW1NR-LV9QN88PC6/I5
 //Device: GW1NR-9
 //Device Version: C
-//Created Time: Thu Oct 16 22:38:03 2025
+//Created Time: Sat Oct 18 16:15:24 2025
 
 module Gowin_SDPB (dout, clka, cea, reseta, clkb, ceb, resetb, oce, ada, din, adb);
 
@@ -55,7 +55,7 @@ defparam sdpb_inst_0.BIT_WIDTH_1 = 2;
 defparam sdpb_inst_0.BLK_SEL_0 = 3'b000;
 defparam sdpb_inst_0.BLK_SEL_1 = 3'b000;
 defparam sdpb_inst_0.RESET_MODE = "SYNC";
-defparam sdpb_inst_0.INIT_RAM_00 = 256'h0000000000000000000000000000000000000000000000000000000000000C01;
+defparam sdpb_inst_0.INIT_RAM_00 = 256'h0000000000000000000000000000000000000000000000000000000000000041;
 
 SDPB sdpb_inst_1 (
     .DO({sdpb_inst_1_dout_w[29:0],dout[3:2]}),
@@ -103,7 +103,7 @@ defparam sdpb_inst_2.BIT_WIDTH_1 = 2;
 defparam sdpb_inst_2.BLK_SEL_0 = 3'b000;
 defparam sdpb_inst_2.BLK_SEL_1 = 3'b000;
 defparam sdpb_inst_2.RESET_MODE = "SYNC";
-defparam sdpb_inst_2.INIT_RAM_00 = 256'h0000000000000000000000000000000000000000000000000000000000000A00;
+defparam sdpb_inst_2.INIT_RAM_00 = 256'h0000000000000000000000000000000000000000000000000000000000000000;
 
 SDPB sdpb_inst_3 (
     .DO({sdpb_inst_3_dout_w[29:0],dout[7:6]}),
@@ -127,7 +127,7 @@ defparam sdpb_inst_3.BIT_WIDTH_1 = 2;
 defparam sdpb_inst_3.BLK_SEL_0 = 3'b000;
 defparam sdpb_inst_3.BLK_SEL_1 = 3'b000;
 defparam sdpb_inst_3.RESET_MODE = "SYNC";
-defparam sdpb_inst_3.INIT_RAM_00 = 256'h0000000000000000000000000000000000000000000000000000000000000380;
+defparam sdpb_inst_3.INIT_RAM_00 = 256'h0000000000000000000000000000000000000000000000000000000000000000;
 
 SDPB sdpb_inst_4 (
     .DO({sdpb_inst_4_dout_w[29:0],dout[9:8]}),
@@ -151,7 +151,7 @@ defparam sdpb_inst_4.BIT_WIDTH_1 = 2;
 defparam sdpb_inst_4.BLK_SEL_0 = 3'b000;
 defparam sdpb_inst_4.BLK_SEL_1 = 3'b000;
 defparam sdpb_inst_4.RESET_MODE = "SYNC";
-defparam sdpb_inst_4.INIT_RAM_00 = 256'h0000000000000000000000000000000000000000000000000000000000000D80;
+defparam sdpb_inst_4.INIT_RAM_00 = 256'h0000000000000000000000000000000000000000000000000000000000000000;
 
 SDPB sdpb_inst_5 (
     .DO({sdpb_inst_5_dout_w[29:0],dout[11:10]}),
@@ -175,7 +175,7 @@ defparam sdpb_inst_5.BIT_WIDTH_1 = 2;
 defparam sdpb_inst_5.BLK_SEL_0 = 3'b000;
 defparam sdpb_inst_5.BLK_SEL_1 = 3'b000;
 defparam sdpb_inst_5.RESET_MODE = "SYNC";
-defparam sdpb_inst_5.INIT_RAM_00 = 256'h0000000000000000000000000000000000000000000000000000000000000800;
+defparam sdpb_inst_5.INIT_RAM_00 = 256'h0000000000000000000000000000000000000000000000000000000000000000;
 
 SDPB sdpb_inst_6 (
     .DO({sdpb_inst_6_dout_w[29:0],dout[13:12]}),
@@ -199,7 +199,7 @@ defparam sdpb_inst_6.BIT_WIDTH_1 = 2;
 defparam sdpb_inst_6.BLK_SEL_0 = 3'b000;
 defparam sdpb_inst_6.BLK_SEL_1 = 3'b000;
 defparam sdpb_inst_6.RESET_MODE = "SYNC";
-defparam sdpb_inst_6.INIT_RAM_00 = 256'h0000000000000000000000000000000000000000000000000000000000000C00;
+defparam sdpb_inst_6.INIT_RAM_00 = 256'h0000000000000000000000000000000000000000000000000000000000000000;
 
 SDPB sdpb_inst_7 (
     .DO({sdpb_inst_7_dout_w[29:0],dout[15:14]}),

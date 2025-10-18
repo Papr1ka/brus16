@@ -96,7 +96,7 @@ logic [COORD_WIDTH-1:0] rect_x2;
 logic [COORD_WIDTH-1:0] rect_y2;
 
 always_comb begin
-    casez ({mem_din[15], $signed(mem_din) > 640})
+    casez ({mem_din[15], $signed(mem_din[15:7]) >= 5}) // >= 640
         2'b1?: rect_x1 = 0;
         2'b01: rect_x1 = 640;
         default: rect_x1 = mem_din[9:0];
@@ -104,7 +104,7 @@ always_comb begin
 end
 
 always_comb begin
-    casez ({mem_din[15], $signed(mem_din) > 480})
+    casez ({mem_din[15], $signed(mem_din[15:5]) >= 15}) // >= 480
         2'b1?: rect_y1 = 0;
         2'b01: rect_y1 = 480;
         default: rect_y1 = mem_din[9:0];
@@ -115,7 +115,7 @@ wire [15:0] rect_x2_true = rect_x1_true + mem_din;
 wire [15:0] rect_y2_true = rect_y1_true + mem_din;
 
 always_comb begin
-    casez ({rect_x2_true[15], $signed(rect_x2_true[15:7]) > 5}) // > 640
+    casez ({rect_x2_true[15], $signed(rect_x2_true[15:7]) >= 5}) // >= 640
         2'b1?: rect_x2 = 0;
         2'b01: rect_x2 = 640;
         default: rect_x2 = rect_x2_true[9:0];
@@ -123,17 +123,13 @@ always_comb begin
 end
 
 always_comb begin
-    casez ({rect_y2_true[15], $signed(rect_y2_true[15:5]) > 15}) // > 480
+    casez ({rect_y2_true[15], $signed(rect_y2_true[15:5]) >= 15}) // >= 480
         2'b1?: rect_y2 = 0;
         2'b01: rect_y2 = 480;
         default: rect_y2 = rect_y2_true[9:0];
     endcase
 end
 
-always_ff @(posedge clk) begin
-    rect_x1_true <= we_rect_lefts ? mem_din : rect_x1_true;
-    rect_y1_true <= we_rect_tops ? mem_din : rect_y1_true;
-end
 
 gpu_mem #(
     .ADDR_WIDTH(RECT_COUNT_WIDTH),
@@ -273,24 +269,24 @@ always_ff @(posedge clk) begin
         copy_state <= READ_START;
         rect_counter <= RECT_COUNT_WIDTH'(0);
         collisions_buffer <= RECT_COUNT'(0);
+        rect_x1_true <= 16'b0;
+        rect_y1_true <= 16'b0;
     end else begin
         rect_counter <= rect_counter_new;
         state <= state_new;
         copy_state <= copy_state_new;
-        collisions_buffer <= collisions; 
+        collisions_buffer <= collisions;
+        rect_x1_true <= we_rect_lefts ? mem_din : rect_x1_true;
+        rect_y1_true <= we_rect_tops ? mem_din : rect_y1_true;
     end
 end
 
+/* rect indices filling (can't remove) */
 initial begin
-    state = WAIT_FOR_COPY;
-    copy_state = READ_START;
-    rect_counter = RECT_COUNT_WIDTH'(0);
     for (integer j = 0; j < RECT_COUNT; j++) begin
         rect_idxs[j] = RECT_COUNT_WIDTH'(j);
     end
-    collisions_buffer = RECT_COUNT'(0);
-    rect_x1_true = 16'b0;
-    rect_y1_true = 16'b0;
 end
+
 
 endmodule

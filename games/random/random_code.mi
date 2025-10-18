@@ -1,3 +1,6 @@
+#File_format=Hex
+#Address_depth=8192
+#Data_width=16
 4a00
 fe70
 4c00

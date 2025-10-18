@@ -115,20 +115,13 @@ always_ff @(posedge clk) begin
         state <= WAIT_FOR_START;
         reading_abs <= 1'b0;
     end else begin
+        cursor_x <= cursor_x_new;
+        cursor_y <= cursor_y_new;
         addr <= addr_new;
         state <= state_new;
         reading_abs <= reading_abs_new;
-        cursor_x <= cursor_x_new;
-        cursor_y <= cursor_y_new;
     end
 end
 
-initial begin
-    cursor_x = COORD_WIDTH'(0);
-    cursor_y = COORD_WIDTH'(0);
-    addr = ADDR_WIDTH'(RECT_ADDR);
-    state = WAIT_FOR_START;
-    reading_abs = 1'b0;
-end
 
 endmodule

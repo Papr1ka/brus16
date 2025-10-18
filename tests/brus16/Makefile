@@ -19,6 +19,7 @@ VERILOG_SOURCES += ../../src/gpu/gpu.sv
 VERILOG_SOURCES += ../../src/brus16_controller.sv
 VERILOG_SOURCES += ../../src/brus16_top.sv
 VERILOG_SOURCES += ../../src/bsram.sv
+VERILOG_SOURCES += ../../src/prom.sv
 VERILOG_SOURCES += ../../src/button_handler.sv
 VERILOG_SOURCES += ../../src/button_controller.sv
 VERILOG_SOURCES += ../../src/rect_copy_controller.sv

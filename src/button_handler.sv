@@ -40,9 +40,5 @@ always_ff @(posedge clk) begin
     end
 end
 
-initial begin
-    counter = COUNTER_SIZE'(0);
-    button_out = 1'b0;
-end
 
 endmodule

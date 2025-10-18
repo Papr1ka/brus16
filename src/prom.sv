@@ -20,6 +20,7 @@ module prom
     output reg [15:0] mem_dout
 );
 
+/* ONLY FOR VERILATOR SIMULATION */
 `ifdef SIM
 
 reg [15:0] data [SIZE-1:0];
@@ -33,13 +34,13 @@ initial begin
     for (integer i = 0; i < SIZE; i = i + 1) begin
         data[i] = 16'b0;
     end
-//     game program
-     $readmemh("program.txt", data);
+    $readmemh("program.txt", data);
 end
 `endif
+/* END */
 
+/* ONLY FOR GOWIN */
 `ifdef GOWIN
-
 Gowin_pROM pROM(
     .dout(mem_dout), //output [15:0] dout
     .clk(clk), //input clk
@@ -48,7 +49,18 @@ Gowin_pROM pROM(
     .reset(1'b0), //input reset
     .ad(mem_dout_addr) //input [12:0] ad
 );
-
 `endif
+/* END */
+
+/* ONLY FOR VIVADO*/
+`ifdef VIVADO
+rom rom(
+    .clka(clk),
+    .ena(1'b1),
+    .addra(mem_dout_addr),
+    .douta(mem_dout)
+);
+`endif
+/* END */
 
 endmodule

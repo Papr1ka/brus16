@@ -36,14 +36,11 @@ def setup_program(dut, program, data):
 
 
 async def generate_clock(dut):
-    dut.resume.value = 0
-    dut.reset.value = 1
     for _ in range(3):
         dut.clk.value = 0
         await Timer(1, unit='ns')
         dut.clk.value = 1
         await Timer(1, unit='ns')
-    dut.reset.value = 0
 
     for _ in range(100000):
         log_debug(dut)

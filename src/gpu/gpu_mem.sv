@@ -1,7 +1,9 @@
 /*
     64*READ 1*WRITE memory
-    intended to be implemented as distributed ram
+    intended to be implemented on registers
     async read, sync write
+
+    There is no reset, because the memory is completely rewritten before use
 */
 
 `include "constants.svh"
@@ -34,11 +36,15 @@ end
 
 assign dout = data; // async read
 
+/* ONLY FOR VERILATOR SIMULATION */
+`ifdef SIM
 initial begin
     for (integer i = 0; i < SIZE; i = i + 1) begin
         data[i] = DATA_WIDTH'(0);
     end
 end
+`endif
+/* END */
 
 
 endmodule

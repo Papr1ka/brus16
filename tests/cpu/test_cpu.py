@@ -250,7 +250,7 @@ async def test_grass(dut):
         await Timer(2 * 1024 * 2, unit='ns')
         await RisingEdge(dut.clk)
 
-@cocotb.test(skip=True)
+@cocotb.test(skip=False)
 async def test_game(dut):
     program = game_program
     async with setup(dut, "game.log", program, game_data):

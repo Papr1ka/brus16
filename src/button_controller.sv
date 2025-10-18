@@ -95,9 +95,5 @@ always_ff @(posedge clk) begin
     end
 end
 
-initial begin
-    state = WAIT;
-    addr = ADDR_WIDTH'(BUTTON_ADDR);
-end
 
 endmodule

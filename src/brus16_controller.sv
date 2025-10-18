@@ -19,42 +19,24 @@ module brus16_controller(
     input wire reset,
     input wire vsync,
 
-    output wire copy_start, // start copy
-    output wire copy, // copy flag (drives memory muxes)
+    output reg copy_start, // start copy
+    output reg copy, // copy flag (drives memory muxes)
     output wire resume, // cpu continue
     output wire gpu_reset // gpu reset
 );
 
-reg copy_reg;
-logic copy_reg_new;
-
-assign copy = copy_reg;
-assign resume = !vsync && copy_reg;
-assign gpu_reset = vsync && !copy_reg;
-reg copy_start_reg; // delayed for 1 tact
-assign copy_start = copy_start_reg;
-
-always_comb begin
-    case ({vsync, copy_reg})
-        2'b10: copy_reg_new = 1'b1;
-        2'b01: copy_reg_new = 1'b0;
-        default: copy_reg_new = copy_reg;
-    endcase
-end
+assign resume = !vsync && copy;
+assign gpu_reset = vsync && !copy;
 
 always_ff @(posedge clk) begin
     if (reset) begin
-        copy_start_reg <= 1'b0;
-        copy_reg <= 1'b0;
+        copy <= 1'b0;
+        copy_start <= 1'b0;
     end else begin
-        copy_reg <= copy_reg_new;
-        copy_start_reg <= gpu_reset;
+        copy <= vsync;
+        copy_start <= gpu_reset;
     end
 end
 
-initial begin
-    copy_start_reg = 1'b0;
-    copy_reg = 1'b0;
-end
 
 endmodule

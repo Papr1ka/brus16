@@ -1,9 +1,17 @@
 `ifndef CONSTANTS
 `define CONSTANTS
 
-`define GOWIN // Uncomment for gowin
+
+// `define GOWIN // Uncomment for gowin
 // `define VIVADO // Uncomment for vivado
-// `define SIM // Uncomment for simulation (Icarus/Verilator)
+`define SIM // Uncomment for simulation (Icarus/Verilator)
+
+// `define DISABLE_GPU // Uncomment to disable the GPU
+`define DISABLE_BUTTONS // Uncomment to disable the button controller and it's inputs
+
+
+`define RESET_COUNTER_WIDTH 5 // 2^n Global reset duration to be sure
+
 
 // memory
 `define CODE_ADDR_WIDTH 13
