@@ -18,27 +18,26 @@ module button_handler
     output reg button_out
 );
 
-reg [COUNTER_SIZE-1:0] counter;
-logic button_out_new;
-
+reg  [COUNTER_SIZE-1:0] counter;
 wire [COUNTER_SIZE-1:0] counter_new = button_in ? counter + 1 : COUNTER_SIZE'(0);
+
+logic button_out_new;
 
 always_comb begin
     case (counter)
         COUNTER_VALUE: button_out_new = 1'b1;
-        default: button_out_new = button_out;
+        default:       button_out_new = button_out;
     endcase
 end
 
 always_ff @(posedge clk) begin
     if (reset) begin
-        counter <= COUNTER_SIZE'(0);
+        counter    <= COUNTER_SIZE'(0);
         button_out <= 1'b0;
     end else begin
-        counter <= counter_new;
+        counter    <= counter_new;
         button_out <= button_out_new;
     end
 end
-
 
 endmodule

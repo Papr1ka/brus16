@@ -10,19 +10,17 @@
 module bsram
 #(
     parameter WIDTH = `DATA_ADDR_WIDTH,
-    parameter SIZE = `DATA_SIZE
+    parameter SIZE  = `DATA_SIZE
 )
 (
-    input wire clk,
-
+    input  wire             clk,
     // read
-    input wire [WIDTH-1:0] mem_dout_addr,
-    output reg [15:0] mem_dout,
-    
+    input  wire [WIDTH-1:0] mem_dout_addr,
+    output reg [15:0]       mem_dout,
     // write
-    input wire we,
-    input wire [WIDTH-1:0] mem_din_addr,
-    input wire [15:0] mem_din
+    input  wire             we,
+    input  wire [WIDTH-1:0] mem_din_addr,
+    input  wire [15:0]      mem_din
 );
 
 /* ONLY FOR VERILATOR SIMULATION */
@@ -48,21 +46,20 @@ end
 /* ONLY FOR GOWIN */
 `ifdef GOWIN
 Gowin_SDPB SDPB(
-    .dout(mem_dout), //output [15:0] dout
-    .clka(clk), //input clka
-    .cea(we), //input cea
-    .reseta(1'b0), //input reseta
-    .clkb(clk), //input clkb
-    .ceb(1'b1), //input ceb
-    .resetb(1'b0), //input resetb
-    .oce(1'b1), //input oce
+    .dout(mem_dout),    //output [15:0] dout
+    .clka(clk),         //input clka
+    .cea(we),           //input cea
+    .reseta(1'b0),      //input reseta
+    .clkb(clk),         //input clkb
+    .ceb(1'b1),         //input ceb
+    .resetb(1'b0),      //input resetb
+    .oce(1'b1),         //input oce
     .ada(mem_din_addr), //input [12:0] ada
-    .din(mem_din), //input [15:0] din
+    .din(mem_din),      //input [15:0] din
     .adb(mem_dout_addr) //input [12:0] adb
 );
 `endif
 /* END */
-
 
 /* ONLY FOR VIVADO */
 `ifdef VIVADO

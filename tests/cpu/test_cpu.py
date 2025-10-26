@@ -10,29 +10,21 @@ from cocotb.types import Logic
 logger = logging.getLogger("test_cpu")
 logger.setLevel(logging.DEBUG)
 
-factorial = [18944, 65146, 19456, 23041, 40996, 23047, 49189, 57344, 17408, 23040, 65152, 17408, 23050, 65153, 17408, 23050, 65154, 17408, 23140, 65155, 17408, 23140, 65156, 17408, 57344, 16384, 23552, 65157, 17408, 57344, 16384, 23552, 23047, 17408, 25600, 32771, 22016, 18945, 17921, 16897, 23552, 11778, 41005, 23041, 22017, 16897, 23552, 16897, 23552, 1537, 49189, 2048, 22017]
-
 def load(filename):
+    data_initial = [0] * 8192
     with open(filename, 'rb') as f:
         buf = f.read()
         vals = [int.from_bytes(buf[i:i + 2], 'little')
                 for i in range(0, len(buf), 2)]
         code_size, data_size, *mem = vals
-        return mem[:code_size], mem[code_size:]
+        code, data = mem[:code_size], mem[code_size:]
+    for i, e in enumerate(data):
+        data_initial[i] = e
+    return code, data_initial
 
+factorial_program, factorial_data = load("./factorial.bin")
 
-# game_program, game_data = load("./bug.bin")
-game_data = [0] * 8192
-game_program, game_data_new = load("./game.bin")
-for i, e in enumerate(game_data_new):
-    game_data[i] = e
-game_data[7802-6 + 2] = 1
-
-
-grass_data = [0] * 8192
-grass_program, grass_data_new = load("./grass.bin")
-for i, e in enumerate(grass_data_new):
-    grass_data[i] = e
+game_program, game_data = load("./racing.bin")
 
 CMDS = [(
     lambda xs: (xs[0], int(xs[1]))
@@ -56,12 +48,10 @@ LOAD = 16
 STORE = 17
 LOCALS = 18
 SET_FP = 19
-ICALL = 20
-RET = 21
-PUSH_INT = 22
-PUSH_MR = 23
-POP = 24
-WAIT = 25""".split("\n")]
+RET = 20
+PUSH_INT = 21
+PUSH_MR = 22
+WAIT = 23""".split("\n")]
 
 CMDS = {opcode: literal for literal, opcode in CMDS}
 
@@ -234,27 +224,20 @@ async def setup(dut, log_filename, program, data, logs_folder="./logs/"):
 
 @cocotb.test(skip=False)
 async def test_factorial(dut):
-    program = factorial
-    async with setup(dut, "factorial.log", program, [0] * 100):
+    program = factorial_program
+    async with setup(dut, "factorial.log", program, factorial_data):
         await Timer(2 * 100 * 2, unit='ns')
         await RisingEdge(dut.clk)
 
-        fact = dut.memory.data[7].value.to_signed()
+        fact = dut.memory.data[0].value.to_signed()
         # s0 = dut.cpu.stack_top.value.to_signed()
         assert fact == 5040
-
-@cocotb.test(skip=False)
-async def test_grass(dut):
-    program = grass_program
-    async with setup(dut, "grass.log", program, grass_data):
-        await Timer(2 * 1024 * 2, unit='ns')
-        await RisingEdge(dut.clk)
 
 @cocotb.test(skip=False)
 async def test_game(dut):
     program = game_program
     async with setup(dut, "game.log", program, game_data):
-        await Timer(2 * 3000, unit='ns')
+        await Timer(2 * 7000, unit='ns')
         await RisingEdge(dut.clk)
         
         for i in range(11):
@@ -262,7 +245,7 @@ async def test_game(dut):
                 dut.resume.value = 1
                 await RisingEdge(dut.clk)
                 dut.resume.value = 0
-            await Timer(2 * 3000, unit='ns')
+            await Timer(2 * 1500, unit='ns')
             dump_mem(dut, sys=False, i=i)
 
             with open(f"./memory_reference/memory_at_{i}.txt", "r") as file:

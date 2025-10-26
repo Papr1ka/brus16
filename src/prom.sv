@@ -10,25 +10,22 @@
 module prom
 #(
     parameter WIDTH = `CODE_ADDR_WIDTH,
-    parameter SIZE = `CODE_SIZE
+    parameter SIZE  = `CODE_SIZE
 )
 (
-    input wire clk,
-
+    input  wire             clk,
     // read
-    input wire [WIDTH-1:0] mem_dout_addr,
-    output reg [15:0] mem_dout
+    input  wire [WIDTH-1:0] mem_dout_addr,
+    output reg  [15:0]      mem_dout
 );
 
 /* ONLY FOR VERILATOR SIMULATION */
 `ifdef SIM
-
 reg [15:0] data [SIZE-1:0];
 
 always_ff @(posedge clk) begin
     mem_dout <= data[mem_dout_addr];
 end
-
 
 initial begin
     for (integer i = 0; i < SIZE; i = i + 1) begin
@@ -42,12 +39,12 @@ end
 /* ONLY FOR GOWIN */
 `ifdef GOWIN
 Gowin_pROM pROM(
-    .dout(mem_dout), //output [15:0] dout
-    .clk(clk), //input clk
-    .oce(1'b1), //input oce
-    .ce(1'b1), //input ce
-    .reset(1'b0), //input reset
-    .ad(mem_dout_addr) //input [12:0] ad
+    .dout(mem_dout),   // output [15:0] dout
+    .clk(clk),         // input clk
+    .oce(1'b1),        // input oce
+    .ce(1'b1),         // input ce
+    .reset(1'b0),      // input reset
+    .ad(mem_dout_addr) // input [12:0] ad
 );
 `endif
 /* END */

@@ -1,0 +1,12 @@
+[General]
+ipc_version=4
+file=rstack_ssram
+module=rstack_ssram
+target_device=gw1nr9c-004
+type=ssram_ram16sdp
+version=1.0
+
+[Config]
+DEPTH=16
+LANG=0
+WIDTH=13

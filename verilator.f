@@ -8,6 +8,7 @@
 ./src/gpu/btree_mux.sv
 ./src/gpu/comparator.sv
 ./src/gpu/gpu_mem.sv
+./src/gpu/gpu_receiver_fsm.sv
 ./src/gpu/gpu.sv
 
 ./src/brus16_controller.sv

@@ -95,7 +95,7 @@ def log_debug(dut):
         gpu_data=dut.gpu_data.value.to_unsigned(),
         gpu_reset=int(dut.gpu_reset.value),
         gpu_state=dut.gpu.state.value.to_unsigned(),
-        gpu_copy_state=dut.gpu.copy_state.value.to_unsigned(),
+        gpu_copy_state=dut.gpu.gpu_receiver_fsm.copy_state.value.to_unsigned(),
         color=dut.pixel_color.value.to_unsigned(),
     )
     logger.debug(string)
@@ -132,4 +132,3 @@ async def test_game(dut):
     async with setup(dut, "brus16_game.log", program, game_data):
         await Timer(2 * 20_000, unit='ns')
         await RisingEdge(dut.clk)
-        

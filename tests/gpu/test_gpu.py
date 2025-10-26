@@ -690,12 +690,13 @@ async def generate_coords(dut):
 
 
 async def generate_clock(dut):
-    for _ in range(1000):
+    for i in range(1000):
         dut.clk.value = 0
         await Timer(1, unit='ns')
         dut.clk.value = 1
         await Timer(1, unit='ns')
-        log_debug(dut)
+        if i > 0:
+            log_debug(dut)
 
 def convert_array(array, size=64):
     arr = []
@@ -726,14 +727,14 @@ def log_debug(dut):
         reset = int(dut.reset.value),
         state = dut.state.value.to_unsigned(),
         state_new = dut.state_new.value.to_unsigned(),
-        copy_state = dut.copy_state.value.to_unsigned(),
-        copy_state_new = dut.copy_state_new.value.to_unsigned(),
-        rect_counter = dut.rect_counter.value.to_unsigned(),
-        rect_counter_new = dut.rect_counter_new.value.to_unsigned(),
-        rect_x1_true = dut.rect_x1_true.value.to_signed(),
-        rect_y1_true = dut.rect_y1_true.value.to_signed(),
-        rect_x2_true = dut.rect_x2_true.value.to_signed() if dut.rect_x2_true.value.is_resolvable else "X",
-        rect_y2_true = dut.rect_y2_true.value.to_signed() if dut.rect_y2_true.value.is_resolvable else "X",
+        copy_state = dut.gpu_receiver_fsm.copy_state.value.to_unsigned(),
+        copy_state_new = dut.gpu_receiver_fsm.copy_state_new.value.to_unsigned(),
+        rect_counter = dut.gpu_receiver_fsm.rect_counter.value.to_unsigned(),
+        rect_counter_new = dut.gpu_receiver_fsm.rect_counter_new.value.to_unsigned(),
+        rect_x1_true = dut.gpu_receiver_fsm.rect_x1_true.value.to_signed(),
+        rect_y1_true = dut.gpu_receiver_fsm.rect_y1_true.value.to_signed(),
+        rect_x2_true = dut.gpu_receiver_fsm.rect_x2_true.value.to_signed() if dut.gpu_receiver_fsm.rect_x2_true.value.is_resolvable else "X",
+        rect_y2_true = dut.gpu_receiver_fsm.rect_y2_true.value.to_signed() if dut.gpu_receiver_fsm.rect_y2_true.value.is_resolvable else "X",
         rect_idx = rect_idx,
         color = color,
         x = dut.x_coord.value,
@@ -806,7 +807,7 @@ def clamp(val, left=0, right=640):
         return right
     return val
 
-@cocotb.test
+@cocotb.test(skip=False)
 async def test_gpu_random(dut):
     cocotb.start_soon(generate_clock(dut))
     dut.reset.value = 1
@@ -847,13 +848,3 @@ async def test_gpu_random(dut):
         else:
             expected = (0, 0, 0, 0, 0)
         assert (l, t, r, b, c) == expected, f"(rect_idx={i}) error on read, expected={expected}, actual={(l, t, r, b, c)}"
-    
-    # cocotb.start_soon(generate_coords(dut))
-    # await RisingEdge(dut.clk)
-    # await RisingEdge(dut.clk)
-    # for i in range(256):
-    #     out_color = dut.color.value.to_unsigned()
-    #     expected = expected_colors[i]
-    #     assert out_color == expected, f"collor mismatch {out_color} != {expected}"
-    #     await RisingEdge(dut.clk)
-

@@ -4,25 +4,30 @@
     async read, sync write
 */
 
+`include "constants.svh"
+
+
 module rstack
 #(
-    parameter WIDTH = 13,
-    parameter SIZE = 8192,
-    parameter DATA_WIDTH = 16
+    parameter WIDTH         = 4,
+    parameter SIZE          = 16,
+    parameter DATA_WIDTH    = 13
 )
 (
-    input wire clk,
+    input   wire                    clk,
 
     // read
-    input wire [WIDTH-1:0] mem_dout_addr,
-    output wire [DATA_WIDTH-1:0] mem_dout,
+    input   wire [WIDTH-1:0]        mem_dout_addr,
+    output  wire [DATA_WIDTH-1:0]   mem_dout,
     
     // write
-    input wire we,
-    input wire [WIDTH-1:0] mem_din_addr,
-    input wire [DATA_WIDTH-1:0] mem_din
+    input   wire                    we,
+    input   wire [WIDTH-1:0]        mem_din_addr,
+    input   wire [DATA_WIDTH-1:0]   mem_din
 );
 
+/* ONLY FOR VERILATOR SIMULATION */
+`ifndef GOWIN 
 reg [DATA_WIDTH-1:0] data [SIZE-1:0];
 
 always @(posedge clk) begin
@@ -34,8 +39,6 @@ end
 assign mem_dout = data[mem_dout_addr]; // async read
 
 
-/* ONLY FOR VERILATOR SIMULATION */
-`ifdef SIM
 initial begin
     for (integer i = 0; i < SIZE; i = i + 1) begin
         data[i] = DATA_WIDTH'(0);
@@ -44,5 +47,18 @@ end
 `endif
 /* END */
 
+
+/* GOWIN ONLY */
+`ifdef GOWIN
+rstack_ssram rstack(
+    .dout(mem_dout), //output [15:0] dout
+    .di(mem_din), //input [15:0] di
+    .wad(mem_din_addr), //input [3:0] wad
+    .rad(mem_dout_addr), //input [3:0] rad
+    .wre(we), //input wre
+    .clk(clk) //input clk
+);
+`endif
+/* END */
 
 endmodule

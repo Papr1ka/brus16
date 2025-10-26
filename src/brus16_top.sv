@@ -6,12 +6,12 @@
 
 
 module brus16_top #(
-    parameter CODE_ADDR_WIDTH = `CODE_ADDR_WIDTH,
-    parameter DATA_ADDR_WIDTH = `DATA_ADDR_WIDTH,
-    parameter DEFAULT_COLOR = `DEFAULT_COLOR,
-    parameter BUTTON_COUNT = `KEY_NUM,
-    parameter BUTTON_ADDR = `KEY_MEM,
-    parameter COORD_WIDTH = `COORD_WIDTH,
+    parameter CODE_ADDR_WIDTH     = `CODE_ADDR_WIDTH,
+    parameter DATA_ADDR_WIDTH     = `DATA_ADDR_WIDTH,
+    parameter DEFAULT_COLOR       = `DEFAULT_COLOR,
+    parameter BUTTON_COUNT        = `KEY_NUM,
+    parameter BUTTON_ADDR         = `KEY_MEM,
+    parameter COORD_WIDTH         = `COORD_WIDTH,
     parameter RESET_COUNTER_WIDTH = `RESET_COUNTER_WIDTH
 )
 (
@@ -34,9 +34,9 @@ module brus16_top #(
     output wire [3:0] hdmi_tx_p
 );
 
-reg [2:0] dvh_delay;
-reg [2:0] dvh; // vsync, display_on_reg, hsync
-reg [15:0] rgb_reg;
+reg [2:0]   dvh_delay;
+reg [2:0]   dvh;        // vsync, display_on_reg, hsync
+reg [15:0]  rgb_reg;
 
 /* SIMULATION ONLY (VERILATOR + VIVADO) */
 `ifndef GOWIN
@@ -50,8 +50,8 @@ assign rgb_out = rgb_reg;
 /* ----------------------------------- PLL ---------------------------------- */
 
 wire system_clk; // clk for the whole system, 25.2 MHz
-wire vga_x5; // system_clk x5 (126 MHz) (for HDMI)
-wire lock; // PLL lock
+wire vga_x5;     // system_clk x5 (126 MHz) (for HDMI)
+wire lock;       // PLL lock
 
 /* VERILATOR SIMULATION ONLY */
 `ifdef SIM
@@ -68,16 +68,16 @@ assign lock = 1'b1;
 `ifdef GOWIN
 
 Gowin_rPLL rPLL(
-    .clkout(vga_x5), //output clkout
-    .lock(lock), //output lock
-    .clkin(clk) //input clkin
+    .clkout(vga_x5), // output clkout
+    .lock(lock),     // output lock
+    .clkin(clk)      // input clkin
 );
 
 Gowin_CLKDIV clkDIV(
-    .clkout(system_clk), //output clkout
-    .hclkin(vga_x5), //input hclkin
-    .resetn(lock), //input resetn
-    .calib(1'b1) //input calib
+    .clkout(system_clk), // output clkout
+    .hclkin(vga_x5),     // input hclkin
+    .resetn(lock),       // input resetn
+    .calib(1'b1)         // input calib
 );
 
 `endif
@@ -97,25 +97,28 @@ PLL pll(
 `endif
 /* END */
 
-
-/* ------------------------------ GLOBAL RESET ------------------------------ */
+/* ------------------------------ Global reset ------------------------------ */
 
 reg [RESET_COUNTER_WIDTH-1:0] reset_counter = RESET_COUNTER_WIDTH'(0);
-
 reg was_reset = 1'b0;
+
 wire reset = ~lock | ~was_reset;
 
-always_ff @(system_clk) begin
+always_ff @(posedge system_clk) begin
     reset_counter <= reset_counter + 1;
-    was_reset <= was_reset ? 1'b1 : reset_counter == {RESET_COUNTER_WIDTH{1'b1}};
+    if (reset_counter == {RESET_COUNTER_WIDTH{1'b1}}) begin
+        was_reset <= 1'b1;
+    end else begin
+        was_reset <= was_reset;
+    end
 end
 
 
 /* ------------------------------- VGA 640x480 ------------------------------ */
 
-wire display_on;
 wire [9:0] hpos;
 wire [9:0] vpos;
+wire display_on;
 wire hsync;
 wire vsync;
 
@@ -133,11 +136,11 @@ vga_controller vga_controller(
 
 
 /* ----------------------------- Main controller ---------------------------- */
-
-wire copy_start; // signal to start copy
-wire copy; // if 1, connect button_controller and rect_copy_controller to data memory
-wire resume; // signal to continue cpu work
-wire gpu_reset; // signal to reset gpu state to wait for copy
+wire copy_start;    // Signal to start copy
+reg  copy_start_delayed;
+wire copy;          // If 1, connect button_controller and rect_copy_controller to data memory
+wire resume;        // Signal to continue cpu work
+wire gpu_reset;     // Signal to reset gpu state to wait for copy
 
 brus16_controller brus16_controller(
     .clk(system_clk),
@@ -152,15 +155,15 @@ brus16_controller brus16_controller(
 
 /* ---------------------------- button_controller --------------------------- */
 
-wire bc_mem_dout_we;
+wire                       bc_mem_dout_we;
 wire [DATA_ADDR_WIDTH-1:0] bc_mem_dout_addr;
-wire [15:0] bc_mem_dout;
+wire [15:0]                bc_mem_dout;
 
 /* ONLY WHEN BUTTONS ARE DISABLED */
 `ifdef DISABLE_BUTTONS
-assign bc_mem_dout_we = 1'b0;
+assign bc_mem_dout_we   = 1'b0;
 assign bc_mem_dout_addr = DATA_ADDR_WIDTH'(0);
-assign bc_mem_dout = 16'b0;
+assign bc_mem_dout      = 16'b0;
 `endif
 /* END */
 
@@ -186,26 +189,26 @@ button_controller(
 
 /* ------------------------------ memory buses ------------------------------ */
 
-/* program memory buses */
+/* Program memory buses */
 wire [CODE_ADDR_WIDTH-1:0] program_memory_addr_bus;
-wire [15:0] program_memory_data_bus;
+wire [15:0]                program_memory_data_bus;
 
-/* data memory write buses */
-wire data_memory_write_we_bus;
-wire [DATA_ADDR_WIDTH-1:0] data_memory_write_addr_bus;
-wire [15:0] data_memory_write_data_bus;
-
-/* data memory read buses */
+/* Data memory read buses */
 wire [DATA_ADDR_WIDTH-1:0] data_memory_read_addr_bus;
-wire [15:0] data_memory_read_data_bus;
+wire [15:0]                data_memory_read_data_bus;
+
+/* Data memory write buses */
+wire                       data_memory_write_we_bus;
+wire [DATA_ADDR_WIDTH-1:0] data_memory_write_addr_bus;
+wire [15:0]                data_memory_write_data_bus;
 
 
 /* ----------------------------------- cpu ---------------------------------- */
 
 /* cpu output buses for memory */
-wire cpu_mem_dout_we;
+wire                       cpu_mem_dout_we;
 wire [DATA_ADDR_WIDTH-1:0] cpu_mem_dout_addr;
-wire [15:0] cpu_mem_dout;
+wire [15:0]                cpu_mem_dout;
 wire [DATA_ADDR_WIDTH-1:0] cpu_mem_din_addr;
 
 cpu cpu(
@@ -225,7 +228,7 @@ cpu cpu(
 /* -------------------------- rect copy controller -------------------------- */
 
 wire [DATA_ADDR_WIDTH-1:0] rc_controller_mem_din_addr;
-wire [15:0] gpu_data;
+wire [15:0]                gpu_data; // gpu rect copy bus
 
 rect_copy_controller rect_copy_controller(
     .clk(system_clk),
@@ -241,10 +244,10 @@ rect_copy_controller rect_copy_controller(
 
 /* ------------------------------- data memory ------------------------------ */
 
-assign data_memory_read_addr_bus = copy ? rc_controller_mem_din_addr : cpu_mem_din_addr;
-assign data_memory_write_we_bus = copy ? bc_mem_dout_we : cpu_mem_dout_we;
-assign data_memory_write_addr_bus = copy ? bc_mem_dout_addr : cpu_mem_dout_addr;
-assign data_memory_write_data_bus = copy ? bc_mem_dout : cpu_mem_dout;
+assign data_memory_read_addr_bus  = copy ? rc_controller_mem_din_addr : cpu_mem_din_addr;
+assign data_memory_write_we_bus   = copy ? bc_mem_dout_we             : cpu_mem_dout_we;
+assign data_memory_write_addr_bus = copy ? bc_mem_dout_addr           : cpu_mem_dout_addr;
+assign data_memory_write_data_bus = copy ? bc_mem_dout                : cpu_mem_dout;
 
 bsram memory(
     .clk(system_clk),
@@ -281,7 +284,7 @@ assign pixel_color = 16'b1111100000000000;
 `ifndef DISABLE_GPU
 gpu gpu(
    .clk(system_clk),
-   .copy_start(copy_start),
+   .copy_start(copy_start_delayed),
    .reset(gpu_reset),
     
    .x_coord({{COORD_WIDTH-10{1'b0}}, hpos}),
@@ -295,6 +298,13 @@ gpu gpu(
 
 /* ---------------------------------- HDMI ---------------------------------- */
 
+// rgb 5 6 5 decode
+wire [23:0] rgb_8_8_8 = {
+    rgb_reg[15:11], rgb_reg[15:13],
+    rgb_reg[10:5], rgb_reg[10:9],
+    rgb_reg[4:0], rgb_reg[4:2]
+};
+
 /* ONLY FOR GOWIN */
 `ifdef GOWIN
 hdmi hdmi(
@@ -302,8 +312,7 @@ hdmi hdmi(
     .hdmi_clk(system_clk),
     .hdmi_clk_5x(vga_x5),
     .hve(dvh_delay),
-    /* rgb 5 6 5 decode */
-    .rgb({rgb_reg[15:11], rgb_reg[15:13], rgb_reg[10:5], rgb_reg[10:9], rgb_reg[4:0], rgb_reg[4:2]}),
+    .rgb(rgb_8_8_8),
     .hdmi_tx_n(hdmi_tx_n),
     .hdmi_tx_p(hdmi_tx_p)
 );
@@ -322,13 +331,15 @@ assign hdmi_tx_p = 4'b0;
 
 always_ff @(posedge system_clk) begin
     if (reset) begin
-        dvh <= 3'b0;
-        dvh_delay <= 3'b0;
-        rgb_reg <= 16'b0;
+        dvh                <= 3'b0;
+        dvh_delay          <= 3'b0;
+        rgb_reg            <= 16'b0;
+        copy_start_delayed <= 1'b0;
     end else begin
-        rgb_reg <= rgb;
-        dvh <= {display_on, vsync, hsync};
-        dvh_delay <= dvh;
+        rgb_reg            <= rgb;
+        dvh                <= {display_on, vsync, hsync};
+        dvh_delay          <= dvh;
+        copy_start_delayed <= copy_start;
     end
 end
 

@@ -26,7 +26,6 @@
     step 3:
         if there was a collision (any_collision flag), color = colors[rect_idx] else default color
     All steps works asynchronously
-    (if the multiplexers logic doesn't fit in one cycle => pipiline mux-es).
 */
 
 `include "constants.svh"
@@ -34,102 +33,63 @@
 
 module gpu
 #(
-    parameter COORD_WIDTH = `COORD_WIDTH,
-    parameter RECT_COUNT = `RECT_COUNT,
-    parameter RECT_COUNT_WIDTH = `RECT_COUNT_WIDTH,
-    parameter DEFAULT_COLOR = `DEFAULT_COLOR
+    parameter COORD_WIDTH       = `COORD_WIDTH,
+    parameter RECT_COUNT        = `RECT_COUNT,
+    parameter RECT_COUNT_WIDTH  = `RECT_COUNT_WIDTH,
+    parameter DEFAULT_COLOR     = `DEFAULT_COLOR
 )
 (
-    input wire clk,
-    input wire reset,
-    input wire copy_start, // trigger to start copy in WAIT_FOR_COPY phase
+    input   wire                    clk,
+    input   wire                    reset,
+    input   wire                    copy_start, // trigger to start copy in WAIT_FOR_COPY phase
 
-    input wire [COORD_WIDTH-1:0] x_coord,
-    input wire [COORD_WIDTH-1:0] y_coord,
-    input wire [15:0] mem_din, // abs rect data from copy controller
-    output wire [15:0] color // out color
+    input   wire [COORD_WIDTH-1:0]  x_coord,
+    input   wire [COORD_WIDTH-1:0]  y_coord,
+    input   wire [15:0]             mem_din,    // abs rect data from copy controller
+    output  wire [15:0]             color       // out color
 );
 
-// state machine to recieve data
-reg [1:0] state;
-logic [1:0] state_new;
+// State machine to recieve data
+reg     [1:0] state;
+logic   [1:0] state_new;
+
 localparam WAIT_FOR_COPY = 2'b00;
 localparam COPY = 2'b01;
 localparam EXECUTE = 2'b10;
 
-reg [2:0] copy_state;
-logic [2:0] copy_state_new;
-localparam READ_START = 3'b000;
-localparam READ_X = 3'b001;
-localparam READ_Y = 3'b010;
-localparam READ_WIDTH = 3'b011;
-localparam READ_HEIGHT = 3'b100;
-localparam READ_COLOR = 3'b101;
+// FSM to recieve new rect data from rect_copy_controller
+wire fsm_finish;
+wire we_rect_lefts;
+wire we_rect_tops;
+wire we_rect_rights;
+wire we_rect_bottoms;
+wire we_rect_colors;
 
-reg [RECT_COUNT_WIDTH-1:0] rect_counter;
-logic [RECT_COUNT_WIDTH-1:0] rect_counter_new;
-//
+wire [RECT_COUNT_WIDTH-1:0] fsm_dout_addr;
+wire [15:0]                 fsm_dout;
+wire [COORD_WIDTH-1:0]      fsm_dout_coords = COORD_WIDTH'(fsm_dout);
 
+gpu_receiver_fsm gpu_receiver_fsm (
+    .clk(clk),
+    .reset(!(state == COPY)),
+    .mem_din(mem_din),
+    .finish(fsm_finish),
+    .we_rect_lefts(we_rect_lefts),
+    .we_rect_tops(we_rect_tops),
+    .we_rect_rights(we_rect_rights),
+    .we_rect_bottoms(we_rect_bottoms),
+    .we_rect_colors(we_rect_colors),
+    .dout_addr(fsm_dout_addr),
+    .dout(fsm_dout)
+);
 
-// rects memory
-wire [COORD_WIDTH-1:0] rect_lefts [RECT_COUNT-1:0]; // xs
-wire [COORD_WIDTH-1:0] rect_tops [RECT_COUNT-1:0]; // ys
-wire [COORD_WIDTH-1:0] rect_rights [RECT_COUNT-1:0]; // xs + widths
-wire [COORD_WIDTH-1:0] rect_bottoms [RECT_COUNT-1:0]; // ys + heights
-wire [15:0] rect_colors [RECT_COUNT-1:0]; // rect colors
-
-reg [RECT_COUNT_WIDTH-1:0] rect_idxs [RECT_COUNT-1:0]; // 0 to 63, constants, read only
-
-// only on state=COPY copy_state can differ from READ_START
-wire we_rect_lefts = copy_state == READ_X;
-wire we_rect_tops = copy_state == READ_Y;
-wire we_rect_rights = copy_state == READ_WIDTH;
-wire we_rect_bottoms = copy_state == READ_HEIGHT;
-wire we_rect_colors = copy_state == READ_COLOR;
-
-reg [15:0] rect_x1_true;
-reg [15:0] rect_y1_true;
-
-logic [COORD_WIDTH-1:0] rect_x1;
-logic [COORD_WIDTH-1:0] rect_y1;
-logic [COORD_WIDTH-1:0] rect_x2;
-logic [COORD_WIDTH-1:0] rect_y2;
-
-always_comb begin
-    casez ({mem_din[15], $signed(mem_din[15:7]) >= 5}) // >= 640
-        2'b1?: rect_x1 = 0;
-        2'b01: rect_x1 = 640;
-        default: rect_x1 = mem_din[9:0];
-    endcase
-end
-
-always_comb begin
-    casez ({mem_din[15], $signed(mem_din[15:5]) >= 15}) // >= 480
-        2'b1?: rect_y1 = 0;
-        2'b01: rect_y1 = 480;
-        default: rect_y1 = mem_din[9:0];
-    endcase
-end
-
-wire [15:0] rect_x2_true = rect_x1_true + mem_din;
-wire [15:0] rect_y2_true = rect_y1_true + mem_din;
-
-always_comb begin
-    casez ({rect_x2_true[15], $signed(rect_x2_true[15:7]) >= 5}) // >= 640
-        2'b1?: rect_x2 = 0;
-        2'b01: rect_x2 = 640;
-        default: rect_x2 = rect_x2_true[9:0];
-    endcase
-end
-
-always_comb begin
-    casez ({rect_y2_true[15], $signed(rect_y2_true[15:5]) >= 15}) // >= 480
-        2'b1?: rect_y2 = 0;
-        2'b01: rect_y2 = 480;
-        default: rect_y2 = rect_y2_true[9:0];
-    endcase
-end
-
+// Rects memory
+wire [COORD_WIDTH-1:0]      rect_lefts      [RECT_COUNT-1:0]; // xs
+wire [COORD_WIDTH-1:0]      rect_tops       [RECT_COUNT-1:0]; // ys
+wire [COORD_WIDTH-1:0]      rect_rights     [RECT_COUNT-1:0]; // xs + widths
+wire [COORD_WIDTH-1:0]      rect_bottoms    [RECT_COUNT-1:0]; // ys + heights
+wire [15:0]                 rect_colors     [RECT_COUNT-1:0]; // rect colors
+reg  [RECT_COUNT_WIDTH-1:0] rect_idxs    [RECT_COUNT-1:0]; // 0 to 63, constants, read only
 
 gpu_mem #(
     .ADDR_WIDTH(RECT_COUNT_WIDTH),
@@ -139,8 +99,8 @@ gpu_mem #(
 mem0 (
     .clk(clk),
     .we(we_rect_lefts),
-    .mem_din_addr(rect_counter),
-    .mem_din(rect_x1),
+    .mem_din_addr(fsm_dout_addr),
+    .mem_din(fsm_dout_coords),
     .dout(rect_lefts) // xs
 );
 
@@ -152,8 +112,8 @@ gpu_mem #(
 mem1 (
     .clk(clk),
     .we(we_rect_tops),
-    .mem_din_addr(rect_counter),
-    .mem_din(rect_y1),
+    .mem_din_addr(fsm_dout_addr),
+    .mem_din(fsm_dout_coords),
     .dout(rect_tops) // ys
 );
 
@@ -165,8 +125,8 @@ gpu_mem #(
 mem2 (
     .clk(clk),
     .we(we_rect_rights),
-    .mem_din_addr(rect_counter),
-    .mem_din(rect_x2),
+    .mem_din_addr(fsm_dout_addr),
+    .mem_din(fsm_dout_coords),
     .dout(rect_rights) // xs + widths
 );
 
@@ -178,8 +138,8 @@ gpu_mem #(
 mem3 (
     .clk(clk),
     .we(we_rect_bottoms),
-    .mem_din_addr(rect_counter),
-    .mem_din(rect_y2),
+    .mem_din_addr(fsm_dout_addr),
+    .mem_din(fsm_dout_coords),
     .dout(rect_bottoms) // ys + heights
 );
 
@@ -191,20 +151,19 @@ gpu_mem #(
 mem4 (
     .clk(clk),
     .we(we_rect_colors),
-    .mem_din_addr(rect_counter),
-    .mem_din(mem_din),
+    .mem_din_addr(fsm_dout_addr),
+    .mem_din(fsm_dout),
     .dout(rect_colors) // colors
 );
-//
 
-// if collisions[i] is 1, than rect[i] collide with (coord_x, coord_y)
-wire [RECT_COUNT-1:0] collisions;
-reg [RECT_COUNT-1:0] collisions_buffer; // for pipilining
-wire [RECT_COUNT_WIDTH-1:0] rect_idx; // index of rect to display
-wire any_collision;
-assign color = any_collision ? rect_colors[rect_idx] : DEFAULT_COLOR;
+// If collisions[i] is 1, than rect[i] collide with (coord_x, coord_y)
+wire    [RECT_COUNT-1:0]        collisions;
+reg     [RECT_COUNT-1:0]        collisions_buffer;  // for pipilining (better STA)
+wire    [RECT_COUNT_WIDTH-1:0]  rect_idx;           // index of rect to display
+wire    any_collision;
+assign  color = any_collision ? rect_colors[rect_idx] : DEFAULT_COLOR;
 
-// comparators for each rect
+// Comparators for each rect
 generate
     genvar i;
     for (i = 0; i < RECT_COUNT; i++) begin
@@ -220,7 +179,7 @@ generate
     end
 endgenerate
 
-// binary tree of 6 mux layers
+// Binary tree of 6 mux layers
 btree_mux btree_mux(
     .clk(clk),
     .flags_in(collisions_buffer),
@@ -230,63 +189,32 @@ btree_mux btree_mux(
 );
 
 always_comb begin
-    casez ({state, copy_state})
-        5'b01000: copy_state_new = READ_X; // COPY + READ_START
-        5'b01001: copy_state_new = READ_Y; // COPY + READ_X
-        5'b01010: copy_state_new = READ_WIDTH; // COPY + READ_Y
-        5'b01011: copy_state_new = READ_HEIGHT; // COPY + READ_WIDTH
-        5'b01100: copy_state_new = READ_COLOR; // COPY + READ_HEIGHT
-        5'b01101: copy_state_new = READ_START; // COPY + READ_COLOR
-        5'b00???: copy_state_new = READ_START; // WAIT_FOR_COPY + ANY
-        5'b10???: copy_state_new = READ_START; // EXECUTE + ANY
-        default: copy_state_new = READ_START;
-    endcase
-end
-
-always_comb begin
-    casez ({state, copy_state})
-        5'b01101: rect_counter_new = rect_counter + 1; // COPY + READ_COLOR
-        5'b00???: rect_counter_new = RECT_COUNT_WIDTH'(0); // WAIT_FOR_COPY + ANY
-        default: rect_counter_new = rect_counter;
-    endcase
-end
-
-always_comb begin
-    casez ({state, copy_start, rect_counter == {RECT_COUNT_WIDTH{1'b1}}, copy_state == READ_COLOR})
-        5'b000??: state_new = WAIT_FOR_COPY; // WAIT_FOR_COPY + 0 + ANY + ANY
-        5'b001??: state_new = COPY; //  WAIT_FOR_COPY + 1 + ANY + ANY
-        5'b01?11: state_new = EXECUTE; // COPY + ANY + 1 + 1
-        5'b01?0?,
-        5'b01?10: state_new = COPY; // COPY + ANY + 0 + ANY
-        5'b10???: state_new = EXECUTE; // EXECUTE + ANY + ANY + ANY
+    casez ({state, copy_start, fsm_finish})
+        4'b000?: state_new = WAIT_FOR_COPY;    // WAIT_FOR_COPY
+        4'b001?,                               // WAIT_FOR_COPY + copy_start
+        4'b01?0: state_new = COPY;             // COPY + !fsm_finish
+        4'b01?1,                               // COPY + fsm_finish
+        4'b10??: state_new = EXECUTE;          // EXECUTE
         default: state_new = WAIT_FOR_COPY;
     endcase
 end
 
+// Sequential logic
 always_ff @(posedge clk) begin
     if (reset) begin
-        state <= WAIT_FOR_COPY;
-        copy_state <= READ_START;
-        rect_counter <= RECT_COUNT_WIDTH'(0);
-        collisions_buffer <= RECT_COUNT'(0);
-        rect_x1_true <= 16'b0;
-        rect_y1_true <= 16'b0;
+        state               <= WAIT_FOR_COPY;
+        collisions_buffer   <= RECT_COUNT'(0);
     end else begin
-        rect_counter <= rect_counter_new;
-        state <= state_new;
-        copy_state <= copy_state_new;
-        collisions_buffer <= collisions;
-        rect_x1_true <= we_rect_lefts ? mem_din : rect_x1_true;
-        rect_y1_true <= we_rect_tops ? mem_din : rect_y1_true;
+        state               <= state_new;
+        collisions_buffer   <= collisions;
     end
 end
 
-/* rect indices filling (can't remove) */
+/* rect indices initialization */
 initial begin
     for (integer j = 0; j < RECT_COUNT; j++) begin
         rect_idxs[j] = RECT_COUNT_WIDTH'(j);
     end
 end
-
 
 endmodule

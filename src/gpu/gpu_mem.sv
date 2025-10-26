@@ -11,19 +11,19 @@
 
 module gpu_mem
 #(
-    parameter ADDR_WIDTH = `RECT_COUNT_WIDTH,
-    parameter SIZE = `RECT_COUNT,
-    parameter DATA_WIDTH = 16
+    parameter ADDR_WIDTH    = `RECT_COUNT_WIDTH,
+    parameter SIZE          = `RECT_COUNT,
+    parameter DATA_WIDTH    = 16
 )
 (
-    input wire clk,
+    input   wire                    clk,
     // write
-    input wire we,
-    input wire [ADDR_WIDTH-1:0] mem_din_addr,
-    input wire [DATA_WIDTH-1:0] mem_din,
+    input   wire                    we,
+    input   wire [ADDR_WIDTH-1:0]   mem_din_addr,
+    input   wire [DATA_WIDTH-1:0]   mem_din,
 
     // read
-    output wire [DATA_WIDTH-1:0] dout [SIZE-1:0]
+    output  wire [DATA_WIDTH-1:0]   dout [SIZE-1:0]
 );
 
 reg [DATA_WIDTH-1:0] data [SIZE-1:0];
@@ -45,6 +45,5 @@ initial begin
 end
 `endif
 /* END */
-
 
 endmodule

@@ -7,6 +7,8 @@
     <FileList>
         <File path="src/gowin_clkdiv/gowin_clkdiv.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_prom/gowin_prom.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_ram16sdp_rstack/rstack_ssram.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_ram16sdp_stack/stack_ssram.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_rpll/gowin_rpll.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_sdpb/gowin_sdpb.v" type="file.verilog" enable="1"/>
         <File path="C:/Users/Joe/dev/brus16/src/brus16_controller.sv" type="file.verilog" enable="1"/>
@@ -23,6 +25,7 @@
         <File path="C:/Users/Joe/dev/brus16/src/gpu/comparator.sv" type="file.verilog" enable="1"/>
         <File path="C:/Users/Joe/dev/brus16/src/gpu/gpu.sv" type="file.verilog" enable="1"/>
         <File path="C:/Users/Joe/dev/brus16/src/gpu/gpu_mem.sv" type="file.verilog" enable="1"/>
+        <File path="C:/Users/Joe/dev/brus16/src/gpu/gpu_receiver_fsm.sv" type="file.verilog" enable="1"/>
         <File path="C:/Users/Joe/dev/brus16/src/hdmi.sv" type="file.verilog" enable="1"/>
         <File path="C:/Users/Joe/dev/brus16/src/prom.sv" type="file.verilog" enable="1"/>
         <File path="C:/Users/Joe/dev/brus16/src/rect_copy_controller.sv" type="file.verilog" enable="1"/>

@@ -17,5 +17,5 @@
 -width_1 16
 -read_mode bypass
 -reset_mode sync
--init_file C:/Users/Joe/dev/Brus-16/random/random_data.mi
+-init_file C:/Users/Joe/dev/brus16/games/racing/racing_data.mi
 -init_match port_A

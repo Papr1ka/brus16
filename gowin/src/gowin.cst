@@ -5,15 +5,34 @@
 //Part Number: GW1NR-LV9QN88PC6/I5
 //Device: GW1NR-9
 //Device Version: C
-//Created Time: Wed 10 15 20:25:22 2025
+//Created Time: Sun 10 26 12:59:53 2025
 
-IO_LOC  "hdmi_tx_p[0]" 71,70;
-IO_PORT "hdmi_tx_p[0]" PULL_MODE=NONE DRIVE=8;
-IO_LOC  "hdmi_tx_p[1]" 73,72;
-IO_PORT "hdmi_tx_p[1]" PULL_MODE=NONE DRIVE=8;
-IO_LOC  "hdmi_tx_p[2]" 75,74;
-IO_PORT "hdmi_tx_p[2]" PULL_MODE=NONE DRIVE=8;
-IO_LOC  "hdmi_tx_p[3]" 69,68;
-IO_PORT "hdmi_tx_p[3]" PULL_MODE=NONE DRIVE=8;
-IO_LOC  "clk" 52; // Board oscillator, 27MHz.
-IO_PORT "clk" IO_TYPE=LVCMOS33 PULL_MODE=UP;
+IO_LOC "hdmi_tx_p[0]" 71,70;
+IO_PORT "hdmi_tx_p[0]" IO_TYPE=LVCMOS33D PULL_MODE=NONE DRIVE=8 BANK_VCCIO=3.3;
+IO_LOC "hdmi_tx_p[1]" 73,72;
+IO_PORT "hdmi_tx_p[1]" IO_TYPE=LVCMOS33D PULL_MODE=NONE DRIVE=8 BANK_VCCIO=3.3;
+IO_LOC "hdmi_tx_p[2]" 75,74;
+IO_PORT "hdmi_tx_p[2]" IO_TYPE=LVCMOS33D PULL_MODE=NONE DRIVE=8 BANK_VCCIO=3.3;
+IO_LOC "hdmi_tx_p[3]" 69,68;
+IO_PORT "hdmi_tx_p[3]" IO_TYPE=LVCMOS33D PULL_MODE=NONE DRIVE=8 BANK_VCCIO=3.3;
+IO_LOC "clk" 52;
+IO_PORT "clk" IO_TYPE=LVCMOS33 PULL_MODE=UP BANK_VCCIO=3.3;
+/*
+INS_LOC "cpu/alu/mult_21_s1" DSP_R19[0][A];
+INS_LOC "program_memory/pROM/prom_inst_0" BSRAM_R28[0];
+INS_LOC "program_memory/pROM/prom_inst_1" BSRAM_R28[1];
+INS_LOC "program_memory/pROM/prom_inst_2" BSRAM_R28[2];
+INS_LOC "program_memory/pROM/prom_inst_3" BSRAM_R28[3];
+INS_LOC "program_memory/pROM/prom_inst_4" BSRAM_R28[4];
+INS_LOC "program_memory/pROM/prom_inst_5" BSRAM_R28[5];
+INS_LOC "program_memory/pROM/prom_inst_6" BSRAM_R28[6];
+INS_LOC "program_memory/pROM/prom_inst_7" BSRAM_R28[7];
+INS_LOC "memory/SDPB/sdpb_inst_0" BSRAM_R10[0];
+INS_LOC "memory/SDPB/sdpb_inst_1" BSRAM_R10[1];
+INS_LOC "memory/SDPB/sdpb_inst_2" BSRAM_R10[2];
+INS_LOC "memory/SDPB/sdpb_inst_3" BSRAM_R10[3];
+INS_LOC "memory/SDPB/sdpb_inst_4" BSRAM_R10[4];
+INS_LOC "memory/SDPB/sdpb_inst_5" BSRAM_R10[5];
+INS_LOC "memory/SDPB/sdpb_inst_6" BSRAM_R10[6];
+INS_LOC "memory/SDPB/sdpb_inst_7" BSRAM_R10[7];
+*/

@@ -14,18 +14,22 @@
         when !copy, to the cpu
 */
 
-module brus16_controller(
-    input wire clk,
-    input wire reset,
-    input wire vsync,
+`include "constants.svh"
 
-    output reg copy_start, // start copy
-    output reg copy, // copy flag (drives memory muxes)
-    output wire resume, // cpu continue
-    output wire gpu_reset // gpu reset
+
+module brus16_controller
+(
+    input   wire clk,
+    input   wire reset,
+    input   wire vsync,
+
+    output  reg  copy_start, // start copy
+    output  reg  copy,       // copy flag (drives memory muxes)
+    output  wire resume,     // cpu continue
+    output  wire gpu_reset   // gpu reset
 );
 
-assign resume = !vsync && copy;
+assign resume    = !vsync && copy;
 assign gpu_reset = vsync && !copy;
 
 always_ff @(posedge clk) begin
@@ -37,6 +41,5 @@ always_ff @(posedge clk) begin
         copy_start <= gpu_reset;
     end
 end
-
 
 endmodule

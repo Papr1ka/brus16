@@ -152,4 +152,3 @@ async def tect_rect_copy_controller(dut):
         # print(dut.controller.mem_dout.value.to_unsigned(), c)
         assert dut.controller.mem_dout.value.to_unsigned() == c
         await RisingEdge(dut.clk)
-
