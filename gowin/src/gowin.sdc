@@ -2,7 +2,7 @@
 //All rights reserved.
 //File Title: Timing Constraints file
 //Tool Version: V1.9.11.03 Education 
-//Created Time: 2025-10-26 01:05:01
+//Created Time: 2025-10-26 20:13:33
 create_clock -name clk -period 37.037 -waveform {0 18.518} [get_ports {clk}]
 create_generated_clock -name vga_x5 -source [get_ports {clk}] -master_clock clk -divide_by 3 -multiply_by 14 [get_nets {vga_x5}]
 create_generated_clock -name system_clk -source [get_nets {vga_x5}] -master_clock vga_x5 -divide_by 5 [get_nets {system_clk}]

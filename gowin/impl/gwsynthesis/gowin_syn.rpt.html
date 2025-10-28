@@ -1,0 +1,2507 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>synthesis Report</title>
+<style type="text/css">
+body { font-family: Verdana, Arial, sans-serif; font-size: 12px; }
+div#main_wrapper{ width: 100%; }
+div#content { margin-left: 350px; margin-right: 30px; }
+div#catalog_wrapper {position: fixed; top: 30px; width: 350px; float: left; }
+div#catalog ul { list-style-type: none; }
+div#catalog li { text-align: left; list-style-type:circle; color: #0084ff; margin-top: 3px; margin-bottom: 3px; }
+div#catalog a { display:inline-block; text-decoration: none; color: #0084ff; font-weight: bold; padding: 3px; }
+div#catalog a:visited { color: #0084ff; }
+div#catalog a:hover { color: #fff; background: #0084ff; }
+hr { margin-top: 30px; margin-bottom: 30px; }
+h1, h3 { text-align: center; }
+h1 {margin-top: 50px; }
+table, th, td { border: 1px solid #aaa; }
+table { border-collapse:collapse; margin-top: 10px; margin-bottom: 20px; width: 100%; }
+th, td { padding: 5px 5px 5px 5px; }
+th { color: #fff; font-weight: bold; background-color: #0084ff; }
+table.summary_table td.label { width: 24%; min-width: 200px; background-color: #dee8f4; }
+table.detail_table td.label { min-width: 100px; width: 8%;}
+</style>
+</head>
+<body>
+<div id="main_wrapper">
+<div id="catalog_wrapper">
+<div id="catalog">
+<ul>
+<li><a href="#about" style=" font-size: 16px;">Synthesis Messages</a></li>
+<li><a href="#summary" style=" font-size: 16px;">Synthesis Details</a></li>
+<li><a href="#resource" style=" font-size: 16px;">Resource</a>
+<ul>
+<li><a href="#usage" style=" font-size: 14px;">Resource Usage Summary</a></li>
+<li><a href="#utilization" style=" font-size: 14px;">Resource Utilization Summary</a></li>
+</ul>
+</li>
+<li><a href="#timing" style=" font-size: 16px;">Timing</a>
+<ul>
+<li><a href="#clock" style=" font-size: 14px;">Clock Summary</a></li>
+<li><a href="#performance" style=" font-size: 14px;">Max Frequency Summary</a></li>
+<li><a href="#detail timing" style=" font-size: 14px;">Detail Timing Paths Informations</a></li>
+</ul>
+</li>
+</ul>
+</div><!-- catalog -->
+</div><!-- catalog_wrapper -->
+<div id="content">
+<h1><a name="about">Synthesis Messages</a></h1>
+<table class="summary_table">
+<tr>
+<td class="label">Report Title</td>
+<td>GowinSynthesis Report</td>
+</tr>
+<tr>
+<td class="label">Design File</td>
+<td>C:\Users\Joe\dev\brus16\gowin\src\gowin_clkdiv\gowin_clkdiv.v<br>
+C:\Users\Joe\dev\brus16\gowin\src\gowin_prom\gowin_prom.v<br>
+C:\Users\Joe\dev\brus16\gowin\src\gowin_ram16sdp_rstack\rstack_ssram.v<br>
+C:\Users\Joe\dev\brus16\gowin\src\gowin_ram16sdp_stack\stack_ssram.v<br>
+C:\Users\Joe\dev\brus16\gowin\src\gowin_rpll\gowin_rpll.v<br>
+C:\Users\Joe\dev\brus16\gowin\src\gowin_sdpb\gowin_sdpb.v<br>
+C:\Users\Joe\dev\brus16\src\brus16_controller.sv<br>
+C:\Users\Joe\dev\brus16\src\brus16_top.sv<br>
+C:\Users\Joe\dev\brus16\src\bsram.sv<br>
+C:\Users\Joe\dev\brus16\src\button_controller.sv<br>
+C:\Users\Joe\dev\brus16\src\button_handler.sv<br>
+C:\Users\Joe\dev\brus16\src\cpu\alu.sv<br>
+C:\Users\Joe\dev\brus16\src\cpu\cpu.sv<br>
+C:\Users\Joe\dev\brus16\src\cpu\rstack.sv<br>
+C:\Users\Joe\dev\brus16\src\cpu\stack.sv<br>
+C:\Users\Joe\dev\brus16\src\gpu\btree_mux.sv<br>
+C:\Users\Joe\dev\brus16\src\gpu\btree_mux_layer.sv<br>
+C:\Users\Joe\dev\brus16\src\gpu\comparator.sv<br>
+C:\Users\Joe\dev\brus16\src\gpu\gpu.sv<br>
+C:\Users\Joe\dev\brus16\src\gpu\gpu_mem.sv<br>
+C:\Users\Joe\dev\brus16\src\gpu\gpu_receiver_fsm.sv<br>
+C:\Users\Joe\dev\brus16\src\hdmi.sv<br>
+C:\Users\Joe\dev\brus16\src\prom.sv<br>
+C:\Users\Joe\dev\brus16\src\rect_copy_controller.sv<br>
+C:\Users\Joe\dev\brus16\src\test.sv<br>
+C:\Users\Joe\dev\brus16\src\vga_controller.sv<br>
+</td>
+</tr>
+<tr>
+<td class="label">GowinSynthesis Constraints File</td>
+<td>---</td>
+</tr>
+<tr>
+<td class="label">Tool Version</td>
+<td>V1.9.11.03 Education</td>
+</tr>
+<tr>
+<td class="label">Part Number</td>
+<td>GW1NR-LV9QN88PC6/I5</td>
+</tr>
+<tr>
+<td class="label">Device</td>
+<td>GW1NR-9</td>
+</tr>
+<tr>
+<td class="label">Device Version</td>
+<td>C</td>
+</tr>
+<tr>
+<td class="label">Created Time</td>
+<td>Tue Oct 28 14:28:57 2025
+</td>
+</tr>
+<tr>
+<td class="label">Legal Announcement</td>
+<td>Copyright (C)2014-2025 Gowin Semiconductor Corporation. ALL rights reserved.</td>
+</tr>
+</table>
+<h1><a name="summary">Synthesis Details</a></h1>
+<table class="summary_table">
+<tr>
+<td class="label">Top Level Module</td>
+<td>brus16_top</td>
+</tr>
+<tr>
+<td class="label">Synthesis Process</td>
+<td>Running parser:<br/>&nbsp;&nbsp;&nbsp;&nbsp;CPU time = 0h 0m 0.812s, Elapsed time = 0h 0m 0.862s, Peak memory usage = 189.602MB<br/>Running netlist conversion:<br/>&nbsp;&nbsp;&nbsp;&nbsp;CPU time = 0h 0m 0s, Elapsed time = 0h 0m 0s, Peak memory usage = 0MB<br/>Running device independent optimization:<br/>&nbsp;&nbsp;&nbsp;&nbsp;Optimizing Phase 0: CPU time = 0h 0m 0.453s, Elapsed time = 0h 0m 0.466s, Peak memory usage = 189.602MB<br/>&nbsp;&nbsp;&nbsp;&nbsp;Optimizing Phase 1: CPU time = 0h 0m 0.171s, Elapsed time = 0h 0m 0.176s, Peak memory usage = 189.602MB<br/>&nbsp;&nbsp;&nbsp;&nbsp;Optimizing Phase 2: CPU time = 0h 0m 0.843s, Elapsed time = 0h 0m 0.849s, Peak memory usage = 189.602MB<br/>Running inference:<br/>&nbsp;&nbsp;&nbsp;&nbsp;Inferring Phase 0: CPU time = 0h 0m 0.312s, Elapsed time = 0h 0m 0.325s, Peak memory usage = 189.602MB<br/>&nbsp;&nbsp;&nbsp;&nbsp;Inferring Phase 1: CPU time = 0h 0m 0.062s, Elapsed time = 0h 0m 0.052s, Peak memory usage = 189.602MB<br/>&nbsp;&nbsp;&nbsp;&nbsp;Inferring Phase 2: CPU time = 0h 0m 0.046s, Elapsed time = 0h 0m 0.047s, Peak memory usage = 189.602MB<br/>&nbsp;&nbsp;&nbsp;&nbsp;Inferring Phase 3: CPU time = 0h 0m 0.015s, Elapsed time = 0h 0m 0.025s, Peak memory usage = 189.602MB<br/>Running technical mapping:<br/>&nbsp;&nbsp;&nbsp;&nbsp;Tech-Mapping Phase 0: CPU time = 0h 0m 0.671s, Elapsed time = 0h 0m 0.673s, Peak memory usage = 189.602MB<br/>&nbsp;&nbsp;&nbsp;&nbsp;Tech-Mapping Phase 1: CPU time = 0h 0m 0.171s, Elapsed time = 0h 0m 0.159s, Peak memory usage = 189.602MB<br/>&nbsp;&nbsp;&nbsp;&nbsp;Tech-Mapping Phase 2: CPU time = 0h 0m 0.109s, Elapsed time = 0h 0m 0.113s, Peak memory usage = 189.602MB<br/>&nbsp;&nbsp;&nbsp;&nbsp;Tech-Mapping Phase 3: CPU time = 0h 0m 26s, Elapsed time = 0h 0m 25s, Peak memory usage = 212.629MB<br/>&nbsp;&nbsp;&nbsp;&nbsp;Tech-Mapping Phase 4: CPU time = 0h 0m 0.421s, Elapsed time = 0h 0m 0.487s, Peak memory usage = 212.629MB<br/>Generate output files:<br/>&nbsp;&nbsp;&nbsp;&nbsp;CPU time = 0h 0m 0.625s, Elapsed time = 0h 0m 0.592s, Peak memory usage = 226.562MB<br/></td>
+</tr>
+<tr>
+<td class="label">Total Time and Memory Usage</td>
+<td>CPU time = 0h 0m 30s, Elapsed time = 0h 0m 29s, Peak memory usage = 226.562MB</td>
+</tr>
+</table>
+<h1><a name="resource">Resource</a></h1>
+<h2><a name="usage">Resource Usage Summary</a></h2>
+<table class="summary_table">
+<tr>
+<td class="label"><b>Resource</b></td>
+<td><b>Usage</b></td>
+</tr>
+<tr>
+<td class="label"><b>I/O Port </b></td>
+<td>27</td>
+</tr>
+<tr>
+<td class="label"><b>I/O Buf </b></td>
+<td>27</td>
+</tr>
+<tr>
+<td class="label">&nbsp&nbsp&nbsp&nbspIBUF</td>
+<td>1</td>
+</tr>
+<tr>
+<td class="label">&nbsp&nbsp&nbsp&nbspOBUF</td>
+<td>26</td>
+</tr>
+<tr>
+<td class="label"><b>Register </b></td>
+<td>3892</td>
+</tr>
+<tr>
+<td class="label">&nbsp&nbsp&nbsp&nbspDFF</td>
+<td>21</td>
+</tr>
+<tr>
+<td class="label">&nbsp&nbsp&nbsp&nbspDFFE</td>
+<td>3585</td>
+</tr>
+<tr>
+<td class="label">&nbsp&nbsp&nbsp&nbspDFFSE</td>
+<td>5</td>
+</tr>
+<tr>
+<td class="label">&nbsp&nbsp&nbsp&nbspDFFR</td>
+<td>107</td>
+</tr>
+<tr>
+<td class="label">&nbsp&nbsp&nbsp&nbspDFFRE</td>
+<td>158</td>
+</tr>
+<tr>
+<td class="label">&nbsp&nbsp&nbsp&nbspDLC</td>
+<td>16</td>
+</tr>
+<tr>
+<td class="label"><b>LUT </b></td>
+<td>4327</td>
+</tr>
+<tr>
+<td class="label">&nbsp&nbsp&nbsp&nbspLUT2</td>
+<td>92</td>
+</tr>
+<tr>
+<td class="label">&nbsp&nbsp&nbsp&nbspLUT3</td>
+<td>2161</td>
+</tr>
+<tr>
+<td class="label">&nbsp&nbsp&nbsp&nbspLUT4</td>
+<td>2074</td>
+</tr>
+<tr>
+<td class="label"><b>ALU </b></td>
+<td>109</td>
+</tr>
+<tr>
+<td class="label">&nbsp&nbsp&nbsp&nbspALU</td>
+<td>109</td>
+</tr>
+<tr>
+<td class="label"><b>SSRAM </b></td>
+<td>16</td>
+</tr>
+<tr>
+<td class="label">&nbsp&nbsp&nbsp&nbspRAM16SDP4</td>
+<td>16</td>
+</tr>
+<tr>
+<td class="label"><b>INV </b></td>
+<td>6</td>
+</tr>
+<tr>
+<td class="label">&nbsp&nbsp&nbsp&nbspINV</td>
+<td>6</td>
+</tr>
+<tr>
+<td class="label"><b>BSRAM </b></td>
+<td>8</td>
+</tr>
+<tr>
+<td class="label">&nbsp&nbsp&nbsp&nbspSDPB</td>
+<td>8</td>
+</tr>
+</table>
+<h2><a name="utilization">Resource Utilization Summary</a></h2>
+<table class="summary_table">
+<tr>
+<td class="label"><b>Resource</b></td>
+<td><b>Usage</b></td>
+<td><b>Utilization</b></td>
+</tr>
+<tr>
+<td class="label">Logic</td>
+<td>4538(4333 LUT, 109 ALU, 16 RAM16) / 8640</td>
+<td>53%</td>
+</tr>
+<tr>
+<td class="label">Register</td>
+<td>3892 / 6693</td>
+<td>59%</td>
+</tr>
+<tr>
+<td class="label">&nbsp&nbsp--Register as Latch</td>
+<td>16 / 6693</td>
+<td><1%</td>
+</tr>
+<tr>
+<td class="label">&nbsp&nbsp--Register as FF</td>
+<td>3876 / 6693</td>
+<td>58%</td>
+</tr>
+<tr>
+<td class="label">BSRAM</td>
+<td>8 / 26</td>
+<td>31%</td>
+</tr>
+</table>
+<h1><a name="timing">Timing</a></h1>
+<h2><a name="clock">Clock Summary:</a></h2>
+<table class="summary_table">
+<tr>
+<th>NO.</th>
+<th>Clock Name</th>
+<th>Type</th>
+<th>Period</th>
+<th>Frequency(MHz)</th>
+<th>Rise</th>
+<th>Fall</th>
+<th>Source</th>
+<th>Master</th>
+<th>Object</th>
+</tr>
+<tr>
+<td>1</td>
+<td>clk</td>
+<td>Base</td>
+<td>20.000</td>
+<td>50.000</td>
+<td>0.000</td>
+<td>10.000</td>
+<td> </td>
+<td> </td>
+<td>clk_ibuf/I </td>
+</tr>
+<tr>
+<td>2</td>
+<td>gpu/n7901_5</td>
+<td>Base</td>
+<td>20.000</td>
+<td>50.000</td>
+<td>0.000</td>
+<td>10.000</td>
+<td> </td>
+<td> </td>
+<td>gpu/n7901_s1/F </td>
+</tr>
+</table>
+<h2><a name="performance">Max Frequency Summary:</a></h2>
+<table class="summary_table">
+<tr>
+<th>NO.</th>
+<th>Clock Name</th>
+<th>Constraint</th>
+<th>Actual Fmax</th>
+<th>Logic Level</th>
+<th>Entity</th>
+</tr>
+<tr>
+<td>1</td>
+<td>clk</td>
+<td>50.000(MHz)</td>
+<td>55.138(MHz)</td>
+<td>11</td>
+<td>TOP</td>
+</tr>
+</table>
+<h2><a name="detail timing">Detail Timing Paths Information</a></h2>
+<h3>Path&nbsp1</h3>
+<b>Path Summary:</b></br>
+<table class="summary_table">
+<tr>
+<td class="label">Slack</td>
+<td>-17.993</td>
+</tr>
+<tr>
+<td class="label">Data Arrival Time</td>
+<td>28.523</td>
+</tr>
+<tr>
+<td class="label">Data Required Time</td>
+<td>10.530</td>
+</tr>
+<tr>
+<td class="label">From</td>
+<td>gpu/collisions_buffer_5_s0</td>
+</tr>
+<tr>
+<td class="label">To</td>
+<td>gpu/color_15_s0</td>
+</tr>
+<tr>
+<td class="label">Launch Clk</td>
+<td>clk[F]</td>
+</tr>
+<tr>
+<td class="label">Latch Clk</td>
+<td>gpu/n7901_5[R]</td>
+</tr>
+</table>
+<b>Data Arrival Path:</b>
+<table class="summary_table">
+<tr>
+<th>AT</th>
+<th>DELAY</th>
+<th>TYPE</th>
+<th>RF</th>
+<th>FANOUT</th>
+<th>NODE</th>
+</tr>
+<tr>
+<td>0.000</td>
+<td>0.000</td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td>clk</td>
+</tr>
+<tr>
+<td>0.000</td>
+<td>0.000</td>
+<td>tCL</td>
+<td>RR</td>
+<td>1</td>
+<td>clk_ibuf/I</td>
+</tr>
+<tr>
+<td>0.000</td>
+<td>0.000</td>
+<td>tINS</td>
+<td>RR</td>
+<td>3908</td>
+<td>clk_ibuf/O</td>
+</tr>
+<tr>
+<td>0.726</td>
+<td>0.726</td>
+<td>tNET</td>
+<td>RR</td>
+<td>1</td>
+<td>gpu/collisions_buffer_5_s0/CLK</td>
+</tr>
+<tr>
+<td>1.184</td>
+<td>0.458</td>
+<td>tC2Q</td>
+<td>RF</td>
+<td>3</td>
+<td>gpu/collisions_buffer_5_s0/Q</td>
+</tr>
+<tr>
+<td>2.144</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7788_s13/I1</td>
+</tr>
+<tr>
+<td>3.243</td>
+<td>1.099</td>
+<td>tINS</td>
+<td>FF</td>
+<td>6</td>
+<td>gpu/n7788_s13/F</td>
+</tr>
+<tr>
+<td>4.203</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7796_s9/I1</td>
+</tr>
+<tr>
+<td>5.302</td>
+<td>1.099</td>
+<td>tINS</td>
+<td>FF</td>
+<td>3</td>
+<td>gpu/n7796_s9/F</td>
+</tr>
+<tr>
+<td>6.262</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7808_s5/I1</td>
+</tr>
+<tr>
+<td>7.361</td>
+<td>1.099</td>
+<td>tINS</td>
+<td>FF</td>
+<td>3</td>
+<td>gpu/n7808_s5/F</td>
+</tr>
+<tr>
+<td>8.321</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7812_s11/I2</td>
+</tr>
+<tr>
+<td>9.143</td>
+<td>0.822</td>
+<td>tINS</td>
+<td>FF</td>
+<td>3</td>
+<td>gpu/n7812_s11/F</td>
+</tr>
+<tr>
+<td>10.103</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7820_s14/I2</td>
+</tr>
+<tr>
+<td>10.925</td>
+<td>0.822</td>
+<td>tINS</td>
+<td>FF</td>
+<td>3</td>
+<td>gpu/n7820_s14/F</td>
+</tr>
+<tr>
+<td>11.885</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7816_s6/I2</td>
+</tr>
+<tr>
+<td>12.707</td>
+<td>0.822</td>
+<td>tINS</td>
+<td>FF</td>
+<td>16</td>
+<td>gpu/n7816_s6/F</td>
+</tr>
+<tr>
+<td>13.667</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7836_s52/I2</td>
+</tr>
+<tr>
+<td>14.489</td>
+<td>0.822</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7836_s52/F</td>
+</tr>
+<tr>
+<td>15.449</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7836_s37/I1</td>
+</tr>
+<tr>
+<td>15.598</td>
+<td>0.149</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7836_s37/O</td>
+</tr>
+<tr>
+<td>16.558</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7836_s32/I0</td>
+</tr>
+<tr>
+<td>16.721</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7836_s32/O</td>
+</tr>
+<tr>
+<td>17.681</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7836_s27/I1</td>
+</tr>
+<tr>
+<td>17.844</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7836_s27/O</td>
+</tr>
+<tr>
+<td>18.804</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7836_s10/I0</td>
+</tr>
+<tr>
+<td>18.967</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7836_s10/O</td>
+</tr>
+<tr>
+<td>19.927</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7898_s39/I1</td>
+</tr>
+<tr>
+<td>21.026</td>
+<td>1.099</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7898_s39/F</td>
+</tr>
+<tr>
+<td>21.986</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7898_s31/I1</td>
+</tr>
+<tr>
+<td>22.135</td>
+<td>0.149</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7898_s31/O</td>
+</tr>
+<tr>
+<td>23.095</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7898_s27/I1</td>
+</tr>
+<tr>
+<td>23.258</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7898_s27/O</td>
+</tr>
+<tr>
+<td>24.218</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7898_s25/I1</td>
+</tr>
+<tr>
+<td>24.381</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7898_s25/O</td>
+</tr>
+<tr>
+<td>25.341</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7898_s10/I1</td>
+</tr>
+<tr>
+<td>25.504</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7898_s10/O</td>
+</tr>
+<tr>
+<td>26.464</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7900_s0/I1</td>
+</tr>
+<tr>
+<td>27.563</td>
+<td>1.099</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7900_s0/F</td>
+</tr>
+<tr>
+<td>28.523</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/color_15_s0/D</td>
+</tr>
+</table>
+<b>Data Required Path:</b>
+<table class="summary_table">
+<tr>
+<th>AT</th>
+<th>DELAY</th>
+<th>TYPE</th>
+<th>RF</th>
+<th>FANOUT</th>
+<th>NODE</th>
+</tr>
+<tr>
+<td>10.000</td>
+<td>0.000</td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td>gpu/n7901_5</td>
+</tr>
+<tr>
+<td>10.000</td>
+<td>0.000</td>
+<td>tCL</td>
+<td>FF</td>
+<td>16</td>
+<td>gpu/n7901_s1/F</td>
+</tr>
+<tr>
+<td>10.960</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/color_15_s0/G</td>
+</tr>
+<tr>
+<td>10.930</td>
+<td>-0.030</td>
+<td>tUnc</td>
+<td> </td>
+<td> </td>
+<td>gpu/color_15_s0</td>
+</tr>
+<tr>
+<td>10.530</td>
+<td>-0.400</td>
+<td>tSu</td>
+<td> </td>
+<td>1</td>
+<td>gpu/color_15_s0</td>
+</tr>
+</table>
+<b>Path Statistics:</b>
+<table class="summary_table">
+<tr>
+<td class="label">Clock Skew:</td>
+<td>0.234</td>
+</tr>
+<tr>
+<td class="label">Setup Relationship:</td>
+<td>10.000</td>
+</tr>
+<tr>
+<td class="label">Logic Level:</td>
+<td>12</td>
+</tr>
+<tr>
+<td class="label">Arrival Clock Path Delay:</td><td> cell: 0.000, 0.000%; route: 0.726, 100.000%</td></tr>
+<tr>
+<td class="label">Arrival Data Path Delay:</td><td> cell: 10.059, 36.187%; route: 17.280, 62.164%; tC2Q: 0.458, 1.649%</td></tr>
+<tr>
+<td class="label">Required Clock Path Delay:</td><td> cell: 0.000, 0.000%; route: 0.726, 100.000%</td></tr>
+</table>
+<br/>
+<h3>Path&nbsp2</h3>
+<b>Path Summary:</b></br>
+<table class="summary_table">
+<tr>
+<td class="label">Slack</td>
+<td>-17.993</td>
+</tr>
+<tr>
+<td class="label">Data Arrival Time</td>
+<td>28.523</td>
+</tr>
+<tr>
+<td class="label">Data Required Time</td>
+<td>10.530</td>
+</tr>
+<tr>
+<td class="label">From</td>
+<td>gpu/collisions_buffer_5_s0</td>
+</tr>
+<tr>
+<td class="label">To</td>
+<td>gpu/color_0_s0</td>
+</tr>
+<tr>
+<td class="label">Launch Clk</td>
+<td>clk[F]</td>
+</tr>
+<tr>
+<td class="label">Latch Clk</td>
+<td>gpu/n7901_5[R]</td>
+</tr>
+</table>
+<b>Data Arrival Path:</b>
+<table class="summary_table">
+<tr>
+<th>AT</th>
+<th>DELAY</th>
+<th>TYPE</th>
+<th>RF</th>
+<th>FANOUT</th>
+<th>NODE</th>
+</tr>
+<tr>
+<td>0.000</td>
+<td>0.000</td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td>clk</td>
+</tr>
+<tr>
+<td>0.000</td>
+<td>0.000</td>
+<td>tCL</td>
+<td>RR</td>
+<td>1</td>
+<td>clk_ibuf/I</td>
+</tr>
+<tr>
+<td>0.000</td>
+<td>0.000</td>
+<td>tINS</td>
+<td>RR</td>
+<td>3908</td>
+<td>clk_ibuf/O</td>
+</tr>
+<tr>
+<td>0.726</td>
+<td>0.726</td>
+<td>tNET</td>
+<td>RR</td>
+<td>1</td>
+<td>gpu/collisions_buffer_5_s0/CLK</td>
+</tr>
+<tr>
+<td>1.184</td>
+<td>0.458</td>
+<td>tC2Q</td>
+<td>RF</td>
+<td>3</td>
+<td>gpu/collisions_buffer_5_s0/Q</td>
+</tr>
+<tr>
+<td>2.144</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7788_s13/I1</td>
+</tr>
+<tr>
+<td>3.243</td>
+<td>1.099</td>
+<td>tINS</td>
+<td>FF</td>
+<td>6</td>
+<td>gpu/n7788_s13/F</td>
+</tr>
+<tr>
+<td>4.203</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7796_s9/I1</td>
+</tr>
+<tr>
+<td>5.302</td>
+<td>1.099</td>
+<td>tINS</td>
+<td>FF</td>
+<td>3</td>
+<td>gpu/n7796_s9/F</td>
+</tr>
+<tr>
+<td>6.262</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7808_s5/I1</td>
+</tr>
+<tr>
+<td>7.361</td>
+<td>1.099</td>
+<td>tINS</td>
+<td>FF</td>
+<td>3</td>
+<td>gpu/n7808_s5/F</td>
+</tr>
+<tr>
+<td>8.321</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7812_s11/I2</td>
+</tr>
+<tr>
+<td>9.143</td>
+<td>0.822</td>
+<td>tINS</td>
+<td>FF</td>
+<td>3</td>
+<td>gpu/n7812_s11/F</td>
+</tr>
+<tr>
+<td>10.103</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7820_s14/I2</td>
+</tr>
+<tr>
+<td>10.925</td>
+<td>0.822</td>
+<td>tINS</td>
+<td>FF</td>
+<td>3</td>
+<td>gpu/n7820_s14/F</td>
+</tr>
+<tr>
+<td>11.885</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7816_s6/I2</td>
+</tr>
+<tr>
+<td>12.707</td>
+<td>0.822</td>
+<td>tINS</td>
+<td>FF</td>
+<td>16</td>
+<td>gpu/n7816_s6/F</td>
+</tr>
+<tr>
+<td>13.667</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9756_s39/I2</td>
+</tr>
+<tr>
+<td>14.489</td>
+<td>0.822</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9756_s39/F</td>
+</tr>
+<tr>
+<td>15.449</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9756_s24/I1</td>
+</tr>
+<tr>
+<td>15.598</td>
+<td>0.149</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9756_s24/O</td>
+</tr>
+<tr>
+<td>16.558</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9756_s19/I0</td>
+</tr>
+<tr>
+<td>16.721</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9756_s19/O</td>
+</tr>
+<tr>
+<td>17.681</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9756_s14/I1</td>
+</tr>
+<tr>
+<td>17.844</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9756_s14/O</td>
+</tr>
+<tr>
+<td>18.804</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9756_s10/I0</td>
+</tr>
+<tr>
+<td>18.967</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9756_s10/O</td>
+</tr>
+<tr>
+<td>19.927</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9818_s30/I1</td>
+</tr>
+<tr>
+<td>21.026</td>
+<td>1.099</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9818_s30/F</td>
+</tr>
+<tr>
+<td>21.986</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9818_s22/I1</td>
+</tr>
+<tr>
+<td>22.135</td>
+<td>0.149</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9818_s22/O</td>
+</tr>
+<tr>
+<td>23.095</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9818_s18/I1</td>
+</tr>
+<tr>
+<td>23.258</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9818_s18/O</td>
+</tr>
+<tr>
+<td>24.218</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9818_s16/I1</td>
+</tr>
+<tr>
+<td>24.381</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9818_s16/O</td>
+</tr>
+<tr>
+<td>25.341</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9818_s10/I1</td>
+</tr>
+<tr>
+<td>25.504</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9818_s10/O</td>
+</tr>
+<tr>
+<td>26.464</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9820_s0/I1</td>
+</tr>
+<tr>
+<td>27.563</td>
+<td>1.099</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9820_s0/F</td>
+</tr>
+<tr>
+<td>28.523</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/color_0_s0/D</td>
+</tr>
+</table>
+<b>Data Required Path:</b>
+<table class="summary_table">
+<tr>
+<th>AT</th>
+<th>DELAY</th>
+<th>TYPE</th>
+<th>RF</th>
+<th>FANOUT</th>
+<th>NODE</th>
+</tr>
+<tr>
+<td>10.000</td>
+<td>0.000</td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td>gpu/n7901_5</td>
+</tr>
+<tr>
+<td>10.000</td>
+<td>0.000</td>
+<td>tCL</td>
+<td>FF</td>
+<td>16</td>
+<td>gpu/n7901_s1/F</td>
+</tr>
+<tr>
+<td>10.960</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/color_0_s0/G</td>
+</tr>
+<tr>
+<td>10.930</td>
+<td>-0.030</td>
+<td>tUnc</td>
+<td> </td>
+<td> </td>
+<td>gpu/color_0_s0</td>
+</tr>
+<tr>
+<td>10.530</td>
+<td>-0.400</td>
+<td>tSu</td>
+<td> </td>
+<td>1</td>
+<td>gpu/color_0_s0</td>
+</tr>
+</table>
+<b>Path Statistics:</b>
+<table class="summary_table">
+<tr>
+<td class="label">Clock Skew:</td>
+<td>0.234</td>
+</tr>
+<tr>
+<td class="label">Setup Relationship:</td>
+<td>10.000</td>
+</tr>
+<tr>
+<td class="label">Logic Level:</td>
+<td>12</td>
+</tr>
+<tr>
+<td class="label">Arrival Clock Path Delay:</td><td> cell: 0.000, 0.000%; route: 0.726, 100.000%</td></tr>
+<tr>
+<td class="label">Arrival Data Path Delay:</td><td> cell: 10.059, 36.187%; route: 17.280, 62.164%; tC2Q: 0.458, 1.649%</td></tr>
+<tr>
+<td class="label">Required Clock Path Delay:</td><td> cell: 0.000, 0.000%; route: 0.726, 100.000%</td></tr>
+</table>
+<br/>
+<h3>Path&nbsp3</h3>
+<b>Path Summary:</b></br>
+<table class="summary_table">
+<tr>
+<td class="label">Slack</td>
+<td>-17.993</td>
+</tr>
+<tr>
+<td class="label">Data Arrival Time</td>
+<td>28.523</td>
+</tr>
+<tr>
+<td class="label">Data Required Time</td>
+<td>10.530</td>
+</tr>
+<tr>
+<td class="label">From</td>
+<td>gpu/collisions_buffer_5_s0</td>
+</tr>
+<tr>
+<td class="label">To</td>
+<td>gpu/color_1_s0</td>
+</tr>
+<tr>
+<td class="label">Launch Clk</td>
+<td>clk[F]</td>
+</tr>
+<tr>
+<td class="label">Latch Clk</td>
+<td>gpu/n7901_5[R]</td>
+</tr>
+</table>
+<b>Data Arrival Path:</b>
+<table class="summary_table">
+<tr>
+<th>AT</th>
+<th>DELAY</th>
+<th>TYPE</th>
+<th>RF</th>
+<th>FANOUT</th>
+<th>NODE</th>
+</tr>
+<tr>
+<td>0.000</td>
+<td>0.000</td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td>clk</td>
+</tr>
+<tr>
+<td>0.000</td>
+<td>0.000</td>
+<td>tCL</td>
+<td>RR</td>
+<td>1</td>
+<td>clk_ibuf/I</td>
+</tr>
+<tr>
+<td>0.000</td>
+<td>0.000</td>
+<td>tINS</td>
+<td>RR</td>
+<td>3908</td>
+<td>clk_ibuf/O</td>
+</tr>
+<tr>
+<td>0.726</td>
+<td>0.726</td>
+<td>tNET</td>
+<td>RR</td>
+<td>1</td>
+<td>gpu/collisions_buffer_5_s0/CLK</td>
+</tr>
+<tr>
+<td>1.184</td>
+<td>0.458</td>
+<td>tC2Q</td>
+<td>RF</td>
+<td>3</td>
+<td>gpu/collisions_buffer_5_s0/Q</td>
+</tr>
+<tr>
+<td>2.144</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7788_s13/I1</td>
+</tr>
+<tr>
+<td>3.243</td>
+<td>1.099</td>
+<td>tINS</td>
+<td>FF</td>
+<td>6</td>
+<td>gpu/n7788_s13/F</td>
+</tr>
+<tr>
+<td>4.203</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7796_s9/I1</td>
+</tr>
+<tr>
+<td>5.302</td>
+<td>1.099</td>
+<td>tINS</td>
+<td>FF</td>
+<td>3</td>
+<td>gpu/n7796_s9/F</td>
+</tr>
+<tr>
+<td>6.262</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7808_s5/I1</td>
+</tr>
+<tr>
+<td>7.361</td>
+<td>1.099</td>
+<td>tINS</td>
+<td>FF</td>
+<td>3</td>
+<td>gpu/n7808_s5/F</td>
+</tr>
+<tr>
+<td>8.321</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7812_s11/I2</td>
+</tr>
+<tr>
+<td>9.143</td>
+<td>0.822</td>
+<td>tINS</td>
+<td>FF</td>
+<td>3</td>
+<td>gpu/n7812_s11/F</td>
+</tr>
+<tr>
+<td>10.103</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7820_s14/I2</td>
+</tr>
+<tr>
+<td>10.925</td>
+<td>0.822</td>
+<td>tINS</td>
+<td>FF</td>
+<td>3</td>
+<td>gpu/n7820_s14/F</td>
+</tr>
+<tr>
+<td>11.885</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7816_s6/I2</td>
+</tr>
+<tr>
+<td>12.707</td>
+<td>0.822</td>
+<td>tINS</td>
+<td>FF</td>
+<td>16</td>
+<td>gpu/n7816_s6/F</td>
+</tr>
+<tr>
+<td>13.667</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9628_s39/I2</td>
+</tr>
+<tr>
+<td>14.489</td>
+<td>0.822</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9628_s39/F</td>
+</tr>
+<tr>
+<td>15.449</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9628_s24/I1</td>
+</tr>
+<tr>
+<td>15.598</td>
+<td>0.149</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9628_s24/O</td>
+</tr>
+<tr>
+<td>16.558</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9628_s19/I0</td>
+</tr>
+<tr>
+<td>16.721</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9628_s19/O</td>
+</tr>
+<tr>
+<td>17.681</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9628_s14/I1</td>
+</tr>
+<tr>
+<td>17.844</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9628_s14/O</td>
+</tr>
+<tr>
+<td>18.804</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9628_s10/I0</td>
+</tr>
+<tr>
+<td>18.967</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9628_s10/O</td>
+</tr>
+<tr>
+<td>19.927</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9690_s29/I1</td>
+</tr>
+<tr>
+<td>21.026</td>
+<td>1.099</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9690_s29/F</td>
+</tr>
+<tr>
+<td>21.986</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9690_s21/I1</td>
+</tr>
+<tr>
+<td>22.135</td>
+<td>0.149</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9690_s21/O</td>
+</tr>
+<tr>
+<td>23.095</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9690_s17/I1</td>
+</tr>
+<tr>
+<td>23.258</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9690_s17/O</td>
+</tr>
+<tr>
+<td>24.218</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9690_s15/I1</td>
+</tr>
+<tr>
+<td>24.381</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9690_s15/O</td>
+</tr>
+<tr>
+<td>25.341</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9690_s10/I1</td>
+</tr>
+<tr>
+<td>25.504</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9690_s10/O</td>
+</tr>
+<tr>
+<td>26.464</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9692_s0/I1</td>
+</tr>
+<tr>
+<td>27.563</td>
+<td>1.099</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9692_s0/F</td>
+</tr>
+<tr>
+<td>28.523</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/color_1_s0/D</td>
+</tr>
+</table>
+<b>Data Required Path:</b>
+<table class="summary_table">
+<tr>
+<th>AT</th>
+<th>DELAY</th>
+<th>TYPE</th>
+<th>RF</th>
+<th>FANOUT</th>
+<th>NODE</th>
+</tr>
+<tr>
+<td>10.000</td>
+<td>0.000</td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td>gpu/n7901_5</td>
+</tr>
+<tr>
+<td>10.000</td>
+<td>0.000</td>
+<td>tCL</td>
+<td>FF</td>
+<td>16</td>
+<td>gpu/n7901_s1/F</td>
+</tr>
+<tr>
+<td>10.960</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/color_1_s0/G</td>
+</tr>
+<tr>
+<td>10.930</td>
+<td>-0.030</td>
+<td>tUnc</td>
+<td> </td>
+<td> </td>
+<td>gpu/color_1_s0</td>
+</tr>
+<tr>
+<td>10.530</td>
+<td>-0.400</td>
+<td>tSu</td>
+<td> </td>
+<td>1</td>
+<td>gpu/color_1_s0</td>
+</tr>
+</table>
+<b>Path Statistics:</b>
+<table class="summary_table">
+<tr>
+<td class="label">Clock Skew:</td>
+<td>0.234</td>
+</tr>
+<tr>
+<td class="label">Setup Relationship:</td>
+<td>10.000</td>
+</tr>
+<tr>
+<td class="label">Logic Level:</td>
+<td>12</td>
+</tr>
+<tr>
+<td class="label">Arrival Clock Path Delay:</td><td> cell: 0.000, 0.000%; route: 0.726, 100.000%</td></tr>
+<tr>
+<td class="label">Arrival Data Path Delay:</td><td> cell: 10.059, 36.187%; route: 17.280, 62.164%; tC2Q: 0.458, 1.649%</td></tr>
+<tr>
+<td class="label">Required Clock Path Delay:</td><td> cell: 0.000, 0.000%; route: 0.726, 100.000%</td></tr>
+</table>
+<br/>
+<h3>Path&nbsp4</h3>
+<b>Path Summary:</b></br>
+<table class="summary_table">
+<tr>
+<td class="label">Slack</td>
+<td>-17.993</td>
+</tr>
+<tr>
+<td class="label">Data Arrival Time</td>
+<td>28.523</td>
+</tr>
+<tr>
+<td class="label">Data Required Time</td>
+<td>10.530</td>
+</tr>
+<tr>
+<td class="label">From</td>
+<td>gpu/collisions_buffer_5_s0</td>
+</tr>
+<tr>
+<td class="label">To</td>
+<td>gpu/color_2_s0</td>
+</tr>
+<tr>
+<td class="label">Launch Clk</td>
+<td>clk[F]</td>
+</tr>
+<tr>
+<td class="label">Latch Clk</td>
+<td>gpu/n7901_5[R]</td>
+</tr>
+</table>
+<b>Data Arrival Path:</b>
+<table class="summary_table">
+<tr>
+<th>AT</th>
+<th>DELAY</th>
+<th>TYPE</th>
+<th>RF</th>
+<th>FANOUT</th>
+<th>NODE</th>
+</tr>
+<tr>
+<td>0.000</td>
+<td>0.000</td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td>clk</td>
+</tr>
+<tr>
+<td>0.000</td>
+<td>0.000</td>
+<td>tCL</td>
+<td>RR</td>
+<td>1</td>
+<td>clk_ibuf/I</td>
+</tr>
+<tr>
+<td>0.000</td>
+<td>0.000</td>
+<td>tINS</td>
+<td>RR</td>
+<td>3908</td>
+<td>clk_ibuf/O</td>
+</tr>
+<tr>
+<td>0.726</td>
+<td>0.726</td>
+<td>tNET</td>
+<td>RR</td>
+<td>1</td>
+<td>gpu/collisions_buffer_5_s0/CLK</td>
+</tr>
+<tr>
+<td>1.184</td>
+<td>0.458</td>
+<td>tC2Q</td>
+<td>RF</td>
+<td>3</td>
+<td>gpu/collisions_buffer_5_s0/Q</td>
+</tr>
+<tr>
+<td>2.144</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7788_s13/I1</td>
+</tr>
+<tr>
+<td>3.243</td>
+<td>1.099</td>
+<td>tINS</td>
+<td>FF</td>
+<td>6</td>
+<td>gpu/n7788_s13/F</td>
+</tr>
+<tr>
+<td>4.203</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7796_s9/I1</td>
+</tr>
+<tr>
+<td>5.302</td>
+<td>1.099</td>
+<td>tINS</td>
+<td>FF</td>
+<td>3</td>
+<td>gpu/n7796_s9/F</td>
+</tr>
+<tr>
+<td>6.262</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7808_s5/I1</td>
+</tr>
+<tr>
+<td>7.361</td>
+<td>1.099</td>
+<td>tINS</td>
+<td>FF</td>
+<td>3</td>
+<td>gpu/n7808_s5/F</td>
+</tr>
+<tr>
+<td>8.321</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7812_s11/I2</td>
+</tr>
+<tr>
+<td>9.143</td>
+<td>0.822</td>
+<td>tINS</td>
+<td>FF</td>
+<td>3</td>
+<td>gpu/n7812_s11/F</td>
+</tr>
+<tr>
+<td>10.103</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7820_s14/I2</td>
+</tr>
+<tr>
+<td>10.925</td>
+<td>0.822</td>
+<td>tINS</td>
+<td>FF</td>
+<td>3</td>
+<td>gpu/n7820_s14/F</td>
+</tr>
+<tr>
+<td>11.885</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7816_s6/I2</td>
+</tr>
+<tr>
+<td>12.707</td>
+<td>0.822</td>
+<td>tINS</td>
+<td>FF</td>
+<td>16</td>
+<td>gpu/n7816_s6/F</td>
+</tr>
+<tr>
+<td>13.667</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9500_s39/I2</td>
+</tr>
+<tr>
+<td>14.489</td>
+<td>0.822</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9500_s39/F</td>
+</tr>
+<tr>
+<td>15.449</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9500_s24/I1</td>
+</tr>
+<tr>
+<td>15.598</td>
+<td>0.149</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9500_s24/O</td>
+</tr>
+<tr>
+<td>16.558</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9500_s19/I0</td>
+</tr>
+<tr>
+<td>16.721</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9500_s19/O</td>
+</tr>
+<tr>
+<td>17.681</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9500_s14/I1</td>
+</tr>
+<tr>
+<td>17.844</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9500_s14/O</td>
+</tr>
+<tr>
+<td>18.804</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9500_s10/I0</td>
+</tr>
+<tr>
+<td>18.967</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9500_s10/O</td>
+</tr>
+<tr>
+<td>19.927</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9562_s29/I1</td>
+</tr>
+<tr>
+<td>21.026</td>
+<td>1.099</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9562_s29/F</td>
+</tr>
+<tr>
+<td>21.986</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9562_s21/I1</td>
+</tr>
+<tr>
+<td>22.135</td>
+<td>0.149</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9562_s21/O</td>
+</tr>
+<tr>
+<td>23.095</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9562_s17/I1</td>
+</tr>
+<tr>
+<td>23.258</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9562_s17/O</td>
+</tr>
+<tr>
+<td>24.218</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9562_s15/I1</td>
+</tr>
+<tr>
+<td>24.381</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9562_s15/O</td>
+</tr>
+<tr>
+<td>25.341</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9562_s10/I1</td>
+</tr>
+<tr>
+<td>25.504</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9562_s10/O</td>
+</tr>
+<tr>
+<td>26.464</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9564_s0/I1</td>
+</tr>
+<tr>
+<td>27.563</td>
+<td>1.099</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9564_s0/F</td>
+</tr>
+<tr>
+<td>28.523</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/color_2_s0/D</td>
+</tr>
+</table>
+<b>Data Required Path:</b>
+<table class="summary_table">
+<tr>
+<th>AT</th>
+<th>DELAY</th>
+<th>TYPE</th>
+<th>RF</th>
+<th>FANOUT</th>
+<th>NODE</th>
+</tr>
+<tr>
+<td>10.000</td>
+<td>0.000</td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td>gpu/n7901_5</td>
+</tr>
+<tr>
+<td>10.000</td>
+<td>0.000</td>
+<td>tCL</td>
+<td>FF</td>
+<td>16</td>
+<td>gpu/n7901_s1/F</td>
+</tr>
+<tr>
+<td>10.960</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/color_2_s0/G</td>
+</tr>
+<tr>
+<td>10.930</td>
+<td>-0.030</td>
+<td>tUnc</td>
+<td> </td>
+<td> </td>
+<td>gpu/color_2_s0</td>
+</tr>
+<tr>
+<td>10.530</td>
+<td>-0.400</td>
+<td>tSu</td>
+<td> </td>
+<td>1</td>
+<td>gpu/color_2_s0</td>
+</tr>
+</table>
+<b>Path Statistics:</b>
+<table class="summary_table">
+<tr>
+<td class="label">Clock Skew:</td>
+<td>0.234</td>
+</tr>
+<tr>
+<td class="label">Setup Relationship:</td>
+<td>10.000</td>
+</tr>
+<tr>
+<td class="label">Logic Level:</td>
+<td>12</td>
+</tr>
+<tr>
+<td class="label">Arrival Clock Path Delay:</td><td> cell: 0.000, 0.000%; route: 0.726, 100.000%</td></tr>
+<tr>
+<td class="label">Arrival Data Path Delay:</td><td> cell: 10.059, 36.187%; route: 17.280, 62.164%; tC2Q: 0.458, 1.649%</td></tr>
+<tr>
+<td class="label">Required Clock Path Delay:</td><td> cell: 0.000, 0.000%; route: 0.726, 100.000%</td></tr>
+</table>
+<br/>
+<h3>Path&nbsp5</h3>
+<b>Path Summary:</b></br>
+<table class="summary_table">
+<tr>
+<td class="label">Slack</td>
+<td>-17.993</td>
+</tr>
+<tr>
+<td class="label">Data Arrival Time</td>
+<td>28.523</td>
+</tr>
+<tr>
+<td class="label">Data Required Time</td>
+<td>10.530</td>
+</tr>
+<tr>
+<td class="label">From</td>
+<td>gpu/collisions_buffer_5_s0</td>
+</tr>
+<tr>
+<td class="label">To</td>
+<td>gpu/color_3_s0</td>
+</tr>
+<tr>
+<td class="label">Launch Clk</td>
+<td>clk[F]</td>
+</tr>
+<tr>
+<td class="label">Latch Clk</td>
+<td>gpu/n7901_5[R]</td>
+</tr>
+</table>
+<b>Data Arrival Path:</b>
+<table class="summary_table">
+<tr>
+<th>AT</th>
+<th>DELAY</th>
+<th>TYPE</th>
+<th>RF</th>
+<th>FANOUT</th>
+<th>NODE</th>
+</tr>
+<tr>
+<td>0.000</td>
+<td>0.000</td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td>clk</td>
+</tr>
+<tr>
+<td>0.000</td>
+<td>0.000</td>
+<td>tCL</td>
+<td>RR</td>
+<td>1</td>
+<td>clk_ibuf/I</td>
+</tr>
+<tr>
+<td>0.000</td>
+<td>0.000</td>
+<td>tINS</td>
+<td>RR</td>
+<td>3908</td>
+<td>clk_ibuf/O</td>
+</tr>
+<tr>
+<td>0.726</td>
+<td>0.726</td>
+<td>tNET</td>
+<td>RR</td>
+<td>1</td>
+<td>gpu/collisions_buffer_5_s0/CLK</td>
+</tr>
+<tr>
+<td>1.184</td>
+<td>0.458</td>
+<td>tC2Q</td>
+<td>RF</td>
+<td>3</td>
+<td>gpu/collisions_buffer_5_s0/Q</td>
+</tr>
+<tr>
+<td>2.144</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7788_s13/I1</td>
+</tr>
+<tr>
+<td>3.243</td>
+<td>1.099</td>
+<td>tINS</td>
+<td>FF</td>
+<td>6</td>
+<td>gpu/n7788_s13/F</td>
+</tr>
+<tr>
+<td>4.203</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7796_s9/I1</td>
+</tr>
+<tr>
+<td>5.302</td>
+<td>1.099</td>
+<td>tINS</td>
+<td>FF</td>
+<td>3</td>
+<td>gpu/n7796_s9/F</td>
+</tr>
+<tr>
+<td>6.262</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7808_s5/I1</td>
+</tr>
+<tr>
+<td>7.361</td>
+<td>1.099</td>
+<td>tINS</td>
+<td>FF</td>
+<td>3</td>
+<td>gpu/n7808_s5/F</td>
+</tr>
+<tr>
+<td>8.321</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7812_s11/I2</td>
+</tr>
+<tr>
+<td>9.143</td>
+<td>0.822</td>
+<td>tINS</td>
+<td>FF</td>
+<td>3</td>
+<td>gpu/n7812_s11/F</td>
+</tr>
+<tr>
+<td>10.103</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7820_s14/I2</td>
+</tr>
+<tr>
+<td>10.925</td>
+<td>0.822</td>
+<td>tINS</td>
+<td>FF</td>
+<td>3</td>
+<td>gpu/n7820_s14/F</td>
+</tr>
+<tr>
+<td>11.885</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n7816_s6/I2</td>
+</tr>
+<tr>
+<td>12.707</td>
+<td>0.822</td>
+<td>tINS</td>
+<td>FF</td>
+<td>16</td>
+<td>gpu/n7816_s6/F</td>
+</tr>
+<tr>
+<td>13.667</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9372_s39/I2</td>
+</tr>
+<tr>
+<td>14.489</td>
+<td>0.822</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9372_s39/F</td>
+</tr>
+<tr>
+<td>15.449</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9372_s24/I1</td>
+</tr>
+<tr>
+<td>15.598</td>
+<td>0.149</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9372_s24/O</td>
+</tr>
+<tr>
+<td>16.558</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9372_s19/I0</td>
+</tr>
+<tr>
+<td>16.721</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9372_s19/O</td>
+</tr>
+<tr>
+<td>17.681</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9372_s14/I1</td>
+</tr>
+<tr>
+<td>17.844</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9372_s14/O</td>
+</tr>
+<tr>
+<td>18.804</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9372_s10/I0</td>
+</tr>
+<tr>
+<td>18.967</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9372_s10/O</td>
+</tr>
+<tr>
+<td>19.927</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9434_s29/I1</td>
+</tr>
+<tr>
+<td>21.026</td>
+<td>1.099</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9434_s29/F</td>
+</tr>
+<tr>
+<td>21.986</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9434_s21/I1</td>
+</tr>
+<tr>
+<td>22.135</td>
+<td>0.149</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9434_s21/O</td>
+</tr>
+<tr>
+<td>23.095</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9434_s17/I1</td>
+</tr>
+<tr>
+<td>23.258</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9434_s17/O</td>
+</tr>
+<tr>
+<td>24.218</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9434_s15/I1</td>
+</tr>
+<tr>
+<td>24.381</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9434_s15/O</td>
+</tr>
+<tr>
+<td>25.341</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9434_s10/I1</td>
+</tr>
+<tr>
+<td>25.504</td>
+<td>0.163</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9434_s10/O</td>
+</tr>
+<tr>
+<td>26.464</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9436_s0/I1</td>
+</tr>
+<tr>
+<td>27.563</td>
+<td>1.099</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/n9436_s0/F</td>
+</tr>
+<tr>
+<td>28.523</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/color_3_s0/D</td>
+</tr>
+</table>
+<b>Data Required Path:</b>
+<table class="summary_table">
+<tr>
+<th>AT</th>
+<th>DELAY</th>
+<th>TYPE</th>
+<th>RF</th>
+<th>FANOUT</th>
+<th>NODE</th>
+</tr>
+<tr>
+<td>10.000</td>
+<td>0.000</td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td>gpu/n7901_5</td>
+</tr>
+<tr>
+<td>10.000</td>
+<td>0.000</td>
+<td>tCL</td>
+<td>FF</td>
+<td>16</td>
+<td>gpu/n7901_s1/F</td>
+</tr>
+<tr>
+<td>10.960</td>
+<td>0.960</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>gpu/color_3_s0/G</td>
+</tr>
+<tr>
+<td>10.930</td>
+<td>-0.030</td>
+<td>tUnc</td>
+<td> </td>
+<td> </td>
+<td>gpu/color_3_s0</td>
+</tr>
+<tr>
+<td>10.530</td>
+<td>-0.400</td>
+<td>tSu</td>
+<td> </td>
+<td>1</td>
+<td>gpu/color_3_s0</td>
+</tr>
+</table>
+<b>Path Statistics:</b>
+<table class="summary_table">
+<tr>
+<td class="label">Clock Skew:</td>
+<td>0.234</td>
+</tr>
+<tr>
+<td class="label">Setup Relationship:</td>
+<td>10.000</td>
+</tr>
+<tr>
+<td class="label">Logic Level:</td>
+<td>12</td>
+</tr>
+<tr>
+<td class="label">Arrival Clock Path Delay:</td><td> cell: 0.000, 0.000%; route: 0.726, 100.000%</td></tr>
+<tr>
+<td class="label">Arrival Data Path Delay:</td><td> cell: 10.059, 36.187%; route: 17.280, 62.164%; tC2Q: 0.458, 1.649%</td></tr>
+<tr>
+<td class="label">Required Clock Path Delay:</td><td> cell: 0.000, 0.000%; route: 0.726, 100.000%</td></tr>
+</table>
+<br/>
+</div><!-- content -->
+</div><!-- main_wrapper -->
+</body>
+</html>

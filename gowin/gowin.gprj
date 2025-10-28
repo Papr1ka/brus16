@@ -29,6 +29,7 @@
         <File path="C:/Users/Joe/dev/brus16/src/hdmi.sv" type="file.verilog" enable="1"/>
         <File path="C:/Users/Joe/dev/brus16/src/prom.sv" type="file.verilog" enable="1"/>
         <File path="C:/Users/Joe/dev/brus16/src/rect_copy_controller.sv" type="file.verilog" enable="1"/>
+        <File path="C:/Users/Joe/dev/brus16/src/test.sv" type="file.verilog" enable="1"/>
         <File path="C:/Users/Joe/dev/brus16/src/vga_controller.sv" type="file.verilog" enable="1"/>
         <File path="src/gowin.cst" type="file.cst" enable="1"/>
         <File path="src/gowin.sdc" type="file.sdc" enable="1"/>

@@ -1,0 +1,26 @@
+//Copyright (C)2014-2025 Gowin Semiconductor Corporation.
+//All rights reserved.
+//File Title: Post-Place file
+//Tool Version: V1.9.11.03 Education
+//Part Number: GW1NR-LV9QN88PC6/I5
+//Device: GW1NR-9
+//Device Version: C
+//Created Time: Sun Oct 26 21:17:25 2025
+
+cpu/alu/mult_21_s1 PLACE_DSP_R19[4][A] //R19C38[0][A]
+memory/SDPB/sdpb_inst_0 PLACE_BSRAM_R10[9]
+memory/SDPB/sdpb_inst_1 PLACE_BSRAM_R10[8]
+memory/SDPB/sdpb_inst_2 PLACE_BSRAM_R28[12]
+memory/SDPB/sdpb_inst_3 PLACE_BSRAM_R28[13]
+memory/SDPB/sdpb_inst_4 PLACE_BSRAM_R28[11]
+memory/SDPB/sdpb_inst_5 PLACE_BSRAM_R28[10]
+memory/SDPB/sdpb_inst_6 PLACE_BSRAM_R10[10]
+memory/SDPB/sdpb_inst_7 PLACE_BSRAM_R28[14]
+program_memory/pROM/prom_inst_0 PLACE_BSRAM_R28[9]
+program_memory/pROM/prom_inst_1 PLACE_BSRAM_R28[7]
+program_memory/pROM/prom_inst_2 PLACE_BSRAM_R28[8]
+program_memory/pROM/prom_inst_3 PLACE_BSRAM_R10[7]
+program_memory/pROM/prom_inst_4 PLACE_BSRAM_R28[5]
+program_memory/pROM/prom_inst_5 PLACE_BSRAM_R10[6]
+program_memory/pROM/prom_inst_6 PLACE_BSRAM_R10[5]
+program_memory/pROM/prom_inst_7 PLACE_BSRAM_R28[6]

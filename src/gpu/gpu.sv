@@ -39,14 +39,15 @@ module gpu
     parameter DEFAULT_COLOR     = `DEFAULT_COLOR
 )
 (
-    input   wire                    clk,
-    input   wire                    reset,
-    input   wire                    copy_start, // trigger to start copy in WAIT_FOR_COPY phase
+    input   wire                     clk,
+    input   wire                     reset,
+    input   wire                     copy_start, // trigger to start copy in WAIT_FOR_COPY phase
+    input   wire                     hsync,
 
-    input   wire [COORD_WIDTH-1:0]  x_coord,
-    input   wire [COORD_WIDTH-1:0]  y_coord,
-    input   wire [15:0]             mem_din,    // abs rect data from copy controller
-    output  wire [15:0]             color       // out color
+    input   wire  [COORD_WIDTH-1:0]  x_coord,
+    input   wire  [COORD_WIDTH-1:0]  y_coord,
+    input   wire  [15:0]             mem_din,    // abs rect data from copy controller
+    output  logic [15:0]             color       // out color
 );
 
 // State machine to recieve data
@@ -89,7 +90,7 @@ wire [COORD_WIDTH-1:0]      rect_tops       [RECT_COUNT-1:0]; // ys
 wire [COORD_WIDTH-1:0]      rect_rights     [RECT_COUNT-1:0]; // xs + widths
 wire [COORD_WIDTH-1:0]      rect_bottoms    [RECT_COUNT-1:0]; // ys + heights
 wire [15:0]                 rect_colors     [RECT_COUNT-1:0]; // rect colors
-reg  [RECT_COUNT_WIDTH-1:0] rect_idxs    [RECT_COUNT-1:0]; // 0 to 63, constants, read only
+reg  [RECT_COUNT_WIDTH-1:0] rect_idxs       [RECT_COUNT-1:0]; // 0 to 63, constants, read only
 
 gpu_mem #(
     .ADDR_WIDTH(RECT_COUNT_WIDTH),
@@ -156,37 +157,51 @@ mem4 (
     .dout(rect_colors) // colors
 );
 
-// If collisions[i] is 1, than rect[i] collide with (coord_x, coord_y)
-wire    [RECT_COUNT-1:0]        collisions;
-reg     [RECT_COUNT-1:0]        collisions_buffer;  // for pipilining (better STA)
-wire    [RECT_COUNT_WIDTH-1:0]  rect_idx;           // index of rect to display
-wire    any_collision;
-assign  color = any_collision ? rect_colors[rect_idx] : DEFAULT_COLOR;
+// If collisions_buffer[i] is 1, than rect[i] collide with (coord_x, coord_y)
+wire    [RECT_COUNT-1:0]        collisions;             // with coord_x | coord_y
+reg     [RECT_COUNT-1:0]        collisions_buffer;      // with (coord_x, coord_y)
+reg     [RECT_COUNT-1:0]        collisions_y_buffer;    // only with (coord_y)
+wire    [RECT_COUNT_WIDTH-1:0]  rect_idx;               // index of rect to display
+// assign  color = any_collision ? rect_colors[rect_idx] : DEFAULT_COLOR;
 
 // Comparators for each rect
 generate
     genvar i;
     for (i = 0; i < RECT_COUNT; i++) begin
         comparator comp(
-            .rect_left(rect_lefts[i]),
-            .rect_top(rect_tops[i]),
-            .rect_right(rect_rights[i]),
-            .rect_bottom(rect_bottoms[i]),
-            .coord_x(COORD_WIDTH'(x_coord)),
-            .coord_y(COORD_WIDTH'(y_coord)),
+            .left(hsync ? rect_tops[i] : rect_lefts[i]),
+            .right(hsync ? rect_bottoms[i] : rect_rights[i]),
+            .coord(COORD_WIDTH'(hsync ? y_coord + 1 : x_coord)),
             .collision(collisions[i])
         );
     end
 endgenerate
 
-// Binary tree of 6 mux layers
-btree_mux btree_mux(
-    .clk(clk),
-    .flags_in(collisions_buffer),
-    .data_in(rect_idxs),
-    .flag_out(any_collision),
-    .data_out(rect_idx)
-);
+// // Binary tree of 6 mux layers
+// btree_mux btree_mux(
+//     .clk(clk),
+//     .flags_in(collisions_buffer),
+//     .data_in(rect_idxs),
+//     .flag_out(any_collision),
+//     .data_out(rect_idx)
+// );
+
+wire [RECT_COUNT-1:0] one_hot_addr = collisions_buffer & (-collisions_buffer);
+
+// generate
+//     genvar idx;
+//     assign color = DEFAULT_COLOR;
+//     for (idx = 0; idx < RECT_COUNT; idx = idx + 1) begin
+//         assign color = one_hot_addr[idx] ? rect_colors[idx] : 'z;
+//     end
+// endgenerate
+
+always_comb begin
+    color = 'z;
+    for (int idx = 0; idx < RECT_COUNT; idx = idx + 1) begin
+        if (one_hot_addr == (1 << idx)) color = rect_colors[idx];
+    end
+end
 
 always_comb begin
     casez ({state, copy_start, fsm_finish})
@@ -204,9 +219,13 @@ always_ff @(posedge clk) begin
     if (reset) begin
         state               <= WAIT_FOR_COPY;
         collisions_buffer   <= RECT_COUNT'(0);
+        collisions_y_buffer <= RECT_COUNT'(0);
     end else begin
         state               <= state_new;
-        collisions_buffer   <= collisions;
+        collisions_buffer   <= collisions & collisions_y_buffer;
+        if (hsync) begin
+            collisions_y_buffer <= collisions;
+        end
     end
 end
 

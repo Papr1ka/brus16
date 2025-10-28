@@ -9,7 +9,7 @@ version=1.0
 [Config]
 DEPTH=8192
 LANG=0
-MEM_FILE=C:\\Users\\Joe\\dev\\brus16\\games\\racing\\racing_code.mi
+MEM_FILE=C:\\Users\\Joe\\dev\\brus16\\games\\zoom\\zoom_code.mi
 READ=0
 RESET_MODE=true
 WIDTH=16

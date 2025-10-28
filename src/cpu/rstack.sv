@@ -24,10 +24,8 @@ module rstack
     input   wire                    we,
     input   wire [WIDTH-1:0]        mem_din_addr,
     input   wire [DATA_WIDTH-1:0]   mem_din
-);
+) /* synthesis syn_ramstyle = "distributed_ram" */;;
 
-/* ONLY FOR VERILATOR SIMULATION */
-`ifndef GOWIN 
 reg [DATA_WIDTH-1:0] data [SIZE-1:0];
 
 always @(posedge clk) begin
@@ -38,7 +36,8 @@ end
 
 assign mem_dout = data[mem_dout_addr]; // async read
 
-
+/* ONLY FOR VERILATOR SIMULATION */
+`ifdef SIM 
 initial begin
     for (integer i = 0; i < SIZE; i = i + 1) begin
         data[i] = DATA_WIDTH'(0);
@@ -48,17 +47,17 @@ end
 /* END */
 
 
-/* GOWIN ONLY */
-`ifdef GOWIN
-rstack_ssram rstack(
-    .dout(mem_dout), //output [15:0] dout
-    .di(mem_din), //input [15:0] di
-    .wad(mem_din_addr), //input [3:0] wad
-    .rad(mem_dout_addr), //input [3:0] rad
-    .wre(we), //input wre
-    .clk(clk) //input clk
-);
-`endif
-/* END */
+// /* GOWIN ONLY */
+// `ifdef GOWIN
+// rstack_ssram rstack(
+//     .dout(mem_dout), //output [15:0] dout
+//     .di(mem_din), //input [15:0] di
+//     .wad(mem_din_addr), //input [3:0] wad
+//     .rad(mem_dout_addr), //input [3:0] rad
+//     .wre(we), //input wre
+//     .clk(clk) //input clk
+// );
+// `endif
+// /* END */
 
 endmodule

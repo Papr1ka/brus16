@@ -286,6 +286,7 @@ gpu gpu(
    .clk(system_clk),
    .copy_start(copy_start_delayed),
    .reset(gpu_reset),
+   .hsync(hsync),
     
    .x_coord({{COORD_WIDTH-10{1'b0}}, hpos}),
    .y_coord({{COORD_WIDTH-10{1'b0}}, vpos}),

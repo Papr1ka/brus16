@@ -2,9 +2,9 @@
 `define CONSTANTS
 
 
-`define GOWIN // Uncomment for gowin
+// `define GOWIN // Uncomment for gowin
 // `define VIVADO // Uncomment for vivado
-// `define SIM // Uncomment for simulation (Icarus/Verilator)
+`define SIM // Uncomment for simulation (Icarus/Verilator)
 
 // `define DISABLE_GPU // Uncomment to disable the GPU
 `define DISABLE_BUTTONS // Uncomment to disable the button controller and it's inputs
@@ -30,8 +30,8 @@
 `define RECT_MEM `DATA_SIZE - `RECT_COUNT * 6
 
 // cpu
-`define STACK_DEPTH 4 // 32
-`define RSTACK_DEPTH 3 // 16
+`define STACK_DEPTH 5 // 32
+`define RSTACK_DEPTH 4 // 16
 
 `define JMP 2'd0
 `define JZ 2'd1

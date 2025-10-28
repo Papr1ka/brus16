@@ -1,0 +1,6 @@
+Reading netlist file: "C:\Users\Joe\dev\brus16\gowin\impl\gwsynthesis\gowin.vg"
+Parsing netlist file "C:\Users\Joe\dev\brus16\gowin\impl\gwsynthesis\gowin.vg" completed
+Processing netlist completed
+Reading constraint file: "C:\Users\Joe\dev\brus16\gowin\src\gowin.cst"
+ERROR  (CT1135) : "C:\Users\Joe\dev\brus16\gowin\src\gowin.cst":20 | Can't find object named 'system_clk'
+Physical Constraint parsed completed with errors
