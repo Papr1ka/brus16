@@ -59,7 +59,7 @@ def log_debug(dut):
     "rect_counter={rect_counter:<4d} wait_counter={wait_counter:<10d} batch_counter={batch_counter:<2d} " \
     "batch_completed={batch_completed} " \
     "cursor_coord={cursor_coord:<6d} cursor_coord_new={cursor_coord_new:<6d} " \
-    "coord_reg={coord_reg:<16d} coord_reg_new={coord_reg_new:<16d} ".format(
+    "buffer_reg={buffer_reg:<16d} buffer_reg_new={buffer_reg_new:<16d} ".format(
         reset=dut.reset.value,
         copy_start=int(dut.copy_start.value),
         mem_din=dut.controller.mem_din.value.to_signed(),
@@ -78,8 +78,8 @@ def log_debug(dut):
         batch_completed=dut.controller.batch_completed.value,
         cursor_coord=dut.controller.cursor_coord.value.to_signed(),
         cursor_coord_new=dut.controller.cursor_coord_new.value.to_signed(),
-        coord_reg=dut.controller.coord_reg.value.to_signed(),
-        coord_reg_new=dut.controller.coord_reg_new.value.to_signed(),
+        buffer_reg=dut.controller.buffer_reg.value.to_signed(),
+        buffer_reg_new=dut.controller.buffer_reg_new.value.to_signed(),
     )
     logger.debug(string)
 
@@ -165,6 +165,13 @@ async def tect_rect_copy_controller(dut):
         assert dut.controller.mem_dout.value.to_unsigned() == c
         await RisingEdge(dut.clk)
 
+def clamp(val, left=0, right=640):
+    if val < left:
+        return left
+    if val > right:
+        return right
+    return val
+
 @cocotb.test(skip=False)
 async def tect_rect_copy_controller(dut):
     dut.copy_start.value = 0
@@ -191,7 +198,7 @@ async def tect_rect_copy_controller(dut):
         else:
             x += cursor_x
             y += cursor_y
-        expected.append((x, x + w, y, y + h, c))
+        expected.append((clamp(x), clamp(x + w), clamp(y, right=480), clamp(y + h, right=480), c))
 
     for batch in range(4):
         for i in range(16):
