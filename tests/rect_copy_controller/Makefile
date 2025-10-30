@@ -6,7 +6,7 @@ TOPLEVEL_LANG ?= verilog
 
 # sources
 VERILOG_SOURCES += ../../src/bsram.sv
-VERILOG_SOURCES += ../../src/rect_copy_controller.sv
+VERILOG_SOURCES += ../../src/rect_copy_controller_new.sv
 VERILOG_SOURCES += ../../src/tb/rect_copy_controller_tb.sv
 
 VERILOG_INCLUDE_DIRS += ../../src/

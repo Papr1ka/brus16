@@ -162,7 +162,9 @@ wire    [RECT_COUNT-1:0]        collisions;             // with coord_x | coord_
 reg     [RECT_COUNT-1:0]        collisions_buffer;      // with (coord_x, coord_y)
 reg     [RECT_COUNT-1:0]        collisions_y_buffer;    // only with (coord_y)
 wire    [RECT_COUNT_WIDTH-1:0]  rect_idx;               // index of rect to display
-// assign  color = any_collision ? rect_colors[rect_idx] : DEFAULT_COLOR;
+wire    [15:0]                  rect_color;
+wire    any_collision;
+assign  color = any_collision ? rect_colors[rect_idx] : DEFAULT_COLOR;
 
 // Comparators for each rect
 generate
@@ -177,31 +179,31 @@ generate
     end
 endgenerate
 
-// // Binary tree of 6 mux layers
-// btree_mux btree_mux(
-//     .clk(clk),
-//     .flags_in(collisions_buffer),
-//     .data_in(rect_idxs),
-//     .flag_out(any_collision),
-//     .data_out(rect_idx)
-// );
+// Binary tree of 6 mux layers
+btree_mux btree_mux(
+    .clk(clk),
+    .flags_in(collisions_buffer),
+    // .data_in(rect_idxs),
+    .flag_out(any_collision),
+    .data_out(rect_idx)
+);
 
-wire [RECT_COUNT-1:0] one_hot_addr = collisions_buffer & (-collisions_buffer);
+// wire [RECT_COUNT-1:0] one_hot_addr = collisions_buffer & (-collisions_buffer);
 
 // generate
 //     genvar idx;
-//     assign color = DEFAULT_COLOR;
+//     assign color = (~|one_hot_addr) ? DEFAULT_COLOR : 'z;
 //     for (idx = 0; idx < RECT_COUNT; idx = idx + 1) begin
-//         assign color = one_hot_addr[idx] ? rect_colors[idx] : 'z;
+//         assign color = one_hot_addr[idx] ? rect_colors[63 - idx] : 'z;
 //     end
 // endgenerate
 
-always_comb begin
-    color = 'z;
-    for (int idx = 0; idx < RECT_COUNT; idx = idx + 1) begin
-        if (one_hot_addr == (1 << idx)) color = rect_colors[idx];
-    end
-end
+// always_comb begin
+//     color = 'z;
+//     for (int idx = 0; idx < RECT_COUNT; idx = idx + 1) begin
+//         if (one_hot_addr == (1 << idx)) color = rect_colors[idx];
+//     end
+// end
 
 always_comb begin
     casez ({state, copy_start, fsm_finish})

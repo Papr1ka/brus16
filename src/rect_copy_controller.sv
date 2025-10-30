@@ -29,8 +29,8 @@ module rect_copy_controller
     output wire  [15:0]           mem_dout      // data mem, write data (to gpu)
 );
 
-reg   [15:0]           mem_dout_reg;
-logic [15:0]           mem_dout_reg_new;
+reg   [15:0]      mem_dout_reg;
+logic [15:0]      mem_dout_reg_new;
 assign mem_dout = mem_dout_reg;
 
 reg   [ADDR_WIDTH-1:0] addr;
@@ -100,10 +100,10 @@ always_comb begin
         4'b001_?: mem_dout_reg_new = 16'b0;                             // READ_ABS
         4'b010_0: mem_dout_reg_new = cursor_x + COORD_WIDTH'(mem_din);  // READ_X + rel
         4'b011_0: mem_dout_reg_new = cursor_y + COORD_WIDTH'(mem_din);  // READ_Y + rel
-        4'b010_1,                                               // READ_X + abs
-        4'b011_1,                                               // READ_Y + abs
+        4'b010_1,                                                       // READ_X + abs
+        4'b011_1,                                                       // READ_Y + abs
         4'b110_?: mem_dout_reg_new = mem_din;                           // READ COLOR
-        4'b100_?,                                               // READ_WIDTH
+        4'b100_?,                                                       // READ_WIDTH
         4'b101_?: mem_dout_reg_new = COORD_WIDTH'(mem_din);             // READ_HEIGHT
         default:  mem_dout_reg_new = 16'b0;
     endcase
@@ -116,7 +116,7 @@ always_ff @(posedge clk) begin
         addr         <= ADDR_WIDTH'(RECT_ADDR);
         state        <= WAIT_FOR_START;
         reading_abs  <= 1'b0;
-        mem_dout_reg <= 16'bx;
+        mem_dout_reg <= 16'b0;
     end else begin
         cursor_x     <= cursor_x_new;
         cursor_y     <= cursor_y_new;
