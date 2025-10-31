@@ -14,18 +14,16 @@ module comparator
     parameter COORD_WIDTH = `COORD_WIDTH
 )
 (
-    input   wire [COORD_WIDTH-1:0] left,    // rect_left || rect_top (unsigned)
-    input   wire [COORD_WIDTH-1:0] right,   // rect_right || rect_bottom (unsigned)
-
-    input   wire [COORD_WIDTH-1:0] coord,   // x || y
-    output  logic collision
+    input   wire [COORD_WIDTH-1:0] left,
+    input   wire [COORD_WIDTH-1:0] right,
+    input   wire                   equal,   // lte or lt
+    output  logic                  collision
 );
 
 always_comb begin
-    collision = (
-        (left <= coord) &&
-        (coord < right)
-    );
+    collision = equal ?
+                    (left <= right) :
+                    (left < right);
 end
 
 endmodule

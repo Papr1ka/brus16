@@ -1,7 +1,12 @@
 <testsuites name="results">
   <testsuite name="all" package="all">
-    <property name="random_seed" value="1761427811" />
-    <testcase name="test_gpu" classname="test_gpu" file="/mnt/c/Users/Joe/dev/brus16/tests/gpu/test_gpu.py" lineno="752" time="2.9869725704193115" sim_time_ns="1291.0" ratio_time="432.21019596399213" />
-    <testcase name="test_gpu_random" classname="test_gpu" file="/mnt/c/Users/Joe/dev/brus16/tests/gpu/test_gpu.py" lineno="810" time="1.6726524829864502" sim_time_ns="775.0000000000002" ratio_time="463.33593372382444" />
+    <property name="random_seed" value="1761872862" />
+    <testcase name="test_gpu" classname="test_gpu" file="/mnt/c/Users/Joe/dev/brus16/tests/gpu/test_gpu.py" lineno="770" time="0" sim_time_ns="0" ratio_time="0">
+      <skipped />
+    </testcase>
+    <testcase name="test_gpu_random" classname="test_gpu" file="/mnt/c/Users/Joe/dev/brus16/tests/gpu/test_gpu.py" lineno="821" time="0" sim_time_ns="0" ratio_time="0">
+      <skipped />
+    </testcase>
+    <testcase name="test_gpu_new" classname="test_gpu" file="/mnt/c/Users/Joe/dev/brus16/tests/gpu/test_gpu.py" lineno="868" time="3.0506937503814697" sim_time_ns="5521.0" ratio_time="1809.7522897241436" />
   </testsuite>
 </testsuites>

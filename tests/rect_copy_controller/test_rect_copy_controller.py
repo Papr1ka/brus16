@@ -17,7 +17,7 @@ logger.addHandler(fh)
 
 
 async def generate_clock(dut):
-    for i in range(10000):
+    for i in range(12000):
         dut.clk.value = 0
         await Timer(1, unit='ns')
         dut.clk.value = 1

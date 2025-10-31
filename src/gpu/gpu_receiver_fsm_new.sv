@@ -9,119 +9,123 @@ module gpu_receiver_fsm
 (
     input  wire                          clk,
     input  wire                          reset,
-    input  wire  [15:0]                  mem_din,      // data from rect_copy controller
+    input  wire  [15:0]                  din,      // data from rect_copy controller
+    input  wire  [2:0]                   state,
+    input  wire  [9:0]                   coord_generator,
+    input  wire  [3:0]                   rect_counter,
+    input  wire  [1:0]                   batch_counter,
+    input  wire                          batch_completed,
 
-    output wire                          finish,       // spike signal, when all rects are recieved
-    output wire  [1:0]                   mem_select,   // to which memory to write
+    output logic [1:0]                   mem_select,   // to which memory to write
+    
+    output wire  [9:0]                   mem_din_addr,
+    input  wire  [63:0]                  mem_din,
+
     output wire                          we,
-    output wire  [RECT_COUNT_WIDTH-1:0]  dout_addr,
-    output logic [15:0]                  dout          // data to write to gpu_mem
+    output wire  [9:0]                   dout_addr,
+    output logic [63:0]                  dout,         // data to write to gpu_mem
+    output wire                          finish        // spike signal, when all rects are recieved
 );
 
-reg     [2:0] copy_state;
-logic   [2:0] copy_state_new;
-localparam READ_START   = 3'b000;
-localparam READ_X       = 3'b001;
-localparam READ_Y       = 3'b010;
-localparam READ_WIDTH   = 3'b011;
-localparam READ_HEIGHT  = 3'b100;
-localparam READ_COLOR   = 3'b101;
-
-reg     [RECT_COUNT_WIDTH-1:0] rect_counter;
-logic   [RECT_COUNT_WIDTH-1:0] rect_counter_new;
+reg [2:0][3:0] rect_counter_delay;
+reg [2:0][9:0] coord_generator_delay;
+reg [2:0][2:0] state_delay;
+reg [2:0][1:0] batch_counter_delay;
+reg [2:0]      batch_completed_delay;
 
 
-assign we_rect_lefts    = copy_state == READ_X;
-assign we_rect_tops     = copy_state == READ_Y;
-assign we_rect_rights   = copy_state == READ_WIDTH;
-assign we_rect_bottoms  = copy_state == READ_HEIGHT;
-assign we_rect_colors   = copy_state == READ_COLOR;
-assign finish           = (rect_counter == {RECT_COUNT_WIDTH{1'b1}}) && (copy_state == READ_COLOR);
-assign dout_addr        = rect_counter;
+wire [9:0] buffer [15:0];
+assign we = batch_completed_delay[2];
 
-reg [15:0] rect_x1_true;
-reg [15:0] rect_y1_true;
+logic [63:0] dout_new;
 
-logic [COORD_WIDTH-1:0] rect_x1;
-logic [COORD_WIDTH-1:0] rect_y1;
-logic [COORD_WIDTH-1:0] rect_x2;
-logic [COORD_WIDTH-1:0] rect_y2;
+assign mem_din_addr = coord_generator_delay[0];
+assign dout_addr = coord_generator_delay[2];
+
+localparam WAIT_FOR_START = 3'd0;
+localparam READ_X = 3'd1;
+localparam READ_WIDTH = 3'd2;
+localparam READ_Y = 3'd3;
+localparam READ_HEIGHT = 3'd4;
+localparam READ_COLOR = 3'd5;
+
+gpu_mem #(
+    .ADDR_WIDTH(4),
+    .SIZE(16),
+    .DATA_WIDTH(10)
+)
+gpu_mem(
+    .clk(clk),
+    .we(~batch_completed_delay[2]),
+    .mem_din_addr(rect_counter_delay[2]),
+    .mem_din(din[9:0]),
+    .dout(buffer)
+);
+
+wire  [15:0] collisions;
+reg   [15:0] collisions_buffer;
+logic [63:0] collisions_buffer_aligned;
+
+wire left_or_top = state_delay[0] == READ_X || state_delay[0] == READ_Y;
+wire [63:0] collisions_updated = mem_din | collisions_buffer_aligned;
 
 always_comb begin
-    casez ({mem_din[15], $signed(mem_din[15:7]) >= 5}) // >= 640
-        2'b1?:   rect_x1 = 0;
-        2'b01:   rect_x1 = 640;
-        default: rect_x1 = mem_din[9:0];
+    case (batch_counter_delay[2])
+        2'd0:    collisions_buffer_aligned = {{48{1'b0}}, collisions_buffer};
+        2'd1:    collisions_buffer_aligned = {{32{1'b0}}, collisions_buffer, {16{1'b0}}};
+        2'd2:    collisions_buffer_aligned = {{16{1'b0}}, collisions_buffer, {32{1'b0}}};
+        2'd3:    collisions_buffer_aligned = {collisions_buffer, {48{1'b0}}};
+        default: collisions_buffer_aligned = {64{1'b0}};
     endcase
 end
 
 always_comb begin
-    casez ({mem_din[15], $signed(mem_din[15:5]) >= 15}) // >= 480
-        2'b1?:   rect_y1 = 0;
-        2'b01:   rect_y1 = 480;
-        default: rect_y1 = mem_din[9:0];
-    endcase
-end
-
-wire [15:0] rect_x2_true = rect_x1_true + mem_din;
-wire [15:0] rect_y2_true = rect_y1_true + mem_din;
-
-always_comb begin
-    casez ({rect_x2_true[15], $signed(rect_x2_true[15:7]) >= 5}) // >= 640
-        2'b1?:    rect_x2 = 0;
-        2'b01:    rect_x2 = 640;
-        default:  rect_x2 = rect_x2_true[9:0];
+    case (state_delay[2])
+        READ_X,
+        READ_WIDTH:  mem_select = 2'd0;
+        READ_Y,
+        READ_HEIGHT: mem_select = 2'd1;
+        default:     mem_select = 2'd2;
     endcase
 end
 
 always_comb begin
-    casez ({rect_y2_true[15], $signed(rect_y2_true[15:5]) >= 15}) // >= 480
-        2'b1?:   rect_y2 = 0;
-        2'b01:   rect_y2 = 480;
-        default: rect_y2 = rect_y2_true[9:0];
+    case (state_delay[2])
+        READ_COLOR: dout_new = {{48{1'b0}}, din};
+        default:    dout_new = collisions_updated; 
     endcase
 end
 
-always_comb begin
-    case (copy_state)
-        READ_START:  copy_state_new = READ_X;
-        READ_X:      copy_state_new = READ_Y;
-        READ_Y:      copy_state_new = READ_WIDTH;
-        READ_WIDTH:  copy_state_new = READ_HEIGHT;
-        READ_HEIGHT: copy_state_new = READ_COLOR;
-        default:     copy_state_new = READ_START;
-    endcase
-end
-
-always_comb begin
-    case (copy_state)
-        READ_COLOR: rect_counter_new = rect_counter + 1; // READ_COLOR
-        default:    rect_counter_new = rect_counter;
-    endcase
-end
-
-always_comb begin
-    case (copy_state)
-        READ_X:      dout = 16'(rect_x1);
-        READ_Y:      dout = 16'(rect_y1);
-        READ_WIDTH:  dout = 16'(rect_x2);
-        READ_HEIGHT: dout = 16'(rect_y2);
-        READ_COLOR:  dout = mem_din;
-        default:     dout = 16'bx;
-    endcase
-end
+// Comparators for each rect
+generate
+    genvar i;
+    for (i = 0; i < 16; i++) begin
+        comparator #(.COORD_WIDTH(10)) comp(
+            .left(left_or_top ? buffer[i] : coord_generator_delay[0]),
+            .right(left_or_top ? coord_generator_delay[0] : buffer[i]),
+            .equal(!left_or_top),
+            .collision(collisions[i])
+        );
+    end
+endgenerate
 
 always_ff @(posedge clk) begin
     if (reset) begin
-        copy_state   <= READ_START;
-        rect_counter <= RECT_COUNT_WIDTH'(0);
-        rect_x1_true <= 16'b0;
-        rect_y1_true <= 16'b0;
+        dout <= '0;
+        collisions_buffer <= '0;
+        rect_counter_delay <= '0;
+        coord_generator_delay <= '0;
+        batch_counter_delay <= '0;
+        batch_completed_delay <= '0;
+        state_delay <= '0;
     end else begin
-        copy_state   <= copy_state_new;
-        rect_counter <= rect_counter_new;
-        rect_x1_true <= we_rect_lefts ? mem_din : rect_x1_true;
-        rect_y1_true <= we_rect_tops  ? mem_din : rect_y1_true;
+        dout <= dout_new;
+        collisions_buffer <= collisions;
+        rect_counter_delay[2:0]    <= {rect_counter_delay[1:0],    rect_counter};
+        coord_generator_delay[2:0] <= {coord_generator_delay[1:0], coord_generator};
+        batch_counter_delay[2:0]   <= {batch_counter_delay[1:0],   batch_counter};
+        batch_completed_delay[2:0] <= {batch_completed_delay[1:0], batch_completed};
+        state_delay[2:0] <= {state_delay[1:0], state};
     end
 end
 

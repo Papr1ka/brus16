@@ -50,7 +50,12 @@ module rect_copy_controller
     output wire  [ADDR_WIDTH-1:0] mem_din_addr, // data mem, read address
     input  wire  [15:0]           mem_din,      // data mem, read data
 
-    output wire  [15:0]           mem_dout      // data to gpu
+    output wire  [15:0]           mem_dout,      // data to gpu
+    output wire  [2:0]            state_out,
+    output wire  [9:0]            wait_counter_out,
+    output wire  [3:0]            rect_counter_out,
+    output wire  [1:0]            batch_counter_out,
+    output wire                   batch_completed_out
 );
 
 // dout (xs | xs + width | ys | ys + width | colors)
@@ -123,6 +128,12 @@ reg   [COORD_WIDTH-1:0] buffer_reg;
 logic [COORD_WIDTH-1:0] buffer_reg_new;
 
 assign mem_din_addr = addr;
+
+assign state_out = state;
+assign wait_counter_out = wait_counter;
+assign rect_counter_out = rect_counter;
+assign batch_counter_out = batch_counter;
+assign batch_completed_out = batch_completed;
 
 // 10 bit comparator for wait_complete flag
 wire [9:0]  to_compare = (in_read_x || in_read_width) ?
