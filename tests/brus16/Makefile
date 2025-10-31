@@ -13,7 +13,8 @@ VERILOG_SOURCES += ../../src/cpu/stack.sv
 VERILOG_SOURCES += ../../src/gpu/btree_mux_layer.sv
 VERILOG_SOURCES += ../../src/gpu/btree_mux.sv
 VERILOG_SOURCES += ../../src/gpu/comparator.sv
-VERILOG_SOURCES += ../../src/gpu/gpu_mem.sv
+VERILOG_SOURCES += ../../src/gpu/gpu_buffer.sv
+VERILOG_SOURCES += ../../src/gpu/gpu_bram.sv
 VERILOG_SOURCES += ../../src/gpu/gpu_receiver_fsm.sv
 VERILOG_SOURCES += ../../src/gpu/gpu.sv
 

@@ -42,7 +42,7 @@ async def generate_clock(dut):
         dut.clk.value = 1
         await Timer(1, unit='ns')
 
-    for _ in range(100000):
+    for _ in range(10_000_000):
         log_debug(dut)
         dut.clk.value = 0
         await Timer(1, unit='ns')
@@ -79,7 +79,7 @@ def log_debug(dut):
     string = "reset={reset} hsync={hsync} vsync={vsync} hpos={hpos} vpos={vpos} copy={copy} copy_start={copy_start} resume={resume} " \
     "data_mra_bus={data_mra_bus} data_mrd_bus={data_mrd_bus} " \
     "data_mwa_bus={data_mwa_bus} data_mwd_bus={data_mwd_bus} gpu_data={gpu_data} gpu_reset={gpu_reset} " \
-    "gpu_state={gpu_state} gpu_copy_state={gpu_copy_state} color={color}".format(
+    "gpu_state={gpu_state} gpu_fsm_state={gpu_fsm_state} color={color}".format(
         reset=int(dut.reset.value),
         hsync=int(dut.hsync.value),
         vsync=int(dut.vsync.value),
@@ -95,8 +95,8 @@ def log_debug(dut):
         gpu_data=dut.gpu_data.value.to_unsigned(),
         gpu_reset=int(dut.gpu_reset.value),
         gpu_state=dut.gpu.state.value.to_unsigned(),
-        gpu_copy_state=dut.gpu.gpu_receiver_fsm.copy_state.value.to_unsigned(),
-        color=dut.pixel_color.value.to_unsigned(),
+        gpu_fsm_state=dut.gpu.gpu_receiver_fsm.state.value.to_unsigned(),
+        color=dut.pixel_color.value.to_unsigned() if dut.pixel_color.value.is_resolvable else "z",
     )
     logger.debug(string)
 
@@ -130,5 +130,5 @@ async def setup(dut, log_filename, program, data, logs_folder="./logs/"):
 async def test_game(dut):
     program = game_program
     async with setup(dut, "brus16_game.log", program, game_data):
-        await Timer(2 * 20_000, unit='ns')
+        await Timer(2 * 1_000_000, unit='ns')
         await RisingEdge(dut.clk)

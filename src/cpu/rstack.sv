@@ -24,7 +24,7 @@ module rstack
     input   wire                    we,
     input   wire [WIDTH-1:0]        mem_din_addr,
     input   wire [DATA_WIDTH-1:0]   mem_din
-) /* synthesis syn_ramstyle = "distributed_ram" */;;
+);
 
 reg [DATA_WIDTH-1:0] data [SIZE-1:0];
 

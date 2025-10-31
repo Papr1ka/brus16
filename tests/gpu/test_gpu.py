@@ -701,15 +701,13 @@ fh.setLevel(logging.DEBUG)
 logger.addHandler(fh)
 
 async def generate_coords(dut):
-    x = 0
-    y = 0
-    dut.x_coord.value = x
-    dut.y_coord.value = y
-    for _ in range(256):
-        await RisingEdge(dut.clk)
-        x += 1
-        dut.x_coord.value = x
-        dut.y_coord.value = y
+    dut.x_coord.value = 0
+    dut.y_coord.value = 0
+    for y in range(480):
+        for x in range(640):
+            await RisingEdge(dut.clk)
+            dut.x_coord.value = x
+            dut.y_coord.value = y
 
 
 async def generate_clock(dut):
@@ -736,19 +734,18 @@ def log_debug(dut):
     
     string = "reset={reset} copy_start={copy_start} " \
     "state={state} state_new={state_new} " \
-    "rect_counter={rect_counter} " \
     "color={color} x={x} y={y} " \
-    "mem_din={mem_din} fsm_state={fsm_state} coord_generator={coord_generator} " \
-    "rect_counter={rect_counter} batch_counter={batch_counter} batch_completed={batch_completed} " \
-    "mem_select={mem_select} fsm_mem_din_addr={fsm_mem_din_addr} fsm_mem_din={fsm_mem_din} fsm_we={fsm_we} " \
-    "fsm_bu={fsm_bu} fsm_cu={fsm_cu} fsm_dout={fsm_dout} fsm_dout_addr={fsm_dout_addr} buffer={buffer} ".format(
+    "mem_din={mem_din:<8d} fsm_state={fsm_state} coord_generator={coord_generator:<4d} " \
+    "rect_counter={rect_counter:<5d} batch_counter={batch_counter:<2d} batch_completed={batch_completed} " \
+    "mem_select={mem_select} fsm_mem_din_addr={fsm_mem_din_addr:<4d} fsm_mem_din={fsm_mem_din:<32} fsm_mdina={fsm_mdina} fsm_we={fsm_we} " \
+    "fsm_cba={fsm_cba} fsm_cu={fsm_cu} fsm_dout={fsm_dout} fsm_dout_addr={fsm_dout_addr} buffer={buffer} ".format(
         reset = dut.reset.value,
         copy_start = dut.copy_start.value,
         state = dut.gpu.state.value.to_unsigned(),
         state_new = dut.gpu.state_new.value.to_unsigned(),
         color = color,
-        x = dut.gpu.x_coord.value,
-        y = dut.gpu.y_coord.value,
+        x = dut.gpu.x_coord.value.to_unsigned(),
+        y = dut.gpu.y_coord.value.to_unsigned(),
         mem_din = dut.gpu.mem_din.value.to_unsigned() if dut.gpu.mem_din.value.is_resolvable else "z",
         fsm_state = dut.gpu.fsm_state.value.to_unsigned(),
         coord_generator = dut.gpu.coord_generator.value.to_unsigned(),
@@ -758,8 +755,9 @@ def log_debug(dut):
         mem_select = dut.gpu.mem_select.value.to_unsigned(),
         fsm_mem_din_addr = dut.gpu.fsm_mem_din_addr.value.to_unsigned(),
         fsm_mem_din = dut.gpu.fsm_mem_din.value.to_unsigned() if dut.gpu.fsm_mem_din.value.is_resolvable else "z",
+        fsm_mdina = dut.gpu.gpu_receiver_fsm.mem_din_aligned.value,
         fsm_we = dut.gpu.fsm_we.value,
-        fsm_bu = dut.gpu.gpu_receiver_fsm.collisions_buffer_aligned.value,
+        fsm_cba = dut.gpu.gpu_receiver_fsm.collisions_buffer_aligned.value,
         fsm_cu = dut.gpu.gpu_receiver_fsm.collisions_updated.value,
         fsm_dout = dut.gpu.fsm_dout.value,
         fsm_dout_addr = dut.gpu.fsm_dout_addr.value.to_unsigned() if dut.gpu.fsm_dout_addr.value.is_resolvable else "z",
@@ -864,6 +862,16 @@ def setup_mem(dut, mem, start=8192-6*64):
     for i, val in zip(range(start, start + len(mem)), mem):
         dut.memory.data[i].value = val
 
+def get_masks(expected, func, max_coord=640):
+    masks = []
+    for coord in range(max_coord):
+        mask = 0
+        for i in range(64):
+            x = expected[63 - i]
+            mask <<= 1
+            mask |= func(x, coord)
+        masks.append(mask)
+    return masks
 
 @cocotb.test(skip=False)
 async def test_gpu_new(dut):
@@ -883,6 +891,7 @@ async def test_gpu_new(dut):
     await RisingEdge(dut.clk)
     await RisingEdge(dut.clk)
 
+    # expected
     cursor_x = 0
     cursor_y = 0
     expected = []
@@ -895,6 +904,7 @@ async def test_gpu_new(dut):
             y += cursor_y
         expected.append((clamp(x), clamp(x + w), clamp(y, right=480), clamp(y + h, right=480), c))
 
+    # xs
     for batch in range(4):
         for i in range(16):
             logger.debug("Yahoo!")
@@ -910,21 +920,14 @@ async def test_gpu_new(dut):
     await RisingEdge(dut.clk)
     await RisingEdge(dut.clk)
     xs_mem = convert_array(dut.gpu.xs_mem.data, 640)
-    masks = []
-    for coord in range(640):
-        mask = 0
-        for i in range(64):
-            x = expected[63 - i][0]
-            mask <<= 1
-            mask |= (x < coord)
-        masks.append(mask)
+    masks = get_masks([rect[0] for rect in expected], lambda x_left, coord: x_left < coord)
 
-    for x_actual, x_expected in zip(xs_mem, masks):
-        print("act", bin(x_actual & 0xffffffffffffffff))
-        print("exp", bin(x_expected & 0xffffffffffffffff))
-        assert x_actual == x_expected
-    return
+    for i, (x_actual, x_expected) in enumerate(zip(xs_mem, masks)):
+        # print("act", bin(x_actual & 0xffffffffffffffff))
+        # print("exp", bin(x_expected & 0xffffffffffffffff))
+        assert x_actual == x_expected, f"fail on xs[{i}]"
     
+    # xs + widths
     for batch in range(4):
         for i in range(16):
             logger.debug("Yahoo!")
@@ -937,40 +940,98 @@ async def test_gpu_new(dut):
         await Timer(2 * 640, unit='ns')
         await RisingEdge(dut.clk)
     
+    await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk)
+    xs_mem = convert_array(dut.gpu.xs_mem.data, 640)
+    masks_new = get_masks([rect[1] for rect in expected], lambda x_right, coord: coord <= x_right)
+    masks = [a & b for a, b in zip(masks, masks_new)]
+
+    for i, (x_actual, x_expected) in enumerate(zip(xs_mem, masks)):
+        # print("act", bin(x_actual & 0xffffffffffffffff))
+        # print("exp", bin(x_expected & 0xffffffffffffffff))
+        assert x_actual == x_expected, f"fail on xs+width[{i}]"
+    
+    # ys
     for batch in range(4):
         for i in range(16):
             logger.debug("Yahoo!")
-            await RisingEdge(dut.clk)
-            await RisingEdge(dut.clk)
-            await RisingEdge(dut.clk)
+            if (batch != 0 or i != 0):
+                await RisingEdge(dut.clk)
+                await RisingEdge(dut.clk)
+                await RisingEdge(dut.clk)
             sout = dut.controller.mem_dout.value.to_signed()
             assert sout == expected[16 * batch + i][2], f"(batch={batch}, i={i}) fail on ys"
         await Timer(2 * 480, unit='ns')
         await RisingEdge(dut.clk)
     
+    await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk)
+    ys_mem = convert_array(dut.gpu.ys_mem.data, 480)
+    masks= get_masks([rect[2] for rect in expected], lambda y_top, coord: y_top < coord, max_coord=480)
+
+    for i, (y_actual, y_expected) in enumerate(zip(ys_mem, masks)):
+        # print("act", bin(x_actual & 0xffffffffffffffff))
+        # print("exp", bin(x_expected & 0xffffffffffffffff))
+        assert y_actual == y_expected, f"fail on ys[{i}]"
+    
+    # ys + heights
     for batch in range(4):
         for i in range(16):
             logger.debug("Yahoo!")
-            await RisingEdge(dut.clk)
-            await RisingEdge(dut.clk)
-            await RisingEdge(dut.clk)
+            if (batch != 0 or i != 0):
+                await RisingEdge(dut.clk)
+                await RisingEdge(dut.clk)
+                await RisingEdge(dut.clk)
             sout = dut.controller.mem_dout.value.to_signed()
             assert sout == expected[16 * batch + i][3], f"(batch={batch}, i={i}) fail on ys + heights"
         await Timer(2 * 480, unit='ns')
         await RisingEdge(dut.clk)
     
+    await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk)
+    ys_mem = convert_array(dut.gpu.ys_mem.data, 480)
+    masks_new = get_masks([rect[3] for rect in expected], lambda y_bottom, coord: coord <= y_bottom, max_coord=480)
+    masks = [a & b for a, b in zip(masks, masks_new)]
+
+    for i, (y_actual, y_expected) in enumerate(zip(ys_mem, masks)):
+        # print("act", bin(x_actual & 0xffffffffffffffff))
+        # print("exp", bin(x_expected & 0xffffffffffffffff))
+        assert y_actual == y_expected, f"fail on ys+heights[{i}]"
+
+    # colors
     for batch in range(4):
         for i in range(16):
             logger.debug("Yahoo!")
-            await RisingEdge(dut.clk)
-            await RisingEdge(dut.clk)
-            await RisingEdge(dut.clk)
+            if (batch != 0 or i != 0):
+                await RisingEdge(dut.clk)
+                await RisingEdge(dut.clk)
+                await RisingEdge(dut.clk)
             uout = dut.controller.mem_dout.value.to_unsigned()
             assert uout == expected[16 * batch + i][4], f"(batch={batch}, i={i}) fail on colors"
         await Timer(2 * 16, unit='ns')
         await RisingEdge(dut.clk)
+    
+    await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk)
+    colors_mem = convert_array(dut.gpu.colors_mem.data, 64)
+    print(colors_mem)
 
-    await Timer(2 * 1000, unit='ns')
+    for i, (color_actual, color_expected) in enumerate(zip(colors_mem, [val[4] for val in expected])):
+        # print("act", bin(x_actual & 0xffffffffffffffff))
+        # print("exp", bin(x_expected & 0xffffffffffffffff))
+        assert color_actual == color_expected, f"fail on colors[{i}]"
 
-    xs_mem = convert_array(dut.gpu.xs_mem.data, 640)
-    print(xs_mem)
+    await RisingEdge(dut.clk)
+    cocotb.start_soon(generate_coords(dut))
+    await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk)
+    for i in range(5000):
+        # out_color = dut.color.value.to_unsigned()
+        # expected = expected_colors[i]
+        # assert out_color == expected, f"collor mismatch {out_color} != {expected}"
+        await RisingEdge(dut.clk)
+

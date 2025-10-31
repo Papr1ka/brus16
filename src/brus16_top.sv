@@ -34,14 +34,14 @@ module brus16_top #(
     output wire [3:0] hdmi_tx_p
 );
 
-reg [2:0]   dvh_delay;
-reg [2:0]   dvh;        // vsync, display_on_reg, hsync
-reg [15:0]  rgb_reg;
+reg [4:0][2:0]   dvh_delay;  // shift register (delay)
+reg [2:0]        dvh;        // vsync, display_on_reg, hsync
+reg [15:0]       rgb_reg;
 
 /* SIMULATION ONLY (VERILATOR + VIVADO) */
 `ifndef GOWIN
-assign hsync_out = dvh_delay[0];
-assign vsync_out = dvh_delay[1];
+assign hsync_out = dvh_delay[4][0];
+assign vsync_out = dvh_delay[4][1];
 assign rgb_out = rgb_reg;
 `endif
 /* END */
@@ -137,7 +137,6 @@ vga_controller vga_controller(
 
 /* ----------------------------- Main controller ---------------------------- */
 wire copy_start;    // Signal to start copy
-reg  copy_start_delayed;
 wire copy;          // If 1, connect button_controller and rect_copy_controller to data memory
 wire resume;        // Signal to continue cpu work
 wire gpu_reset;     // Signal to reset gpu state to wait for copy
@@ -145,7 +144,7 @@ wire gpu_reset;     // Signal to reset gpu state to wait for copy
 brus16_controller brus16_controller(
     .clk(system_clk),
     .reset(reset),
-    .vsync(vsync),
+    .vpos(vpos),
     .copy_start(copy_start),
     .copy(copy),
     .resume(resume),
@@ -230,15 +229,26 @@ cpu cpu(
 wire [DATA_ADDR_WIDTH-1:0] rc_controller_mem_din_addr;
 wire [15:0]                gpu_data; // gpu rect copy bus
 
-rect_copy_controller rect_copy_controller(
-    .clk(system_clk),
-    .reset(!vsync),
-    .copy_start(copy_start),
-    
-    .mem_din_addr(rc_controller_mem_din_addr),
-    .mem_din(data_memory_read_data_bus),
+wire  [2:0]  state;
+wire  [9:0]  wait_counter;
+wire  [3:0]  rect_counter;
+wire  [1:0]  batch_counter;
+wire         batch_completed;
 
-    .mem_dout(gpu_data)
+rect_copy_controller copy_controller(
+    .clk(system_clk),
+    .reset(!copy),
+    .copy_start(copy_start),
+
+    .mem_din_addr(rc_controller_mem_din_addr), // data mem, read address
+    .mem_din(data_memory_read_data_bus),       // data mem, read data
+
+    .mem_dout(gpu_data),                       // data mem, write data
+    .state_out(state),
+    .wait_counter_out(wait_counter),
+    .rect_counter_out(rect_counter),
+    .batch_counter_out(batch_counter),
+    .batch_completed_out(batch_completed)
 );
 
 
@@ -272,7 +282,7 @@ prom program_memory(
 /* ----------------------------------- gpu ---------------------------------- */
 
 wire [15:0] pixel_color; // rgb 5 6 5
-wire [15:0] rgb = display_on ? pixel_color : DEFAULT_COLOR;
+wire [15:0] rgb = dvh_delay[4][2] ? pixel_color : DEFAULT_COLOR;
 
 /* ONLY IF GPU IS DISABLED */
 `ifdef DISABLE_GPU
@@ -283,15 +293,19 @@ assign pixel_color = 16'b1111100000000000;
 /* ONLY IF GPU IS ENABLED */
 `ifndef DISABLE_GPU
 gpu gpu(
-   .clk(system_clk),
-   .copy_start(copy_start_delayed),
-   .reset(gpu_reset),
-   .hsync(hsync),
-    
-   .x_coord({{COORD_WIDTH-10{1'b0}}, hpos}),
-   .y_coord({{COORD_WIDTH-10{1'b0}}, vpos}),
-   .mem_din(gpu_data),
-   .color(pixel_color)
+    .clk(system_clk),
+    .copy_start(copy_start),
+    .reset(gpu_reset),
+
+    .mem_din(gpu_data),
+    .fsm_state(state),
+    .coord_generator(wait_counter),
+    .rect_counter(rect_counter),
+    .batch_counter(batch_counter),
+    .batch_completed(batch_completed),
+    .x_coord(hpos),
+    .y_coord(vpos),
+    .color(pixel_color)
 );
 `endif
 /* END */
@@ -312,7 +326,7 @@ hdmi hdmi(
     .reset(~lock),
     .hdmi_clk(system_clk),
     .hdmi_clk_5x(vga_x5),
-    .hve(dvh_delay),
+    .hve(dvh_delay[4]),
     .rgb(rgb_8_8_8),
     .hdmi_tx_n(hdmi_tx_n),
     .hdmi_tx_p(hdmi_tx_p)
@@ -332,15 +346,13 @@ assign hdmi_tx_p = 4'b0;
 
 always_ff @(posedge system_clk) begin
     if (reset) begin
-        dvh                <= 3'b0;
-        dvh_delay          <= 3'b0;
         rgb_reg            <= 16'b0;
-        copy_start_delayed <= 1'b0;
+        dvh                <= 3'b0;
+        dvh_delay          <= '0;
     end else begin
         rgb_reg            <= rgb;
         dvh                <= {display_on, vsync, hsync};
-        dvh_delay          <= dvh;
-        copy_start_delayed <= copy_start;
+        dvh_delay          <= {dvh_delay[3:0], dvh};
     end
 end
 

@@ -19,25 +19,26 @@
 
 module brus16_controller
 (
-    input   wire clk,
-    input   wire reset,
-    input   wire vsync,
+    input   wire       clk,
+    input   wire       reset,
+    input   wire [9:0] vpos,
 
-    output  reg  copy_start, // start copy
-    output  reg  copy,       // copy flag (drives memory muxes)
-    output  wire resume,     // cpu continue
-    output  wire gpu_reset   // gpu reset
+    output  reg        copy_start, // start copy
+    output  reg        copy,       // copy flag (drives memory muxes)
+    output  wire       resume,     // cpu continue
+    output  wire       gpu_reset   // gpu reset
 );
 
-assign resume    = !vsync && copy;
-assign gpu_reset = vsync && !copy;
+wire   copy_time = vpos >= 511;
+assign resume    = !copy_time &&  copy;
+assign gpu_reset =  copy_time && !copy;
 
 always_ff @(posedge clk) begin
     if (reset) begin
         copy <= 1'b0;
         copy_start <= 1'b0;
     end else begin
-        copy <= vsync;
+        copy <= copy_time;
         copy_start <= gpu_reset;
     end
 end

@@ -27,7 +27,7 @@ module stack
     input wire we,
     input wire [WIDTH-1:0] mem_din_addr,
     input wire [15:0] mem_din
-) /* synthesis syn_ramstyle = "distributed_ram" */;
+);
 
 reg [15:0] data [SIZE-1:0];
 

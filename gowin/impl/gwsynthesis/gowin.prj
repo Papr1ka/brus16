@@ -6,8 +6,6 @@
     <FileList>
         <File path="C:\Users\Joe\dev\brus16\gowin\src\gowin_clkdiv\gowin_clkdiv.v" type="verilog"/>
         <File path="C:\Users\Joe\dev\brus16\gowin\src\gowin_prom\gowin_prom.v" type="verilog"/>
-        <File path="C:\Users\Joe\dev\brus16\gowin\src\gowin_ram16sdp_rstack\rstack_ssram.v" type="verilog"/>
-        <File path="C:\Users\Joe\dev\brus16\gowin\src\gowin_ram16sdp_stack\stack_ssram.v" type="verilog"/>
         <File path="C:\Users\Joe\dev\brus16\gowin\src\gowin_rpll\gowin_rpll.v" type="verilog"/>
         <File path="C:\Users\Joe\dev\brus16\gowin\src\gowin_sdpb\gowin_sdpb.v" type="verilog"/>
         <File path="C:\Users\Joe\dev\brus16\src\brus16_controller.sv" type="verilog"/>
@@ -23,13 +21,15 @@
         <File path="C:\Users\Joe\dev\brus16\src\gpu\btree_mux_layer.sv" type="verilog"/>
         <File path="C:\Users\Joe\dev\brus16\src\gpu\comparator.sv" type="verilog"/>
         <File path="C:\Users\Joe\dev\brus16\src\gpu\gpu.sv" type="verilog"/>
-        <File path="C:\Users\Joe\dev\brus16\src\gpu\gpu_mem.sv" type="verilog"/>
         <File path="C:\Users\Joe\dev\brus16\src\gpu\gpu_receiver_fsm.sv" type="verilog"/>
         <File path="C:\Users\Joe\dev\brus16\src\hdmi.sv" type="verilog"/>
         <File path="C:\Users\Joe\dev\brus16\src\prom.sv" type="verilog"/>
         <File path="C:\Users\Joe\dev\brus16\src\rect_copy_controller.sv" type="verilog"/>
-        <File path="C:\Users\Joe\dev\brus16\src\test.sv" type="verilog"/>
         <File path="C:\Users\Joe\dev\brus16\src\vga_controller.sv" type="verilog"/>
+        <File path="C:\Users\Joe\dev\brus16\src\gpu\gpu_bram.sv" type="verilog"/>
+        <File path="C:\Users\Joe\dev\brus16\src\gpu\gpu_buffer.sv" type="verilog"/>
+        <File path="C:\Users\Joe\dev\brus16\gowin\src\gowin_sdpb_collisions\gpu_collisions_sdpb.v" type="verilog"/>
+        <File path="C:\Users\Joe\dev\brus16\gowin\src\gowin_sdpb_colors\colors_bram.v" type="verilog"/>
     </FileList>
     <OptionList>
         <Option type="disable_insert_pad" value="1"/>

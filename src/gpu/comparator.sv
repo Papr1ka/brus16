@@ -1,9 +1,5 @@
 /*
-    Comparator
-    check's that point (coord_x, coord_y)
-    collide with rect (rect_left, rect_top, rect_right, rect_bottom)
-
-    async
+    Async comparator for two values
 */
 
 `include "constants.svh"
@@ -20,10 +16,6 @@ module comparator
     output  logic                  collision
 );
 
-always_comb begin
-    collision = equal ?
-                    (left <= right) :
-                    (left < right);
-end
+assign collision = equal ? (left <= right) : (left < right);
 
 endmodule

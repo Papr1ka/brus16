@@ -1,0 +1,17 @@
+[General]
+ipc_version=4
+file=gpu_collisions_sdpb
+module=collisions_bram_SDPB
+target_device=gw1nr9c-004
+type=ram_sdpb
+version=1.0
+
+[Config]
+BYTE_SIZE=0
+DEPTH_A=1024
+DEPTH_B=1024
+LANG=0
+READ=0
+RESET_MODE=true
+WIDTH_A=64
+WIDTH_B=64

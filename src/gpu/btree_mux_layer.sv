@@ -1,5 +1,5 @@
 /*
-    Binary tree mux layer (INPUT_COUNT X INPUT_COUNT/2) (read gpu)
+    Binary tree mux layer (INPUT_COUNT X INPUT_COUNT/2)
 */
 
 `include "constants.svh"

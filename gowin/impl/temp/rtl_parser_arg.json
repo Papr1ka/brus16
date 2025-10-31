@@ -10,14 +10,6 @@
    "Type" : "verilog"
   },
   {
-   "Path" : "C:/Users/Joe/dev/brus16/gowin/src/gowin_ram16sdp_rstack/rstack_ssram.v",
-   "Type" : "verilog"
-  },
-  {
-   "Path" : "C:/Users/Joe/dev/brus16/gowin/src/gowin_ram16sdp_stack/stack_ssram.v",
-   "Type" : "verilog"
-  },
-  {
    "Path" : "C:/Users/Joe/dev/brus16/gowin/src/gowin_rpll/gowin_rpll.v",
    "Type" : "verilog"
   },
@@ -78,10 +70,6 @@
    "Type" : "verilog"
   },
   {
-   "Path" : "C:/Users/Joe/dev/brus16/src/gpu/gpu_mem.sv",
-   "Type" : "verilog"
-  },
-  {
    "Path" : "C:/Users/Joe/dev/brus16/src/gpu/gpu_receiver_fsm.sv",
    "Type" : "verilog"
   },
@@ -98,11 +86,23 @@
    "Type" : "verilog"
   },
   {
-   "Path" : "C:/Users/Joe/dev/brus16/src/test.sv",
+   "Path" : "C:/Users/Joe/dev/brus16/src/vga_controller.sv",
    "Type" : "verilog"
   },
   {
-   "Path" : "C:/Users/Joe/dev/brus16/src/vga_controller.sv",
+   "Path" : "C:/Users/Joe/dev/brus16/src/gpu/gpu_bram.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/gpu/gpu_buffer.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/gowin/src/gowin_sdpb_collisions/gpu_collisions_sdpb.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/gowin/src/gowin_sdpb_colors/colors_bram.v",
    "Type" : "verilog"
   }
  ],

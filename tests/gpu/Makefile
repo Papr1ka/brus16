@@ -6,14 +6,14 @@ TOPLEVEL_LANG ?= verilog
 
 # sources
 VERILOG_SOURCES += ../../src/bsram.sv
-VERILOG_SOURCES += ../../src/rect_copy_controller_new.sv
+VERILOG_SOURCES += ../../src/rect_copy_controller.sv
 VERILOG_SOURCES += ../../src/gpu/btree_mux_layer.sv
 VERILOG_SOURCES += ../../src/gpu/btree_mux.sv
 VERILOG_SOURCES += ../../src/gpu/comparator.sv
-VERILOG_SOURCES += ../../src/gpu/gpu_mem.sv
-VERILOG_SOURCES += ../../src/gpu/wide_bram.sv
-VERILOG_SOURCES += ../../src/gpu/gpu_receiver_fsm_new.sv
-VERILOG_SOURCES += ../../src/gpu/gpu_new.sv
+VERILOG_SOURCES += ../../src/gpu/gpu_buffer.sv
+VERILOG_SOURCES += ../../src/gpu/gpu_bram.sv
+VERILOG_SOURCES += ../../src/gpu/gpu_receiver_fsm.sv
+VERILOG_SOURCES += ../../src/gpu/gpu.sv
 VERILOG_SOURCES += ../../src/tb/gpu_tb.sv
 
 VERILOG_INCLUDE_DIRS += ../../src/

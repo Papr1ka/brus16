@@ -7,7 +7,8 @@
 ./src/gpu/btree_mux_layer.sv
 ./src/gpu/btree_mux.sv
 ./src/gpu/comparator.sv
-./src/gpu/gpu_mem.sv
+./src/gpu/gpu_bram.sv
+./src/gpu/gpu_buffer.sv
 ./src/gpu/gpu_receiver_fsm.sv
 ./src/gpu/gpu.sv
 
