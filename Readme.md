@@ -4,6 +4,12 @@ The repository contains the implementation of the [Brus-16 educational game cons
 
 ![Connection demo](https://github.com/Papr1ka/Brus-16_media/blob/main/fpga_1920_1280_preview.jpg?raw=true)
 
+Gameplay videos:
+- [Ping](https://drive.google.com/file/d/19WD4IPud9H5oBmxPa01WaL1kcS1Kgt_U/view?usp=sharing
+)
+- [Tower](https://drive.google.com/file/d/11EBztNqjRtLEJV-QDxEIYXf2d5LLjlsZ/view?usp=sharing
+)
+
 ### Contents
 
 - [Architecture](#architecture).
