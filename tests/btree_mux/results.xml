@@ -1,6 +1,0 @@
-<testsuites name="results">
-  <testsuite name="all" package="all">
-    <property name="random_seed" value="1761426762" />
-    <testcase name="test_btree_mux" classname="test_btree_mux" file="/mnt/c/Users/Joe/dev/brus16/tests/btree_mux/test_btree_mux.py" lineno="22" time="0.0298459529876709" sim_time_ns="129.0" ratio_time="4322.194035931397" />
-  </testsuite>
-</testsuites>

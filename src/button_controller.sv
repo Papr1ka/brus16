@@ -19,7 +19,7 @@ module button_controller
     input  wire                    reset,       // reset button values
     input  wire                    copy_start,  // start copy button values?
 
-    input  wire [BUTTON_COUNT-1:0] buttons_in,  // button async raw signals
+    input  wire [BUTTON_COUNT-1:0] buttons_in,  // buttons from gamepads
 
     output reg                     mem_dout_we,
     output wire [ADDR_WIDTH-1:0]   mem_dout_addr,
@@ -28,24 +28,10 @@ module button_controller
 
 localparam LAST_BUTTON_ADDR = ADDR_WIDTH'(BUTTON_ADDR + BUTTON_COUNT - 1);
 
-wire buttons_data [BUTTON_COUNT-1:0];
-
-generate
-    genvar i;
-    for (i = 0; i < BUTTON_COUNT; i = i + 1) begin
-        button_handler button(
-            .clk(clk),
-            .reset(reset),
-            .button_in(buttons_in[BUTTON_COUNT - 1 - i]),
-            .button_out(buttons_data[i])
-        );
-    end
-endgenerate
-
 reg   [ADDR_WIDTH-1:0] addr;
 logic [ADDR_WIDTH-1:0] addr_new;
 assign mem_dout_addr = addr;
-assign mem_dout      = {16{buttons_data[BUTTON_COUNT_WIDTH'(addr - BUTTON_ADDR)]}};
+assign mem_dout      = {16{buttons_in[BUTTON_COUNT_WIDTH'(addr - BUTTON_ADDR)]}};
 
 reg   state;
 logic state_new;

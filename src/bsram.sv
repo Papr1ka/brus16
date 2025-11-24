@@ -49,15 +49,23 @@ Gowin_SDPB SDPB(
     .dout(mem_dout),    //output [15:0] dout
     .clka(clk),         //input clka
     .cea(we),           //input cea
-    .reseta(1'b0),      //input reseta
     .clkb(clk),         //input clkb
     .ceb(1'b1),         //input ceb
-    .resetb(1'b0),      //input resetb
+
+`ifdef TP25k
+   .reset(1'b0),       //input reset
+`endif
+`ifdef TN20K
+    .reseta(1'b0),
+    .resetb(1'b0),
+`endif
+
     .oce(1'b1),         //input oce
     .ada(mem_din_addr), //input [12:0] ada
     .din(mem_din),      //input [15:0] din
     .adb(mem_dout_addr) //input [12:0] adb
 );
+
 `endif
 /* END */
 

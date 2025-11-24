@@ -14,7 +14,8 @@ module cpu
     parameter CODE_ADDR_WIDTH   = `CODE_ADDR_WIDTH,
     parameter DATA_ADDR_WIDTH   = `DATA_ADDR_WIDTH,
     parameter STACK_DEPTH       = `STACK_DEPTH,
-    parameter RSTACK_DEPTH      = `RSTACK_DEPTH
+    parameter RSTACK_DEPTH      = `RSTACK_DEPTH,
+    parameter KEY_MEM           = `KEY_MEM
 )
 (
     input   wire                        clk,
@@ -103,7 +104,7 @@ rstack(
     F2: [('F', 1), ('OP', 5), ('I', 1), ('SIMM', 9)]    Other
 */
 
-wire [15:0] instr       = reset ? 18944 : instruction; // 19456 = LOCALS 0 (MODE 1) = NOP
+wire [15:0] instr       = reset ? 18944 : instruction; // 18944 = LOCALS 0 (MODE 1) = NOP
 wire [15:0] instr_simm9 = {{7{instr[8]}}, instr[8:0]};
 wire [15:0] instr_imm13 = {3'b0, instr[12:0]};
 wire [4:0]  opcode      = instr[14:10];
@@ -123,9 +124,10 @@ logic   wait_flag_new;
 
 
 assign code_addr = pc_new;
-wire [DATA_ADDR_WIDTH-1:0] mem_abs_addr =   mode ?
-                                            fp + instr_simm9[DATA_ADDR_WIDTH-1:0] :
-                                            stack_top[DATA_ADDR_WIDTH-1:0];
+wire [DATA_ADDR_WIDTH-1:0] mem_abs_addr =  (mode ?
+                                            fp :
+                                            stack_top[DATA_ADDR_WIDTH-1:0]
+                                            ) + instr_simm9[DATA_ADDR_WIDTH-1:0];
 
 assign mem_dout_we   = (!cmd_type && opcode == `STORE) ? 1'b1 : 1'b0;
 assign mem_dout      = mode ? stack_top : stack_pre_top;
@@ -249,8 +251,8 @@ always_ff @(posedge clk) begin
         pc  <= {CODE_ADDR_WIDTH{1'b1}};
         sp  <= STACK_DEPTH'(0);
         rsp <= RSTACK_DEPTH'(0);
-        fp  <= DATA_ADDR_WIDTH'(0);
-        wait_flag <= 1'b1;
+        fp  <= DATA_ADDR_WIDTH'(KEY_MEM);
+        wait_flag <= 1'b0;
     end else begin
         pc  <= pc_new;
         sp  <= sp_new;

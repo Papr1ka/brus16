@@ -12,7 +12,7 @@ module comparator
 (
     input   wire [COORD_WIDTH-1:0] left,
     input   wire [COORD_WIDTH-1:0] right,
-    input   wire                   equal,   // lte or lt
+    input   wire                   equal,    // lte or lt
     output  logic                  collision
 );
 

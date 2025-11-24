@@ -13,7 +13,7 @@ module gpu_receiver_fsm
     input  wire                          reset,
     
     // from rect_copy_controller
-    input  wire  [15:0]                  din,           // data from rect_copy controller
+    input  wire  [15:0]                  din,          // data from rect_copy controller
     input  wire  [2:0]                   state,
     input  wire  [9:0]                   coord_generator,
     input  wire  [3:0]                   rect_counter,
@@ -140,7 +140,7 @@ generate
         comp(
             .left(comp_left),
             .right(comp_right),
-            .equal(!left_or_top),
+            .equal(left_or_top),
             .collision(collisions[i])
         );
     end

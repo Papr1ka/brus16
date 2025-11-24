@@ -5,7 +5,6 @@ SIM ?= icarus
 TOPLEVEL_LANG ?= verilog
 
 # sources
-VERILOG_SOURCES += ../../src/button_handler.sv
 VERILOG_SOURCES += ../../src/button_controller.sv
 
 VERILOG_INCLUDE_DIRS += ../../src/

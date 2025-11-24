@@ -12,24 +12,36 @@ module brus16_top #(
     parameter BUTTON_COUNT        = `KEY_NUM,
     parameter BUTTON_ADDR         = `KEY_MEM,
     parameter COORD_WIDTH         = `COORD_WIDTH,
-    parameter RESET_COUNTER_WIDTH = `RESET_COUNTER_WIDTH
+    parameter RESET_COUNTER_WIDTH = `RESET_COUNTER_WIDTH,
+    parameter DS2_CLK_RATIO       = `DS2_CLK_RATIO
 )
 (
     input wire clk,
+
+// DUALSHOCK 2 controllers
+/* ONLY WHEN CONTROLLERS ARE ENABLED */
+`ifndef DISABLE_CONTROLLERS
+    output     joystick_clk_0,
+    output     joystick_mosi_0,
+    input      joystick_miso_0,
+    output reg joystick_cs_0,
     
-/* ONLY WHEN BUTTONS ARE ENABLED */
-`ifndef DISABLE_BUTTONS
-    input wire [15:0] buttons_in, // async raw signals from controller
+    output     joystick_clk_1,
+    output     joystick_mosi_1,
+    input      joystick_miso_1,
+    output reg joystick_cs_1,
 `endif
 /* END */
 
-/* SIMULATION ONLY (VERILATOR + VIVADO) */
-`ifndef GOWIN
+/* SIMULATION ONLY */
+`ifdef SIM
     output wire hsync_out,
     output wire vsync_out,
     output wire [15:0] rgb_out,
+    input  wire [15:0] buttons_in,
 `endif
 /* END */
+
     output wire [3:0] hdmi_tx_n,
     output wire [3:0] hdmi_tx_p
 );
@@ -38,8 +50,8 @@ reg [4:0][2:0]   dvh_delay;  // shift register (delay)
 reg [2:0]        dvh;        // vsync, display_on_reg, hsync
 reg [15:0]       rgb_reg;
 
-/* SIMULATION ONLY (VERILATOR + VIVADO) */
-`ifndef GOWIN
+/* SIMULATION ONLY */
+`ifdef SIM
 assign hsync_out = dvh_delay[4][0];
 assign vsync_out = dvh_delay[4][1];
 assign rgb_out = rgb_reg;
@@ -53,13 +65,11 @@ wire system_clk; // clk for the whole system, 25.2 MHz
 wire vga_x5;     // system_clk x5 (126 MHz) (for HDMI)
 wire lock;       // PLL lock
 
-/* VERILATOR SIMULATION ONLY */
+/* SIMULATION ONLY */
 `ifdef SIM
-
 assign system_clk = clk;
 assign vga_x5 = 1'b0;
 assign lock = 1'b1;
-
 `endif
 /* END */
 
@@ -67,11 +77,22 @@ assign lock = 1'b1;
 /* FOR GOWIN ONLY */
 `ifdef GOWIN
 
+`ifdef TN20K
 Gowin_rPLL rPLL(
     .clkout(vga_x5), // output clkout
     .lock(lock),     // output lock
     .clkin(clk)      // input clkin
 );
+`endif
+
+`ifdef TP25k
+Gowin_PLL rPLL(
+   .clkout0(vga_x5), // output clkout
+   .lock(lock),      // output lock
+   .clkin(clk),      // input clkin
+   .mdclk(clk)       // input mdclk
+);
+`endif
 
 Gowin_CLKDIV clkDIV(
     .clkout(system_clk), // output clkout
@@ -102,7 +123,7 @@ PLL pll(
 reg [RESET_COUNTER_WIDTH-1:0] reset_counter = RESET_COUNTER_WIDTH'(0);
 reg was_reset = 1'b0;
 
-wire reset = ~lock | ~was_reset;
+wire reset;
 
 always_ff @(posedge system_clk) begin
     reset_counter <= reset_counter + 1;
@@ -151,6 +172,106 @@ brus16_controller brus16_controller(
     .gpu_reset(gpu_reset)
 );
 
+/* -------------------------- dualshok2_controllers ------------------------- */
+
+/* ONLY WHEN CONTROLLERS ARE ENABLED */
+`ifndef DISABLE_CONTROLLERS
+
+wire [15:0] joystick_buttons_0;
+wire [15:0] joystick_buttons_1;
+wire        data_valid_0;
+wire        data_valid_1;
+
+/*
+    CHEATSHEET
+    brus_buttons[0] -> KEY_MEM
+    brus_buttons[1] -> KEY_MEM + 1
+    brus_buttons[15] -> KEY_MEM + 15
+
+    joystick_buttons[0]:  square
+    joystick_buttons[1]:  cross
+    joystick_buttons[2]:  circle
+    joystick_buttons[3]:  triangle
+    joystick_buttons[4]:  R1
+    joystick_buttons[5]:  L1
+    joystick_buttons[6]:  R2
+    joystick_buttons[7]:  L2
+    joystick_buttons[8]:  L
+    joystick_buttons[9]:  D
+    joystick_buttons[10]: R
+    joystick_buttons[11]: U
+    joystick_buttons[12]: start
+    joystick_buttons[13]: R3
+    joystick_buttons[14]: L3
+    joystick_buttons[15]: select
+*/
+
+wire [15:0] brus_buttons = ~{
+    // player 2
+    joystick_buttons_1[2],  // circle
+    joystick_buttons_1[3],  // triangle
+    joystick_buttons_1[1],  // cross
+    joystick_buttons_1[0],  // square
+    joystick_buttons_1[10], // R
+    joystick_buttons_1[8],  // L
+    joystick_buttons_1[9],  // D
+    joystick_buttons_1[11], // U
+
+    // player 1
+    joystick_buttons_0[2],  // circle
+    joystick_buttons_0[3],  // triangle
+    joystick_buttons_0[1],  // cross
+    joystick_buttons_0[0],  // square
+    joystick_buttons_0[10], // R
+    joystick_buttons_0[8],  // L
+    joystick_buttons_0[9],  // D
+    joystick_buttons_0[11]  // U
+};
+
+dualshock_spi_master #(
+    .CLK_RATIO(DS2_CLK_RATIO)
+)
+controller0 (
+    .clk(system_clk),
+    .reset(reset),
+    
+    .spi_miso(joystick_miso_0),
+    .spi_clk(joystick_clk_0),
+    .spi_cs(joystick_cs_0),
+    .spi_mosi(joystick_mosi_0),
+
+    .data_valid(data_valid_0),
+    .rx_buffer(joystick_buttons_0)
+);
+
+dualshock_spi_master #(
+    .CLK_RATIO(DS2_CLK_RATIO)
+)
+controller1 (
+    .clk(system_clk),
+    .reset(reset),
+    
+    .spi_miso(joystick_miso_1),
+    .spi_clk(joystick_clk_1),
+    .spi_cs(joystick_cs_1),
+    .spi_mosi(joystick_mosi_1),
+
+    .data_valid(data_valid_1),
+    .rx_buffer(joystick_buttons_1)
+);
+
+assign reset = ~lock | ~was_reset | (~joystick_buttons_0[12] && data_valid_0) | (~joystick_buttons_1[12] && data_valid_1);
+
+`endif
+/* END */
+
+/* ONLY WHEN CONTROLLERS ARE DISABLED */
+`ifdef DISABLE_CONTROLLERS
+assign reset = ~lock | ~was_reset;
+wire [15:0] brus_buttons = 16'b0;
+`endif
+/* END */
+
 
 /* ---------------------------- button_controller --------------------------- */
 
@@ -159,7 +280,7 @@ wire [DATA_ADDR_WIDTH-1:0] bc_mem_dout_addr;
 wire [15:0]                bc_mem_dout;
 
 /* ONLY WHEN BUTTONS ARE DISABLED */
-`ifdef DISABLE_BUTTONS
+`ifdef DISABLE_CONTROLLERS
 assign bc_mem_dout_we   = 1'b0;
 assign bc_mem_dout_addr = DATA_ADDR_WIDTH'(0);
 assign bc_mem_dout      = 16'b0;
@@ -176,7 +297,13 @@ button_controller(
     .clk(system_clk),
     .reset(reset | resume),
     .copy_start(copy_start),
+
+`ifdef SIM
     .buttons_in(buttons_in),
+`endif
+`ifndef SIM
+    .buttons_in(brus_buttons),
+`endif
 
     .mem_dout_we(bc_mem_dout_we),
     .mem_dout_addr(bc_mem_dout_addr),
@@ -334,7 +461,7 @@ hdmi hdmi(
 `endif
 /* END */
 
-/* SIMULATION ONLY (VERILATOR + VIVADO) */
+/* SIMULATION + VIVADO ONLY */
 `ifndef GOWIN
 assign hdmi_tx_n = 4'b0;
 assign hdmi_tx_p = 4'b0;

@@ -24,7 +24,7 @@ def load(filename):
 
 factorial_program, factorial_data = load("./factorial.bin")
 
-game_program, game_data = load("./racing.bin")
+game_program, game_data = load("./logo.bin")
 
 CMDS = [(
     lambda xs: (xs[0], int(xs[1]))
@@ -240,7 +240,7 @@ async def test_game(dut):
         await Timer(2 * 7000, unit='ns')
         await RisingEdge(dut.clk)
         
-        for i in range(11):
+        for i in range(10):
             if i != 0:
                 dut.resume.value = 1
                 await RisingEdge(dut.clk)

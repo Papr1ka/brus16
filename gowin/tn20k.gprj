@@ -1,0 +1,40 @@
+<?xml version="1" encoding="UTF-8"?>
+<!DOCTYPE gowin-fpga-project>
+<Project>
+    <Template>FPGA</Template>
+    <Version>5</Version>
+    <Device name="GW2AR-18C" pn="GW2AR-LV18QN88C8/I7">gw2ar18c-000</Device>
+    <FileList>
+        <File path="src/tn20k/gowin_prom/gowin_prom.v" type="file.verilog" enable="1"/>
+        <File path="src/tn20k/gowin_sdpb/gowin_sdpb.v" type="file.verilog" enable="1"/>
+        <File path="src/tn20k/gowin_clkdiv/gowin_clkdiv.v" type="file.verilog" enable="1"/>
+        <File path="src/tn20k/gowin_prom/gowin_prom.v" type="file.verilog" enable="1"/>
+        <File path="src/tn20k/gowin_rpll/gowin_rpll.v" type="file.verilog" enable="1"/>
+        <File path="src/tn20k/gowin_sdpb/gowin_sdpb.v" type="file.verilog" enable="1"/>
+        <File path="src/tn20k/gowin_sdpb_collisions/gowin_sdpb_collisions.v" type="file.verilog" enable="1"/>
+        <File path="src/tn20k/gowin_sdpb_colors/gowin_sdpb_colors.v" type="file.verilog" enable="1"/>
+        <File path="../src/brus16_controller.sv" type="file.verilog" enable="1"/>
+        <File path="../src/brus16_top.sv" type="file.verilog" enable="1"/>
+        <File path="../src/bsram.sv" type="file.verilog" enable="1"/>
+        <File path="../src/button_controller.sv" type="file.verilog" enable="1"/>
+        <File path="../src/cpu/alu.sv" type="file.verilog" enable="1"/>
+        <File path="../src/cpu/cpu.sv" type="file.verilog" enable="1"/>
+        <File path="../src/cpu/rstack.sv" type="file.verilog" enable="1"/>
+        <File path="../src/cpu/stack.sv" type="file.verilog" enable="1"/>
+        <File path="../src/dualshock_spi_master.sv" type="file.verilog" enable="1"/>
+        <File path="../src/gpu/btree_mux.sv" type="file.verilog" enable="1"/>
+        <File path="../src/gpu/btree_mux_layer.sv" type="file.verilog" enable="1"/>
+        <File path="../src/gpu/comparator.sv" type="file.verilog" enable="1"/>
+        <File path="../src/gpu/gpu.sv" type="file.verilog" enable="1"/>
+        <File path="../src/gpu/gpu_bram.sv" type="file.verilog" enable="1"/>
+        <File path="../src/gpu/gpu_buffer.sv" type="file.verilog" enable="1"/>
+        <File path="../src/gpu/gpu_receiver_fsm.sv" type="file.verilog" enable="1"/>
+        <File path="../src/hdmi.sv" type="file.verilog" enable="1"/>
+        <File path="../src/prom.sv" type="file.verilog" enable="1"/>
+        <File path="../src/rect_copy_controller.sv" type="file.verilog" enable="1"/>
+        <File path="../src/vga_controller.sv" type="file.verilog" enable="1"/>
+        <File path="src/tn20k/20k.cst" type="file.cst" enable="1"/>
+        <File path="src/tn20k/20k.sdc" type="file.sdc" enable="1"/>
+        <File path="../src/constants.svh" type="file.other" enable="1"/>
+    </FileList>
+</Project>

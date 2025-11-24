@@ -27,9 +27,7 @@ async def generate_clock(dut):
 
 
 def log_debug(dut):
-    buttons = []
-    for i in range(BUTTON_COUNT):
-        buttons.append(int(dut.buttons_data[i].value))
+    buttons = dut.buttons_in.value
     
     string = "reset={reset} copy_start={copy_start} " \
     "state={state} state_new={state_new} " \
@@ -59,7 +57,7 @@ async def tect_button_controller(dut):
     dut.reset.value = 0
 
     await RisingEdge(dut.clk)
-    button_values = [0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1]
+    button_values = [0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1][::-1]
     dut.buttons_in.value = 0b0101100010000011
     await Timer(2 * 260, 'ns')
 

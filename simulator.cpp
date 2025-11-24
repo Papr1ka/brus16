@@ -104,10 +104,10 @@ bool pre_v_sync = 0;
 // set Verilog module inputs based on arrow key inputs
 // void apply_input() {
 //     uint16_t buttons = 0;
-//     buttons |= keys[0] << 15; // up
-//     buttons |= keys[1] << 14; // down
-//     buttons |= keys[2] << 13; // left
-//     buttons |= keys[3] << 12; // right
+//     buttons |= keys[0] << 0; // up
+//     buttons |= keys[1] << 1; // down
+//     buttons |= keys[2] << 2; // left
+//     buttons |= keys[3] << 3; // right
 //     display->buttons_in = buttons;
 // }
 

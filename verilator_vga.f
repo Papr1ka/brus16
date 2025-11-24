@@ -16,7 +16,6 @@
 ./src/brus16_top.sv
 ./src/bsram.sv
 ./src/prom.sv
-./src/button_handler.sv
 ./src/button_controller.sv
 ./src/rect_copy_controller.sv
 ./src/vga_controller.sv

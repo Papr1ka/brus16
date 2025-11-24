@@ -46,18 +46,4 @@ end
 `endif
 /* END */
 
-
-// /* GOWIN ONLY */
-// `ifdef GOWIN
-// rstack_ssram rstack(
-//     .dout(mem_dout), //output [15:0] dout
-//     .di(mem_din), //input [15:0] di
-//     .wad(mem_din_addr), //input [3:0] wad
-//     .rad(mem_dout_addr), //input [3:0] rad
-//     .wre(we), //input wre
-//     .clk(clk) //input clk
-// );
-// `endif
-// /* END */
-
 endmodule

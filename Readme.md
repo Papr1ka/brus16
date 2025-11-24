@@ -1,61 +1,144 @@
-# Брус-16
+# Brus-16 fpga implementation
 
-Аппаратная реализация [учебной игровой приставки](https://github.com/true-grue/Brus-16).
+The repository contains the implementation of the [Brus-16 educational game console](https://github.com/true-grue/Brus-16).
 
-## Архитектура
 
-Подробнее об архитектуре можно узнать из презентации [Презентация](./docs/Брус-16.pdf).
+### Contents
 
-Высокоуровневая схема архитектуры:
+- [Architecture](#architecture).
+- [Boards specific](#boards-specific).
+- [Get firmware for new game](#get-firmware-for-new-game).
+- [PMOD joystick kit connection](#pmod-joystick-kit-connection).
+- [Simulation](#simulation).
+- [Tests](#tests).
 
-![Архитектура, вид сверху](./docs/architecture.png)
 
-## Ключевые аспекты:
+### Architecture
 
-- Вывод через интерфейс 64 аппаратных прямоугольников.
-- 16-битный программируемый процессор вычисляет следующий кадр.
-- GPU без видеобуфера выводит текущий кадр.
-- Управляющие сигналы (gpu_reset, copy_start, resume, copy) являются производными от vsync.
-- (Грубо) По vsync (copy_start), DMA Rect copy и DMA Button controler подключаются к памяти данных, Rect copy копирует данные прямоугольников с пересчётом на абсолютные координаты в память GPU, Button controller записывает в память состояние кнопок.
-- По заднему фронту vsync (resume), процессор возобновляет работу (Не начинает заново, а возобновляет с места остановки, что реализовано через флаг wait).
-- Для разработки под приставку требуется ассемблер и компилятор.
+More general information can be found [here](https://github.com/true-grue/Brus-16?tab=readme-ov-file#architecture).
 
-## Код игры и эмулятор
+High-level diagram of a game console:
 
-Приставка прошита игрой про машинку в bsram.v.
+![High-level diagram of a game console](./docs/architecture.png)
 
-Посмотреть на приставку в действии можно [здесь](https://true-grue.github.io/Brus-16-Demo/brus16.html).
+#### Key notes
 
-## Симуляция
+CPU:
+- The **Single-cycle** processor calculates the next frame and enters the wait state.
+- After the resume signal, it **continues** its work from the previous location.
+- [ISA is available here](https://true-grue.github.io/Brus-16/isa.html).
 
-На текущий момент, доступна симуляция с помощью verilator.
+GPU:
 
-Зависимости:
-- компилятор c++
+- **No framebuffer**.
+- Uses a frame representation in the form of a 640x480x64 matrix, where each of the 64 bits indicates the intersection of a rectangle with a specific pixel, $rect\_left <= x < rect\_right \ and \ rect\_top <= y < rect\_bottom$ for each rect for each pixel.
+- Due to the properties of rectangles, the 640x480 matrix is represented as two arrays of 640 and 480 and is calculated during copying.
+- During operation, the GPU obtains a 64-bit vector of rectangle collisions with the current pixel and passes the rectangle indices through a tree of multiplexers.
+- The color is sent to the output based on the index from a mux tree.
+
+Multiplexer tree diagram for 4 inputs:
+
+![Multiplexer tree diagram for 4 inputs](./docs/btree_mux.png)
+
+Other:
+
+- The main controller wakes up the CPU and resets the GPU.
+- DMA Button controller copies the status of buttons to the data memory.
+- DMA Rect copy preprocesses rectangle data and sends it to the GPU.
+- Access to data memory is switched from the processor to the controllers near the vsync area.
+
+
+### Boards specific
+
+Currently supported FPGA boards:
+- [Tang Nano 20k](https://wiki.sipeed.com/hardware/en/tang/tang-nano-20k/nano-20k.html).
+- [Tang Primer 25k](https://wiki.sipeed.com/hardware/en/tang/tang-primer-25k/primer-25k.html).
+
+> Although tang nano 9k has sufficient resources, for unknown reasons, I was unable to obtain a working version.
+
+Board specific files are:
+- src/brus16_top.sv (PLL)
+- src/hdmi.sv
+- src/bsram.sv (Data memory, bram instantination)
+- src/prom.sv (Program memory, bram instantination)
+- src/gpu/gpu_bram.sv (GPU internal memory, bram instantination)
+
+If desired, the project can be adapted relatively quickly for another board.
+
+
+### Get firmware for new game
+
+If you are using tang nano 20k or tang primer 25k:
+1. Generate program memory and data memory initialization files (game_code.mi, game_data.mi) from the game's binary file.
+
+`python tools/gen_fpga_firm.py game.bin game`
+
+2. Open the corresponding project (gowin/tn20k.gprj, gowin/tp25k.gprj).
+3. Uncomment line 6 or 7 in the src/constants.svh file.
+4. Generate prom (8192x16) for program memory and sdpb (8192x16) for data memory with default parameters, selecting game_code.mi for prom and game_data.mi for sdpb (choose board folder).
+5. Run all and program your device.
+
+Important project settings:
+| Setting | Value |
+| :-:     | :-:   |
+| Synthesize/General, Top Module/Entity | brus16_top |
+| Synthesize/General, Include Path | ..\src |
+| Synthesize/General, Verilog Language | System Verilog 2017 |
+| Dual-Purpose Pin, Use SSPI as regular IO | True |
+| Dual-Purpose Pin, Use CPU as regular IO (tp25k) | True |
+
+### PMOD joystick kit connection
+
+[PMOD Joystick](https://wiki.sipeed.com/hardware/en/tang/tang-PMOD/FPGA_PMOD.html#PMOD_DS2x2).
+
+#### Tang nano 20k
+
+| Joystick 1          || Joystick 2          ||
+| :-:      | :-:       | :-:      | :-:       |
+| PMOD pin | Board pin | PMOD pin | Board pin |
+| 3.3V     | 3.3V      | 3.3V     | 3.3V      |
+| GND      | GND       | GND      | GND       |
+| SCLK     | 52        | SCLK     | 17        |
+| MISO     | 71        | MISO     | 19        |
+| MOSI     | 53        | MOSI     | 20        |
+| ~CS1     | 72        | ~CS2     | 18        |
+
+#### Tang primer 25k
+
+PMOD joystick: G11 PMOD group.
+
+[PMOD DVI](https://wiki.sipeed.com/hardware/en/tang/tang-PMOD/FPGA_PMOD.html#PMOD_DVI): F5 PMOD group.
+
+
+### Simulation
+
+Simulation via Verilator.
+
+Dependencies:
+- С++ compiler
 - verilator
 - freeglut + freeglut-devel
 - make
 
-Запуск:
+Uncomment SIM, DISABLE_CONTROLLERS and comment GOWIN, TP25K/TN20K.
+
+Paste game data in data.txt and program.txt
+
+Run:
 ```
 verilator -f verilator_vga.f
 make -j -C obj_dir -f Vbrus16_top.mk Vbrus16_top
 ./obj_dir/Vbrus16_top 
 ```
 
-Управление на стрелки (требует терпения).
 
-## Тесты
+### Tests
 
-Зависимости:
+Dependencies:
 - cocotb
 - icarus verilog >= 13.0
 - make
 
-Запуск:
+Run:
 
 `cd tests && make all`
-
-## Перспектива
-
-Запустить на [Tang nano 9k](https://wiki.sipeed.com/hardware/en/tang/Tang-Nano-9K/Nano-9K.html).
