@@ -2,12 +2,13 @@
 
 The repository contains the implementation of the [Brus-16 educational game console](https://github.com/true-grue/Brus-16).
 
+![Connection demo](https://github.com/Papr1ka/Brus-16_media/blob/main/fpga_1920_1280_preview.jpg?raw=true)
 
 ### Contents
 
 - [Architecture](#architecture).
-- [Boards specific](#boards-specific).
-- [Get firmware for new game](#get-firmware-for-new-game).
+- [Board-specific](#board-specific).
+- [Build firmware for new game](#build-firmware-for-a-new-game).
 - [PMOD joystick kit connection](#pmod-joystick-kit-connection).
 - [Simulation](#simulation).
 - [Tests](#tests).
@@ -31,7 +32,7 @@ CPU:
 GPU:
 
 - **No framebuffer**.
-- Uses a frame representation in the form of a 640x480x64 matrix, where each of the 64 bits indicates the intersection of a rectangle with a specific pixel, $rect\_left <= x < rect\_right \ and \ rect\_top <= y < rect\_bottom$ for each rect for each pixel.
+- Uses a frame representation in the form of a 640x480x64 matrix, where each of the 64 bits indicates the intersection of a rectangle with a specific pixel, rect_left <= x < rect_right && rect_top <= y < rect_bottom for each rect for each pixel.
 - Due to the properties of rectangles, the 640x480 matrix is represented as two arrays of 640 and 480 and is calculated during copying.
 - During operation, the GPU obtains a 64-bit vector of rectangle collisions with the current pixel and passes the rectangle indices through a tree of multiplexers.
 - The color is sent to the output based on the index from a mux tree.
@@ -48,27 +49,28 @@ Other:
 - Access to data memory is switched from the processor to the controllers near the vsync area.
 
 
-### Boards specific
+### Board-specific
 
 Currently supported FPGA boards:
-- [Tang Nano 20k](https://wiki.sipeed.com/hardware/en/tang/tang-nano-20k/nano-20k.html).
-- [Tang Primer 25k](https://wiki.sipeed.com/hardware/en/tang/tang-primer-25k/primer-25k.html).
+- [Tang Nano 20K](https://wiki.sipeed.com/hardware/en/tang/tang-nano-20k/nano-20k.html).
+- [Tang Primer 25K](https://wiki.sipeed.com/hardware/en/tang/tang-primer-25k/primer-25k.html).
 
-> Although tang nano 9k has sufficient resources, for unknown reasons, I was unable to obtain a working version.
+> Although Tang Nano 9K has sufficient resources, for unknown reasons, I was unable to obtain a working version.
 
 Board specific files are:
 - src/brus16_top.sv (PLL)
 - src/hdmi.sv
-- src/bsram.sv (Data memory, bram instantination)
-- src/prom.sv (Program memory, bram instantination)
-- src/gpu/gpu_bram.sv (GPU internal memory, bram instantination)
+- src/bsram.sv (Data memory, BRAM instantination)
+- src/prom.sv (Program memory, BRAM instantination)
+- src/gpu/gpu_bram.sv (GPU internal memory, BRAM instantination)
 
 If desired, the project can be adapted relatively quickly for another board.
 
+system_clk clock frequency = **25.2 MHz**.
 
-### Get firmware for new game
+### Build firmware for a new game
 
-If you are using tang nano 20k or tang primer 25k:
+If you are using Tang Nano 20K or Tang Primer 25K:
 1. Generate program memory and data memory initialization files (game_code.mi, game_data.mi) from the game's binary file.
 
 `python tools/gen_fpga_firm.py game.bin game`
@@ -91,7 +93,7 @@ Important project settings:
 
 [PMOD Joystick](https://wiki.sipeed.com/hardware/en/tang/tang-PMOD/FPGA_PMOD.html#PMOD_DS2x2).
 
-#### Tang nano 20k
+#### Tang Nano 20k
 
 | Joystick 1          || Joystick 2          ||
 | :-:      | :-:       | :-:      | :-:       |
@@ -103,7 +105,7 @@ Important project settings:
 | MOSI     | 53        | MOSI     | 20        |
 | ~CS1     | 72        | ~CS2     | 18        |
 
-#### Tang primer 25k
+#### Tang Primer 25k
 
 PMOD joystick: G11 PMOD group.
 
@@ -115,7 +117,7 @@ PMOD joystick: G11 PMOD group.
 Simulation via Verilator.
 
 Dependencies:
-- С++ compiler
+- C++ compiler
 - verilator
 - freeglut + freeglut-devel
 - make
