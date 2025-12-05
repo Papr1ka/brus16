@@ -31,7 +31,7 @@ localparam LAST_BUTTON_ADDR = ADDR_WIDTH'(BUTTON_ADDR + BUTTON_COUNT - 1);
 reg   [ADDR_WIDTH-1:0] addr;
 logic [ADDR_WIDTH-1:0] addr_new;
 assign mem_dout_addr = addr;
-assign mem_dout      = {16{buttons_in[BUTTON_COUNT_WIDTH'(addr - BUTTON_ADDR)]}};
+assign mem_dout      = {15'b0, {buttons_in[BUTTON_COUNT_WIDTH'(addr - BUTTON_ADDR)]}};
 
 reg   state;
 logic state_new;
