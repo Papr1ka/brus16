@@ -1,11 +1,12 @@
 # Makefile
 
 # defaults
-SIM ?= icarus
+SIM ?= verilator
+EXTRA_ARGS += --trace --trace-structs
 TOPLEVEL_LANG ?= verilog
 
 # sources
-VERILOG_SOURCES += ../../src/button_controller.sv
+VERILOG_SOURCES += ../../src/buttons/button_controller.sv
 
 VERILOG_INCLUDE_DIRS += ../../src/
 

@@ -15,24 +15,21 @@ module cpu
     parameter DATA_ADDR_WIDTH   = `DATA_ADDR_WIDTH,
     parameter STACK_DEPTH       = `STACK_DEPTH,
     parameter RSTACK_DEPTH      = `RSTACK_DEPTH,
-    parameter KEY_MEM           = `KEY_MEM
+    parameter FP                = `FP
 )
 (
     input   wire                        clk,
     input   wire                        reset,          // reset cpu, start from scratch
     input   wire                        resume,         // continue work after wait
 
-    // Input code bus
+    // Code bus
     output  wire [CODE_ADDR_WIDTH-1:0]  code_addr,      // pc (what instruction to fetch)
     input   wire [15:0]                 instruction,    // instruction from program memory
 
-    // Input data bus
-    output  wire [DATA_ADDR_WIDTH-1:0]  mem_din_addr,   // data mem, read address
-    input   wire [15:0]                 mem_din,        // data mem, data
-
-    // Output data bus
-    output  wire                        mem_dout_we,    // write enable to data mem
-    output  wire [DATA_ADDR_WIDTH-1:0]  mem_dout_addr,  // data mem, write address
+    // Data bus
+    output  wire [DATA_ADDR_WIDTH-1:0]  mem_addr,       // data mem, r/w addr
+    input   wire [15:0]                 mem_din,        // data mem, read data
+    output  wire                        mem_dout_we,    // data mem, write enable
     output  wire [15:0]                 mem_dout        // data mem, write data
 );
 
@@ -131,8 +128,7 @@ wire [DATA_ADDR_WIDTH-1:0] mem_abs_addr =  (mode ?
 
 assign mem_dout_we   = (!cmd_type && opcode == `STORE) ? 1'b1 : 1'b0;
 assign mem_dout      = mode ? stack_top : stack_pre_top;
-assign mem_dout_addr = mem_abs_addr;
-assign mem_din_addr  = mem_abs_addr;
+assign mem_addr = mem_abs_addr;
 
 /*
     ALU
@@ -251,7 +247,7 @@ always_ff @(posedge clk) begin
         pc  <= {CODE_ADDR_WIDTH{1'b1}};
         sp  <= STACK_DEPTH'(0);
         rsp <= RSTACK_DEPTH'(0);
-        fp  <= DATA_ADDR_WIDTH'(KEY_MEM);
+        fp  <= DATA_ADDR_WIDTH'(FP);
         wait_flag <= 1'b0;
     end else begin
         pc  <= pc_new;

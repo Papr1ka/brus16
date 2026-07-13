@@ -40,24 +40,24 @@ localparam READ_HEIGHT = 3'd4;
 localparam READ_COLOR = 3'd5;
 
 // shift registers (3 tacts)
-reg [2:0][3:0] rect_counter_delay;
-reg [2:0][9:0] coord_generator_delay;
-reg [2:0][2:0] state_delay;
-reg [2:0][1:0] batch_counter_delay;
-reg [2:0]      batch_completed_delay;
+reg [3:0][3:0] rect_counter_delay;
+reg [3:0][9:0] coord_generator_delay;
+reg [3:0][2:0] state_delay;
+reg [3:0][1:0] batch_counter_delay;
+reg [3:0]      batch_completed_delay;
 
-assign we = batch_completed_delay[2];
-assign mem_din_addr = coord_generator_delay[0];
+assign we = batch_completed_delay[3];
+assign mem_din_addr = coord_generator_delay[1];
 
 logic [63:0] dout_new;
-wire  finish_new = (state_delay[2] == READ_COLOR) && dout_addr == 63;
+wire  finish_new = (state_delay[3] == READ_COLOR) && dout_addr == 63;
 
 // address calculation
 logic [9:0] addr_sm_right;
-assign dout_addr = coord_generator_delay[2] + addr_sm_right;
+assign dout_addr = coord_generator_delay[3] + addr_sm_right;
 
 always_comb begin
-    case ({state_delay[2] == READ_COLOR, batch_counter_delay[2]})
+    case ({state_delay[3] == READ_COLOR, batch_counter_delay[3]})
         {1'b1, 2'd0}: addr_sm_right = 10'd0;
         {1'b1, 2'd1}: addr_sm_right = 10'd16;
         {1'b1, 2'd2}: addr_sm_right = 10'd32;
@@ -89,10 +89,10 @@ logic [63:0] mem_din_aligned;           // mem_din with 1 on unprocessed bits
                                         // processed collisions
 wire  [63:0] collisions_updated = mem_din_aligned & collisions_buffer_aligned;
 
-wire left_or_top = (state_delay[0] == READ_X) || (state_delay[0] == READ_Y);
+wire left_or_top = (state_delay[1] == READ_X) || (state_delay[1] == READ_Y);
 
 always_comb begin
-    case ({((state_delay[2] == READ_X) || (state_delay[2] == READ_Y)), batch_counter_delay[2]})
+    case ({((state_delay[3] == READ_X) || (state_delay[3] == READ_Y)), batch_counter_delay[3]})
         {1'b1, 2'd0}: mem_din_aligned = {64{1'b1}};
         {1'b1, 2'd1}: mem_din_aligned = {{48{1'b1}}, mem_din[15:0]};
         {1'b1, 2'd2}: mem_din_aligned = {{32{1'b1}}, mem_din[31:0]};
@@ -102,7 +102,7 @@ always_comb begin
 end
 
 always_comb begin
-    case (batch_counter_delay[2])
+    case (batch_counter_delay[3])
         2'd0:    collisions_buffer_aligned = {{48{1'b1}}, collisions_buffer};
         2'd1:    collisions_buffer_aligned = {{32{1'b1}}, collisions_buffer, {16{1'b1}}};
         2'd2:    collisions_buffer_aligned = {{16{1'b1}}, collisions_buffer, {32{1'b1}}};
@@ -112,7 +112,7 @@ always_comb begin
 end
 
 always_comb begin
-    case (state_delay[2])
+    case (state_delay[3])
         READ_X,
         READ_WIDTH:  mem_select = 2'd0; // xs
         READ_Y,
@@ -122,8 +122,8 @@ always_comb begin
 end
 
 always_comb begin
-    case (state_delay[2])
-        READ_COLOR: dout_new = {{48{1'b0}}, buffer[coord_generator_delay[1][3:0]]};
+    case (state_delay[3])
+        READ_COLOR: dout_new = {{48{1'b0}}, buffer[coord_generator_delay[2][3:0]]};
         default:    dout_new = collisions_updated;
     endcase
 end
@@ -132,8 +132,8 @@ end
 generate
     genvar i;
     for (i = 0; i < 16; i++) begin
-        wire [9:0] comp_left  = left_or_top ? buffer[i][9:0]           : coord_generator_delay[0];
-        wire [9:0] comp_right = left_or_top ? coord_generator_delay[0] : buffer[i][9:0];
+        wire [9:0] comp_left  = left_or_top ? buffer[i][9:0]           : coord_generator_delay[1];
+        wire [9:0] comp_right = left_or_top ? coord_generator_delay[1] : buffer[i][9:0];
         comparator #(
             .COORD_WIDTH(10)
         )
@@ -159,11 +159,11 @@ always_ff @(posedge clk) begin
     end else begin
         dout                       <= dout_new;
         collisions_buffer          <= collisions;
-        rect_counter_delay[2:0]    <= {rect_counter_delay[1:0],    rect_counter};
-        coord_generator_delay[2:0] <= {coord_generator_delay[1:0], coord_generator};
-        batch_counter_delay[2:0]   <= {batch_counter_delay[1:0],   batch_counter};
-        batch_completed_delay[2:0] <= {batch_completed_delay[1:0], batch_completed};
-        state_delay[2:0]           <= {state_delay[1:0], state};
+        rect_counter_delay[3:0]    <= {rect_counter_delay[2:0],    rect_counter};
+        coord_generator_delay[3:0] <= {coord_generator_delay[2:0], coord_generator};
+        batch_counter_delay[3:0]   <= {batch_counter_delay[2:0],   batch_counter};
+        batch_completed_delay[3:0] <= {batch_completed_delay[2:0], batch_completed};
+        state_delay[3:0]           <= {state_delay[2:0], state};
         finish                     <= finish_new;
     end
 end

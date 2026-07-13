@@ -3,7 +3,7 @@ import os
 from random import randint, seed
 from itertools import batched
 
-seed(42)
+seed(1)
 
 import cocotb
 from cocotb.triggers import Timer, RisingEdge
@@ -42,10 +42,17 @@ mem = []
 for i in range(64):
     mem += generate_rect(i)
 
+rect0 = [1, 797, -284, 51, 563, 32098]
+
+for i in range(6):
+    mem[i] = rect0[i]
+
 with open("rects.txt", 'w') as file:
     file.write("\n".join([str(e) for e in mem]) + "\n")
 
 def setup_mem(dut, mem, start=8192-6*64):
+    for i in range(8192):
+        dut.memory.data[i].value = 0
     for i, val in zip(range(start, start + len(mem)), mem):
         dut.memory.data[i].value = val
 

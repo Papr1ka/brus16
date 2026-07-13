@@ -18,7 +18,7 @@ logger.addHandler(fh)
 BUTTON_COUNT = 16
 
 async def generate_clock(dut):
-    for _ in range(10000):
+    for _ in range(20000):
         dut.clk.value = 0
         await Timer(1, unit='ns')
         dut.clk.value = 1
@@ -74,6 +74,9 @@ async def tect_button_controller(dut):
         assert addr_i == (8192 - 6*64 - BUTTON_COUNT) + i
         assert button_i == button_values[i]
     
+    await RisingEdge(dut.clk)
+    await Timer(2 * 10, 'ns')
+    await RisingEdge(dut.clk)
     dut.reset.value = 1
     await RisingEdge(dut.clk)
     dut.reset.value = 0

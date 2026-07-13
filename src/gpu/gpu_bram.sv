@@ -11,8 +11,7 @@ module gpu_bram
 #(
     parameter ADDR_WIDTH = 10,
     parameter SIZE       = 1024,
-    parameter DATA_WIDTH = 64,
-    parameter COLLISIONS = 1
+    parameter DATA_WIDTH = 64
 )
 (
     input  wire                  clk,
@@ -25,8 +24,6 @@ module gpu_bram
     input  wire [DATA_WIDTH-1:0] mem_din
 );
 
-/* ONLY FOR SIMULATION + VIVADO */
-`ifndef GOWIN
 reg [DATA_WIDTH-1:0] data [SIZE-1:0];
 
 always_ff @(posedge clk) begin
@@ -35,56 +32,5 @@ always_ff @(posedge clk) begin
     end
     mem_dout <= data[mem_dout_addr];
 end
-`endif
-/* END */
-
-
-/* FOR GOWIN ONLY */
-`ifdef GOWIN
-if (COLLISIONS == 1) begin
-collisions_bram_SDPB collisions_bram(
-   .dout(mem_dout),    //output [63:0] dout
-   .clka(clk),         //input clka
-   .cea(we),           //input cea
-   .clkb(clk),         //input clkb
-   .ceb(1'b1),         //input ceb
-
-`ifdef TP25K
-   .reset(1'b0),       //input resetb
-`endif
-`ifdef TN20K
-   .reseta(1'b0),
-   .resetb(1'b0),
-`endif
-
-   .oce(1'b1),         //input oce
-   .ada(mem_din_addr), //input [9:0] ada
-   .din(mem_din),      //input [63:0] din
-   .adb(mem_dout_addr) //input [9:0] adb
-);
-end else begin
-colors_bram_SDPB colors_bram(
-   .dout(mem_dout),    //output [15:0] dout
-   .clka(clk),         //input clka
-   .cea(we),           //input cea
-   .clkb(clk),         //input clkb
-   .ceb(1'b1),         //input ceb
-
-`ifdef TP25K
-   .reset(1'b0),       //input resetb
-`endif
-`ifdef TN20K
-   .reseta(1'b0),
-   .resetb(1'b0),
-`endif
-
-   .oce(1'b1),         //input oce
-   .ada(mem_din_addr), //input [5:0] ada
-   .din(mem_din),      //input [15:0] din
-   .adb(mem_dout_addr) //input [5:0] adb
-);
-end
-`endif
-/* END */
 
 endmodule

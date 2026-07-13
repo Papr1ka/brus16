@@ -32,7 +32,7 @@ def setup_program(dut, program, data):
         dut.program_memory.data[i].value = instr
     
     for i, data in enumerate(data):
-        dut.memory.data[i].value = data
+        dut.data_memory.data[i].value = data
 
 
 async def generate_clock(dut):
@@ -76,27 +76,37 @@ def decode_mem(dut, start=0, end=8):
 
 
 def log_debug(dut):
-    string = "reset={reset} hsync={hsync} vsync={vsync} hpos={hpos} vpos={vpos} copy={copy} copy_start={copy_start} resume={resume} " \
-    "data_mra_bus={data_mra_bus} data_mrd_bus={data_mrd_bus} " \
-    "data_mwa_bus={data_mwa_bus} data_mwd_bus={data_mwd_bus} gpu_data={gpu_data} gpu_reset={gpu_reset} " \
-    "gpu_state={gpu_state} gpu_fsm_state={gpu_fsm_state} color={color}".format(
+    string = "reset={reset} hsync={hsync} vsync={vsync} hpos={hpos} vpos={vpos} peripheral_sel={peripheral_sel} resume={resume} sfx={sfx} sfx_pulse={sfx_pulse} " \
+    "data_addr_bus_0={data_addr_bus_0} data_rd_bus_0={data_rd_bus_0} data_we_bus_0={data_we_bus_0} data_wd_bus_0={data_wd_bus_0} " \
+    "data_addr_bus_1={data_addr_bus_1} data_rd_bus_1={data_rd_bus_1} data_we_bus_1={data_we_bus_1} data_wd_bus_1={data_wd_bus_1} " \
+    "gpu_reset={gpu_reset} color={color} sample={sample} sample_counter={sample_counter} stage_counter={stage_counter}".format(
         reset=int(dut.reset.value),
         hsync=int(dut.hsync.value),
         vsync=int(dut.vsync.value),
+        sfx=int(dut.peripheral_sel.value == 2),
+        sfx_pulse=int(dut.sfx_controller_pulse.value),
         hpos=dut.hpos.value.to_unsigned(),
         vpos=dut.vpos.value.to_unsigned(),
-        copy=int(dut.copy.value),
-        copy_start=int(dut.copy_start.value),
-        resume=int(dut.resume.value),
-        data_mra_bus=dut.data_memory_read_addr_bus.value.to_unsigned(),
-        data_mrd_bus=dut.data_memory_read_data_bus.value.to_unsigned(),
-        data_mwa_bus=dut.data_memory_write_addr_bus.value.to_unsigned(),
-        data_mwd_bus=dut.data_memory_write_data_bus.value.to_unsigned(),
-        gpu_data=dut.gpu_data.value.to_unsigned(),
-        gpu_reset=int(dut.gpu_reset.value),
-        gpu_state=dut.gpu.state.value.to_unsigned(),
-        gpu_fsm_state=dut.gpu.gpu_receiver_fsm.state.value.to_unsigned(),
-        color=dut.pixel_color.value.to_unsigned() if dut.pixel_color.value.is_resolvable else "z",
+        peripheral_sel=unsigned(dut.peripheral_sel.value),
+        resume=int(dut.cpu_pulse.value),
+
+        data_addr_bus_0=dut.data_memory_addr_bus_0.value.to_unsigned(),
+        data_rd_bus_0=dut.data_memory_read_data_bus_0.value.to_unsigned(),
+        data_we_bus_0=int(dut.data_memory_write_we_bus_0.value),
+        data_wd_bus_0=dut.data_memory_write_data_bus_0.value.to_unsigned(),
+
+        data_addr_bus_1=dut.data_memory_addr_bus_1.value.to_unsigned(),
+        data_rd_bus_1=dut.data_memory_read_data_bus_1.value.to_unsigned(),
+        data_we_bus_1=int(dut.data_memory_write_we_bus_1.value),
+        data_wd_bus_1=dut.data_memory_write_data_bus_1.value.to_unsigned(),
+
+        gpu_reset=int(dut.gpu_pulse.value),
+        gpu_state=dut.gpu_top.gpu.state.value.to_unsigned(),
+        gpu_fsm_state=dut.gpu_top.gpu.gpu_receiver_fsm.state.value.to_unsigned(),
+        color=dut.gpu_top.pixel_color.value.to_unsigned() if dut.gpu_top.pixel_color.value.is_resolvable else "z",
+        sample=signed(dut.sample.value),
+        sample_counter=unsigned(dut.sfx_top.sfx_controller.sample_counter.value),
+        stage_counter=unsigned(dut.sfx_top.sfx_process.stage_counter.value)
     )
     logger.debug(string)
 

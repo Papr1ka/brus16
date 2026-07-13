@@ -3,7 +3,8 @@ TESTS := 	gpu \
 			btree_mux \
 			rect_copy_controller \
 			button_controller \
-			brus16
+			brus16 \
+			sfx
 
 .PHONY: $(TESTS)
 

@@ -165,7 +165,7 @@ def log_debug(dut):
     "stack={stack} sp={sp:4d} sp_new={sp_new} s0={s0:4d} s1={s1:4d} s0_new={s0_new} we_stack={we_stack:1d} " \
     "rsp={rsp} rstack={rstack} rs0={rs0} we_rstack={we_rstack:1d} " \
     "mem={mem} mem_dout={mem_dout}, mem_dout_we={mem_dout_we} " \
-    "mem_din={mem_din} mem_din_addr={mem_din_addr}".format(
+    "mem_din={mem_din} mem_addr={mem_addr}".format(
         reset=reset,
         resume=resume,
         pc=unsigned(dut.cpu.pc.value),
@@ -186,10 +186,11 @@ def log_debug(dut):
         rs0=rs0,
         mem=mem,
         we_rstack=int(dut.cpu.write_to_rstack.value),
+
         mem_dout=unsigned(dut.cpu.mem_dout.value),
         mem_dout_we=unsigned(dut.cpu.mem_dout_we.value),
         mem_din=unsigned(dut.cpu.mem_din.value),
-        mem_din_addr=unsigned(dut.cpu.mem_din_addr.value)
+        mem_addr=unsigned(dut.cpu.mem_addr.value)
     )
     logger.debug(string)
 
@@ -204,7 +205,7 @@ def dump_mem(dut, sys=False, i=0):
         file.write("\n".join([str(val) for val in mem]) + "\n")
 
 @asynccontextmanager
-async def setup(dut, log_filename, program, data, logs_folder="./logs/"):
+async def setup(dut, log_filename, program, data, logs_folder="./logs/", fp=None):
     os.makedirs(logs_folder, exist_ok=True)
     fh = logging.FileHandler(logs_folder + log_filename)
     fh.setLevel(logging.DEBUG)
@@ -214,6 +215,8 @@ async def setup(dut, log_filename, program, data, logs_folder="./logs/"):
     await Timer(6, 'ns')
     dut.resume.value = 1
     await RisingEdge(dut.clk)
+    if fp is not None:
+        dut.cpu.fp.value = fp
     dut.resume.value = 0
     try:
         yield
@@ -236,7 +239,7 @@ async def test_factorial(dut):
 @cocotb.test(skip=False)
 async def test_game(dut):
     program = game_program
-    async with setup(dut, "game.log", program, game_data):
+    async with setup(dut, "game.log", program, game_data, fp=7792):
         await Timer(2 * 7000, unit='ns')
         await RisingEdge(dut.clk)
         

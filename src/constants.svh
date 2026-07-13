@@ -3,13 +3,11 @@
 
 
 `define GOWIN // Uncomment for gowin
-`define TN20K // Uncomment for Tang nano 20k
+`define TN9K
+// `define TN20K // Uncomment for Tang nano 20k
 // `define TP25k // Uncomment for Tang primer 25k
 
-// `define VIVADO // Uncomment for vivado
 // `define SIM // Uncomment for simulation (Icarus/Verilator)
-
-// `define DISABLE_GPU // Uncomment to disable the GPU
 // `define DISABLE_CONTROLLERS // Uncomment to disable the button controller and it's inputs
 
 `define DS2_CLK_RATIO 750
@@ -28,12 +26,22 @@
 
 `define KEY_NUM 16
 `define KEY_NUM_WIDTH 4
-`define KEY_MEM `DATA_SIZE - `RECT_COUNT * 6 - `KEY_NUM
 `define RECT_MEM `DATA_SIZE - `RECT_COUNT * 6
+`define KEY_MEM `RECT_MEM - `KEY_NUM
+
+`define VOICES 16
+`define CYCLES_PER_FRAME 420000
+`define SFX_FREQ 44100
+`define RATIO_BITS 10
+`define DECAY_BITS 6
+`define AMP_BITS 15
+`define TABLE_BITS 6
+`define SFX_MEM `KEY_MEM - `VOICES * 4
 
 // cpu
 `define STACK_DEPTH 5 // 32
 `define RSTACK_DEPTH 4 // 16
+`define FP `SFX_MEM
 
 `define JMP 2'd0
 `define JZ 2'd1

@@ -8,6 +8,7 @@ module vga_controller(
     output reg [9:0] hpos,
     output reg [9:0] vpos
 );
+    localparam GPU_DELAY = 5;
     /* verilator lint_off UNUSEDPARAM */
     // 640X480 VGA sync parameters
     localparam LEFT_PORCH		= 	48;
@@ -34,7 +35,7 @@ module vga_controller(
         if (reset) begin
             hsync <= 0;
             vsync <= 0;
-            hpos <= 0;
+            hpos <= GPU_DELAY;
             vpos <= 0;
             display_on <= 0;
         end else begin

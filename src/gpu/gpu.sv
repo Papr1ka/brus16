@@ -78,8 +78,8 @@ gpu_receiver_fsm gpu_receiver_fsm(
     .finish(fsm_finish)
 );
 
-wire [9:0] xs_read_addr = state == COPY ? fsm_mem_din_addr : x_coord;
-wire [9:0] ys_read_addr = state == COPY ? fsm_mem_din_addr : y_coord;
+wire [9:0] xs_read_addr =    state == COPY ? fsm_mem_din_addr : x_coord;
+wire [8:0] ys_read_addr = 9'(state == COPY ? fsm_mem_din_addr : y_coord);
 wire       xs_we        = fsm_we && mem_select == 0;
 wire       ys_we        = fsm_we && mem_select == 1;
 wire       colors_we    = fsm_we && mem_select == 2;
@@ -87,8 +87,7 @@ wire       colors_we    = fsm_we && mem_select == 2;
 gpu_bram #(
     .ADDR_WIDTH(10),
     .SIZE(1024),
-    .DATA_WIDTH(64),
-    .COLLISIONS(1)
+    .DATA_WIDTH(64)
 )
 xs_mem(
     .clk(clk),
@@ -100,17 +99,16 @@ xs_mem(
 );
 
 gpu_bram #(
-    .ADDR_WIDTH(10),
-    .SIZE(1024),
-    .DATA_WIDTH(64),
-    .COLLISIONS(1)
+    .ADDR_WIDTH(9),
+    .SIZE(512),
+    .DATA_WIDTH(64)
 )
 ys_mem(
     .clk(clk),
     .mem_dout_addr(ys_read_addr),
     .mem_dout(ys_mem_dout),
     .we(ys_we),
-    .mem_din_addr(fsm_dout_addr),
+    .mem_din_addr(9'(fsm_dout_addr)),
     .mem_din(fsm_dout)
 );
 
@@ -123,8 +121,7 @@ wire [15:0] color_new = any_collision_delay[1] ? colors_mem_dout : DEFAULT_COLOR
 gpu_bram #(
     .ADDR_WIDTH(6),
     .SIZE(64),
-    .DATA_WIDTH(16),
-    .COLLISIONS(0)
+    .DATA_WIDTH(16)
 )
 colors_mem(
     .clk(clk),

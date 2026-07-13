@@ -2,6 +2,8 @@
 #include <GL/glut.h>
 #include <thread>
 #include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "Vbrus16_top.h"           // from Verilating "display.v"
 
@@ -181,7 +183,19 @@ void tick() {
 //     display->reset = 0;
 // }
 
+FILE* fp;
+bool last_audio_clk;
+
+void check_sample()
+{
+    if (!last_audio_clk && display->audio_clk_out) {
+        fprintf(fp, "%d\n", (int16_t)display->sample_out);
+    }
+    last_audio_clk = display->audio_clk_out;
+}
+
 int main(int argc, char** argv) {
+    Verilated::traceEverOn(true);
     // create a new thread for graphics handling
     thread thread(graphics_loop, argc, argv);
     // wait for graphics initialization to complete
@@ -194,14 +208,16 @@ int main(int argc, char** argv) {
 
     // reset the model
     // reset();
-
+    fp = fopen("samples_out.hex", "a");
     // cycle accurate simulation loop
     while (!Verilated::gotFinish()) {
         tick();
         sample_pixel();
+        check_sample();
     }
 
     display->final();
+    fclose(fp);
     delete display;
 }
 

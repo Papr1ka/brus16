@@ -22,7 +22,7 @@ def generate_rect():
 def clamp(val, left=0, right=640):
     if val < left:
         return left
-    if val > right:
+    if val >= right:
         return right
     return val
 
@@ -873,6 +873,9 @@ def get_masks(expected, func, max_coord=640):
         masks.append(mask)
     return masks
 
+def vec64_generator(memory):
+    return (f"{bin(val & 0xffffffffffffffff)[2:]:0>64}\n" for val in memory)
+
 @cocotb.test(skip=False)
 async def test_gpu_new(dut):
     dut.x_coord.value = 0
@@ -920,11 +923,16 @@ async def test_gpu_new(dut):
     await RisingEdge(dut.clk)
     await RisingEdge(dut.clk)
     xs_mem = convert_array(dut.gpu.xs_mem.data, 640)
-    masks = get_masks([rect[0] for rect in expected], lambda x_left, coord: x_left < coord)
+    masks = get_masks([rect[0] for rect in expected], lambda x_left, coord: x_left <= coord)
+
+    with open("out.txt", "w") as f:
+        f.writelines(vec64_generator(xs_mem))
+    with open("out_ref.txt", "w") as f:
+        f.writelines(vec64_generator(masks))
 
     for i, (x_actual, x_expected) in enumerate(zip(xs_mem, masks)):
-        # print("act", bin(x_actual & 0xffffffffffffffff))
-        # print("exp", bin(x_expected & 0xffffffffffffffff))
+        print("act", bin(x_actual & 0xffffffffffffffff))
+        print("exp", bin(x_expected & 0xffffffffffffffff))
         assert x_actual == x_expected, f"fail on xs[{i}]"
     
     # xs + widths
@@ -944,12 +952,19 @@ async def test_gpu_new(dut):
     await RisingEdge(dut.clk)
     await RisingEdge(dut.clk)
     xs_mem = convert_array(dut.gpu.xs_mem.data, 640)
-    masks_new = get_masks([rect[1] for rect in expected], lambda x_right, coord: coord <= x_right)
+    masks_new = get_masks([rect[1] for rect in expected], lambda x_right, coord: coord < x_right)
+
+    with open("out_1.txt", "w") as f:
+        f.writelines(vec64_generator(xs_mem))
+    with open("out_ref_1.txt", "w") as f:
+        f.writelines(vec64_generator(masks_new))
+
     masks = [a & b for a, b in zip(masks, masks_new)]
 
     for i, (x_actual, x_expected) in enumerate(zip(xs_mem, masks)):
-        # print("act", bin(x_actual & 0xffffffffffffffff))
-        # print("exp", bin(x_expected & 0xffffffffffffffff))
+        print("start")
+        print("act", bin(x_actual & 0xffffffffffffffff))
+        print("exp", bin(x_expected & 0xffffffffffffffff))
         assert x_actual == x_expected, f"fail on xs+width[{i}]"
     
     # ys
@@ -969,7 +984,7 @@ async def test_gpu_new(dut):
     await RisingEdge(dut.clk)
     await RisingEdge(dut.clk)
     ys_mem = convert_array(dut.gpu.ys_mem.data, 480)
-    masks= get_masks([rect[2] for rect in expected], lambda y_top, coord: y_top < coord, max_coord=480)
+    masks= get_masks([rect[2] for rect in expected], lambda y_top, coord: y_top <= coord, max_coord=480)
 
     for i, (y_actual, y_expected) in enumerate(zip(ys_mem, masks)):
         # print("act", bin(x_actual & 0xffffffffffffffff))
@@ -993,7 +1008,7 @@ async def test_gpu_new(dut):
     await RisingEdge(dut.clk)
     await RisingEdge(dut.clk)
     ys_mem = convert_array(dut.gpu.ys_mem.data, 480)
-    masks_new = get_masks([rect[3] for rect in expected], lambda y_bottom, coord: coord <= y_bottom, max_coord=480)
+    masks_new = get_masks([rect[3] for rect in expected], lambda y_bottom, coord: coord < y_bottom, max_coord=480)
     masks = [a & b for a, b in zip(masks, masks_new)]
 
     for i, (y_actual, y_expected) in enumerate(zip(ys_mem, masks)):

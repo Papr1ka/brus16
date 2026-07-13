@@ -14,10 +14,10 @@ wire [15:0] read_data;
 wire [15:0] gpu_data;
 wire gpu_reset;
 
-bsram memory(
+data_memory memory(
     .clk(clk),
-    .mem_dout_addr(read_addr),
-    .mem_dout(read_data)
+    .mem_addr_1(read_addr),
+    .mem_dout_1(read_data)
 );
 
 wire  [2:0]  state;

@@ -24,9 +24,7 @@ https://github.com/user-attachments/assets/afb5e501-f497-4eca-b2d6-a9d5f201da5c
 
 More general information can be found [here](https://github.com/true-grue/Brus-16?tab=readme-ov-file#architecture).
 
-High-level diagram of a game console:
-
-![High-level diagram of a game console](./docs/architecture.png)
+This [article in Russian](https://habr.com/ru/companies/yadro/articles/1040288/) provides a detailed history of the console's development and describes its key architectural features.
 
 #### Key notes
 
@@ -43,32 +41,21 @@ GPU:
 - During operation, the GPU obtains a 64-bit vector of rectangle collisions with the current pixel and passes the rectangle indices through a tree of multiplexers.
 - The color is sent to the output based on the index from a mux tree.
 
-Multiplexer tree diagram for 4 inputs:
+All components of Brus-16 have been implemented.
 
-![Multiplexer tree diagram for 4 inputs](./docs/btree_mux.png)
-
-Other:
-
-- The main controller wakes up the CPU and resets the GPU.
-- DMA Button controller copies the status of buttons to the data memory.
-- DMA Rect copy preprocesses rectangle data and sends it to the GPU.
-- Access to data memory is switched from the processor to the controllers near the vsync area.
-
+Currently, each game requires separate firmware.
 
 ### Board-specific
 
 Currently supported FPGA boards:
+
+- [Tang Nano 9K](https://wiki.sipeed.com/hardware/en/tang/Tang-Nano-9K/Nano-9K.html).
 - [Tang Nano 20K](https://wiki.sipeed.com/hardware/en/tang/tang-nano-20k/nano-20k.html).
 - [Tang Primer 25K](https://wiki.sipeed.com/hardware/en/tang/tang-primer-25k/primer-25k.html).
 
-> Although Tang Nano 9K has sufficient resources, for unknown reasons, I was unable to obtain a working version.
-
 Board specific files are:
-- src/brus16_top.sv (PLL)
-- src/hdmi.sv
-- src/bsram.sv (Data memory, BRAM instantination)
-- src/prom.sv (Program memory, BRAM instantination)
-- src/gpu/gpu_bram.sv (GPU internal memory, BRAM instantination)
+- src/brus16_top.sv (ELVDS instantination for HDMI)
+- src/pll_generic.sv
 
 If desired, the project can be adapted relatively quickly for another board.
 
@@ -76,15 +63,16 @@ system_clk clock frequency = **25.2 MHz**.
 
 ### Build firmware for a new game
 
-If you are using Tang Nano 20K or Tang Primer 25K:
-1. Generate program memory and data memory initialization files (game_code.mi, game_data.mi) from the game's binary file.
+1. Generate program memory and data memory initialization files (code.hex, data.hex) from the game's binary file. (a tool will replace files in the **firm/** folder)
 
-`python tools/gen_fpga_firm.py game.bin game`
+`python tools/gen_fpga_firm.py {game}.bin firm`
 
-2. Open the corresponding project (gowin/tn20k.gprj, gowin/tp25k.gprj).
-3. Uncomment line 6 or 7 in the src/constants.svh file.
-4. Generate prom (8192x16) for program memory and sdpb (8192x16) for data memory with default parameters, selecting game_code.mi for prom and game_data.mi for sdpb (choose board folder).
-5. Run all and program your device.
+2. Open the corresponding project with GOWIN EDA (gowin/{board}.gprj).
+
+> For the tang nano 9k, I recommend to use one of the older versions of EDA (I use 1.9.8.11_Education), since newer versions do not infer True Dual Port BSRAM correctly and return the error "ERROR (PA2122): Not supported ... (DPB) WRITE_MODE0 = 2'b10, please change write mode WRITE_MODE0 = 2'b00 or 2'b01." Alternatively, you can create a DPB using the IP Generator in newer versions.
+
+3. Change lines 5-10 in the src/constants.svh file.
+4. Run all and program your device.
 
 Important project settings:
 | Setting | Value |
@@ -98,6 +86,18 @@ Important project settings:
 ### PMOD joystick kit connection
 
 [PMOD Joystick](https://wiki.sipeed.com/hardware/en/tang/tang-PMOD/FPGA_PMOD.html#PMOD_DS2x2).
+
+#### Tang Nano 9K
+
+| Joystick 1          || 
+| :-:      | :-:       |
+| PMOD pin | Board pin |
+| 3.3V     | 3.3V      |
+| GND      | GND       |
+| SCLK     | 32        |
+| MISO     | 31        |
+| MOSI     | 49        |
+| ~CS1     | 48        |
 
 #### Tang Nano 20k
 
@@ -128,9 +128,7 @@ Dependencies:
 - freeglut + freeglut-devel
 - make
 
-Uncomment SIM, DISABLE_CONTROLLERS and comment GOWIN, TP25K/TN20K.
-
-Paste game data in data.txt and program.txt
+Uncomment SIM, DISABLE_CONTROLLERS and comment GOWIN, TN9K/TN20K/TP25K in constants.svh.
 
 Run:
 ```

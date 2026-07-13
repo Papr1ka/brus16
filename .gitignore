@@ -4,3 +4,5 @@ sim_build/
 logs/
 results.xml
 vivado/
+games/
+output/

@@ -5,6 +5,8 @@ SIM ?= icarus
 TOPLEVEL_LANG ?= verilog
 
 # sources
+VERILOG_SOURCES += ../../src/buttons/buttons_top.sv
+
 VERILOG_SOURCES += ../../src/cpu/alu.sv
 VERILOG_SOURCES += ../../src/cpu/cpu.sv
 VERILOG_SOURCES += ../../src/cpu/rstack.sv
@@ -17,15 +19,22 @@ VERILOG_SOURCES += ../../src/gpu/gpu_buffer.sv
 VERILOG_SOURCES += ../../src/gpu/gpu_bram.sv
 VERILOG_SOURCES += ../../src/gpu/gpu_receiver_fsm.sv
 VERILOG_SOURCES += ../../src/gpu/gpu.sv
+VERILOG_SOURCES += ../../src/gpu/gpu_top.sv
+VERILOG_SOURCES += ../../src/gpu/rect_copy_controller.sv
+
+VERILOG_SOURCES += ../../src/sfx/sfx_controller.sv
+VERILOG_SOURCES += ../../src/sfx/sfx_dma.sv
+VERILOG_SOURCES += ../../src/sfx/sfx_mem.sv
+VERILOG_SOURCES += ../../src/sfx/sfx_process.sv
+VERILOG_SOURCES += ../../src/sfx/sfx_top.sv
+VERILOG_SOURCES += ../../src/sfx/sine_table.sv
 
 VERILOG_SOURCES += ../../src/brus16_controller.sv
 VERILOG_SOURCES += ../../src/brus16_top.sv
-VERILOG_SOURCES += ../../src/bsram.sv
-VERILOG_SOURCES += ../../src/prom.sv
-VERILOG_SOURCES += ../../src/button_handler.sv
-VERILOG_SOURCES += ../../src/button_controller.sv
-VERILOG_SOURCES += ../../src/rect_copy_controller.sv
+VERILOG_SOURCES += ../../src/data_memory.sv
+VERILOG_SOURCES += ../../src/program_memory.sv
 VERILOG_SOURCES += ../../src/vga_controller.sv
+VERILOG_SOURCES += ../../src/pll_generic.sv
 
 VERILOG_INCLUDE_DIRS += ../../src/
 

@@ -9,7 +9,8 @@ VERILOG_SOURCES += ../../src/cpu/alu.sv
 VERILOG_SOURCES += ../../src/cpu/rstack.sv
 VERILOG_SOURCES += ../../src/cpu/stack.sv
 VERILOG_SOURCES += ../../src/cpu/cpu.sv
-VERILOG_SOURCES += ../../src/bsram.sv
+VERILOG_SOURCES += ../../src/data_memory.sv
+VERILOG_SOURCES += ../../src/program_memory.sv
 VERILOG_SOURCES += ../../src/tb/cpu_tb.sv
 
 VERILOG_INCLUDE_DIRS += ../../src/
