@@ -1,0 +1,172 @@
+{
+ "Files" : [
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/gowin/src/tn9k/gowin_clkdiv/gowin_clkdiv.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/gowin/src/tn9k/gowin_rpll/gowin_rpll.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/brus16_controller.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/brus16_top.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/buttons/button_controller.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/buttons/buttons_top.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/buttons/dualshock_spi_master.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/cpu/alu.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/cpu/cpu.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/cpu/rstack.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/cpu/stack.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/data_memory.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/gpu/btree_mux.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/gpu/btree_mux_layer.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/gpu/comparator.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/gpu/gpu.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/gpu/gpu_bram.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/gpu/gpu_buffer.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/gpu/gpu_receiver_fsm.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/gpu/gpu_top.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/gpu/rect_copy_controller.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/hdmi/audio_clock_regeneration_packet.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/hdmi/audio_info_frame.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/hdmi/audio_sample_packet.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/hdmi/auxiliary_video_information_info_frame.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/hdmi/hdmi.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/hdmi/packet_assembler.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/hdmi/packet_picker.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/hdmi/serializer.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/hdmi/source_product_description_info_frame.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/hdmi/tmds_channel.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/pll_generic.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/program_memory.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/sfx/sfx_controller.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/sfx/sfx_dma.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/sfx/sfx_mem.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/sfx/sfx_process.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/sfx/sfx_top.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/sfx/sine_table.sv",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/Joe/dev/brus16/src/vga_controller.sv",
+   "Type" : "verilog"
+  }
+ ],
+ "IncludePath" : [
+  "../src"
+ ],
+ "LoopLimit" : 10000,
+ "ResultFile" : "C:/Users/Joe/dev/brus16/gowin/impl/temp/rtl_parser.result",
+ "Top" : "brus16_top",
+ "VerilogStd" : "sysv",
+ "VhdlStd" : "vhdl_93"
+}

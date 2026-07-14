@@ -1,0 +1,31 @@
+Reading netlist file: "C:\Users\Joe\dev\brus16\gowin\impl\gwsynthesis\tn9k.vg"
+Parsing netlist file "C:\Users\Joe\dev\brus16\gowin\impl\gwsynthesis\tn9k.vg" completed
+Processing netlist completed
+Reading constraint file: "C:\Users\Joe\dev\brus16\gowin\src\tn9k\9k.cst"
+Physical Constraint parsed completed
+Running placement......
+[10%] Placement Phase 0 completed
+[20%] Placement Phase 1 completed
+[30%] Placement Phase 2 completed
+WARN  (TA1117) : Can't calculate clocks' relationship between: "audio_clk_2" and "pll_generic/clkDIV/clkdiv_inst/CLKOUT.default_gen_clk"
+WARN  (TA1117) : Can't calculate clocks' relationship between: "pll_generic/clkDIV/clkdiv_inst/CLKOUT.default_gen_clk" and "audio_clk_2"
+[50%] Placement Phase 3 completed
+Running routing......
+[60%] Routing Phase 0 completed
+[70%] Routing Phase 1 completed
+[80%] Routing Phase 2 completed
+[90%] Routing Phase 3 completed
+Running timing analysis......
+[95%] Timing analysis completed
+Placement and routing completed
+Bitstream generation in progress......
+Bitstream generation completed
+Running power analysis......
+[100%] Power analysis completed
+Generate file "C:\Users\Joe\dev\brus16\gowin\impl\pnr\tn9k.power.html" completed
+Generate file "C:\Users\Joe\dev\brus16\gowin\impl\pnr\tn9k.pin.html" completed
+Generate file "C:\Users\Joe\dev\brus16\gowin\impl\pnr\tn9k.rpt.html" completed
+Generate file "C:\Users\Joe\dev\brus16\gowin\impl\pnr\tn9k.rpt.txt" completed
+Generate file "C:\Users\Joe\dev\brus16\gowin\impl\pnr\tn9k.tr.html" completed
+Tue Jul 14 02:12:44 2026
+
