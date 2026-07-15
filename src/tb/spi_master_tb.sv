@@ -38,12 +38,20 @@ module tb_spi_master;
         if (!spi_cs) begin  // когда выбрано
             miso_shift <= {miso_shift[6:0], 1'b0};
             spi_miso <= miso_shift[6];
+        end
+    end
+
+    always @(posedge spi_clk) begin
+        if (!spi_cs) begin
             mosi_shift <= {mosi_shift[6:0], spi_mosi};
         end
     end
 
     initial begin
-        // Дамп сигналов для GTKWave
+        localparam CLK_DIV = 16'd10;
+        localparam MOSI = 8'd165;
+        localparam MISO = 8'd90;
+
         $dumpfile("spi_master.vcd");
         $dumpvars(0, tb_spi_master);
 
@@ -54,7 +62,7 @@ module tb_spi_master;
         mem_din = 16'h0000;
         mem_din_we = 0;
         spi_miso = 0;
-        miso_shift = 8'd90;  // устройство вернёт 0x5A
+        miso_shift = MISO;  // устройство вернёт 90
 
         // Сброс
         #100 reset = 0;
@@ -63,7 +71,7 @@ module tb_spi_master;
         // Установка делителя = 3 (SPI ~ 3.15 МГц при 25.2 МГц)
         @(posedge clk);
         mem_addr = 2'b00;  // регистр DIV
-        mem_din  = 16'h0005;
+        mem_din  = CLK_DIV;
         mem_din_we = 1;
         @(posedge clk);
         mem_din_we = 0;
@@ -79,7 +87,7 @@ module tb_spi_master;
         // Записать байт для передачи (TXDATA) -> запустится SPI-обмен
         @(posedge clk);
         mem_addr = 2'b10;
-        mem_din  = 16'd165;
+        mem_din  = MOSI;
         mem_din_we = 1;
         @(posedge clk);
         mem_din_we = 0;
@@ -93,12 +101,58 @@ module tb_spi_master;
         mem_addr = 2'b11;
         @(posedge clk);
         #1;
-        if (mem_dout[7:0] == 8'd90)
+        if (mem_dout[7:0] == MISO)
             $display("PASS: принят байт 90");
         else
             $display("FAIL: принят байт %d, ожидался 90", mem_dout[7:0]);
 
-        if (mosi_shift == 8'd165)
+        if (mosi_shift[7:0] == MOSI)
+            $display("PASS: передан байт 165");
+        else
+            $display("FAIL: передан байт %d, ожидался 165", mosi_shift);
+        
+        @(posedge clk)
+        // Опустить CS (регистр CTRL[0]=0)
+        @(posedge clk);
+        mem_addr = 2'b01;
+        mem_din  = 16'h0001;
+        mem_din_we = 1;
+        @(posedge clk);
+        mem_din_we = 0;
+        #200;
+
+        miso_shift = MISO;  // устройство вернёт 90
+        // Опустить CS (регистр CTRL[0]=0)
+        @(posedge clk);
+        mem_addr = 2'b01;
+        mem_din  = 16'h0000;
+        mem_din_we = 1;
+        @(posedge clk);
+        mem_din_we = 0;
+
+        // Записать байт для передачи (TXDATA) -> запустится SPI-обмен
+        @(posedge clk);
+        mem_addr = 2'b10;
+        mem_din  = MOSI;
+        mem_din_we = 1;
+        @(posedge clk);
+        mem_din_we = 0;
+
+        // Ждём завершения передачи
+        wait(resume);
+        $display("Передача завершена, проверяем принятый байт");
+
+        // Читаем регистр RXDATA (адрес 3)
+        @(posedge clk);
+        mem_addr = 2'b11;
+        @(posedge clk);
+        #1;
+        if (mem_dout[7:0] == MISO)
+            $display("PASS: принят байт 90");
+        else
+            $display("FAIL: принят байт %d, ожидался 90", mem_dout[7:0]);
+
+        if (mosi_shift[7:0] == MOSI)
             $display("PASS: передан байт 165");
         else
             $display("FAIL: передан байт %d, ожидался 165", mosi_shift);
