@@ -1,6 +1,6 @@
 module spi_master(
-    input wire clk,
-    input wire reset,
+    input wire         clk,
+    input wire         reset,
 
     // r/w memory interface
     input  wire [1:0]  mem_addr,
@@ -9,13 +9,13 @@ module spi_master(
     output reg  [15:0] mem_dout,
 
     // cpu resume
-    output reg resume,
+    output reg         resume,
 
     // SPI
-    input  wire              spi_miso,
-    output reg               spi_clk,
-    output wire              spi_cs,
-    output wire              spi_mosi
+    input  wire        spi_miso,
+    output reg         spi_clk,
+    output wire        spi_cs,
+    output wire        spi_mosi
 );
 
 // Out SPI frequency = 1 / (2 * (clk_div + 1))
@@ -53,7 +53,7 @@ wire [2:0] bit_sended_counter_new = (spi_clk_negedge) ? bits_sended_counter + 1 
 wire [15:0] counter_new = work ? (spi_clk_toggle ? 0 : counter + 1) : counter;
 
 wire transaction_start = we && mem_addr == 2; // write to txdata register
-wire transaction_end = spi_clk_negedge && bits_sended_counter == 7;
+wire transaction_end   = spi_clk_negedge && bits_sended_counter == 7;
 
 always_comb begin
     case ({transaction_start, transaction_end})
@@ -104,7 +104,7 @@ always_ff @(posedge clk) begin
 
     end else begin
         state               <= state_new;
-        counter             <= counter;
+        counter             <= counter_new;
         bits_sended_counter <= bit_sended_counter_new;
 
         clk_div             <= clk_div_new;
