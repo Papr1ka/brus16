@@ -13,20 +13,23 @@ def load(filename):
 def hex_generator(memory):
     return (f"{hex(val & 0xffff)[2:]:0>4}" for val in memory)
 
-def save_memory(program_path, folder_path):
+def save_memory(program_path, folder_path, control_core):
     code, data = load(program_path)
     os.makedirs(folder_path, exist_ok=True)
-    program_name = pathlib.Path(os.path.basename(program_path)).stem
-    print(program_name)
     norm = lambda path: os.path.join(folder_path, path)
-    
-    with open(norm(f"code.hex"), "w") as file:
+    code_fname = norm("code_rom.hex" if control_core else "code.hex")
+    data_fname = norm("data_rom.hex" if control_core else "data.hex")
+
+    with open(code_fname, "w") as file:
         file.write("\n".join(hex_generator(code)) + "\n")
 
-    with open(norm(f"data.hex"), "w") as file:
+    with open(data_fname, "w") as file:
         file.write("\n".join(hex_generator(data)) + "\n")
+    
+    print(f"Gen completed:\nIn: {program_path}\nOut: {code_fname}\nOut: {data_fname}")
 
 save_memory(
     os.path.abspath(sys.argv[1]),
-    os.path.abspath(sys.argv[2])
+    os.path.abspath(sys.argv[2]),
+    len(sys.argv) > 3 and sys.argv[3] == '--control'
 )

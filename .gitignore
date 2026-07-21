@@ -6,3 +6,8 @@ results.xml
 vivado/
 games/
 output/
+*.log
+*.vcd
+*.bin
+dd.exe
+

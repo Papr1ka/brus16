@@ -14,7 +14,8 @@ https://github.com/user-attachments/assets/afb5e501-f497-4eca-b2d6-a9d5f201da5c
 
 - [Architecture](#architecture).
 - [Board-specific](#board-specific).
-- [Build firmware for new game](#build-firmware-for-a-new-game).
+- [Write games to SD card](#write-games-to-sd-card).
+- [Build firmware for a new game](#build-firmware-for-a-new-game).
 - [PMOD joystick kit connection](#pmod-joystick-kit-connection).
 - [Simulation](#simulation).
 - [Tests](#tests).
@@ -43,8 +44,6 @@ GPU:
 
 All components of Brus-16 have been implemented.
 
-Currently, each game requires separate firmware.
-
 ### Board-specific
 
 Currently supported FPGA boards:
@@ -60,6 +59,38 @@ Board specific files are:
 If desired, the project can be adapted relatively quickly for another board.
 
 system_clk clock frequency = **25.2 MHz**.
+
+### Write games to SD card
+
+1. Make sure your SD card is SDHC or SDXC.
+2. Make sure there is no important data on the SD card. (The data will be overwritten in raw format, starting from sector 0).
+3. Generate an SD card image with games.
+
+`python tools\make_sd_image.py {folder with games in .bin} {sd_image.bin}`
+
+4. Get the DeviceID of the SD card.
+
+`wmic diskdrive list brief` on Windows.
+
+5. Copy {sd_image.bin} to the SD card.
+
+`dd if={sd_image.bin} of={DeviceID} bs={SIZE}`
+
+> dd for windows http://www.chrysocome.net/dd
+
+SIZE - A number, greater than size of {sd_image.bin} according to the dd format:
+
+Examples:
+- For most files: **16M** (~511 games)
+- For fantastic files: **1G**  (32 752 games)
+- For fairy tale files: **32G**  (over a million games!)
+
+6. Insert the SD card in the board.
+
+To nagivate, use `select` and `start` buttons on any connected DualShock2 Joystick.
+
+If you **don't have an SD card**, just ignore this option.
+There is an old variant, described in the next section.
 
 ### Build firmware for a new game
 
@@ -117,6 +148,7 @@ PMOD joystick: G11 PMOD group.
 
 [PMOD DVI](https://wiki.sipeed.com/hardware/en/tang/tang-PMOD/FPGA_PMOD.html#PMOD_DVI): F5 PMOD group.
 
+PMOD TF-Card: A11 PMOD group.
 
 ### Simulation
 

@@ -39,6 +39,15 @@ module brus16_top #(
     output wire [15:0] sample_out,
     output wire        audio_clk_out,
 `endif
+    // Control core SPI SD card
+    output wire spi_clk_sd,
+    output wire spi_mosi_sd,
+    input  wire spi_miso_sd,
+    output wire spi_cs_sd,
+
+    // Control core UART
+    input  wire uart_rx,
+    output wire uart_tx,
 
     output wire [3:0]  hdmi_tx_n,
     output wire [3:0]  hdmi_tx_p
@@ -48,6 +57,12 @@ reg [4:0][2:0]   dvh_delay;  // shift register (delay)
 reg [2:0]        dvh;        // vsync, display_on_reg, hsync
 reg [15:0]       rgb_reg;
 
+// Control core outputs
+wire        control_core_sel;
+wire        game_core_reset;
+wire [15:0] control_core_mem_dout_addr;
+wire [15:0] control_core_mem_dout;
+wire        control_core_mem_dout_we;
 
 `ifdef SIM
 assign hsync_out = dvh_delay[4][0];
@@ -75,7 +90,7 @@ pll_generic pll_generic(
 reg [RESET_COUNTER_WIDTH-1:0] reset_counter = RESET_COUNTER_WIDTH'(0);
 reg was_reset = 1'b0;
 
-reg reset = 1'b0;
+reg reset         = 1'b0;
 reg reset_osers_0 = 1'b0;
 reg reset_osers_1 = 1'b0;
 
@@ -89,7 +104,6 @@ always_ff @(posedge system_clk) begin
     reset <= ~lock | ~was_reset;
 end
 
-// assign reset = ~lock | ~was_reset;
 
 always_ff @(posedge vga_x5 or posedge reset) begin
     if (reset) begin
@@ -154,6 +168,7 @@ brus16_controller brus16_controller(
 wire                       bc_mem_dout_we;
 wire [DATA_ADDR_WIDTH-1:0] bc_mem_dout_addr;
 wire [15:0]                bc_mem_dout;
+wire [15:0]                buttons;
 
 buttons_top buttons_top(
     .clk(system_clk),
@@ -174,6 +189,7 @@ buttons_top buttons_top(
     .joystick_cs_1(joystick_cs_1),
 `endif
 
+    .buttons(buttons),
     // data memory interface
     .mem_dout_we(bc_mem_dout_we),
     .mem_dout_addr(bc_mem_dout_addr),
@@ -184,8 +200,12 @@ buttons_top buttons_top(
 /* ------------------------------ memory buses ------------------------------ */
 
 /* Program memory buses */
-wire [CODE_ADDR_WIDTH-1:0] program_memory_addr_bus;
-wire [15:0]                program_memory_data_bus;
+wire [CODE_ADDR_WIDTH-1:0] program_memory_addr_bus_0;
+wire [15:0]                program_memory_data_bus_0;
+
+wire [CODE_ADDR_WIDTH-1:0] program_memory_addr_bus_1;
+wire                       program_memory_write_we_bus_1;
+wire [15:0]                program_memory_write_data_bus_1;
 
 /* Data memory buses, cpu port */
 wire [DATA_ADDR_WIDTH-1:0] data_memory_addr_bus_0;
@@ -200,25 +220,71 @@ wire                       data_memory_write_we_bus_1;
 wire [15:0]                data_memory_write_data_bus_1;
 
 
-/* ----------------------------------- cpu ---------------------------------- */
+/* --------------------------------- game cpu --------------------------------- */
 
 /* cpu output buses for data memory */
 wire                       cpu_mem_dout_we;
 wire [DATA_ADDR_WIDTH-1:0] cpu_mem_addr;
 wire [15:0]                cpu_mem_dout;
 
+/*
+    cpu reset:
+    set to 1 instantly
+    set to 0 only after cpu_pulse to ensure a sufficient clock cycle reserve before vsync
+*/
+
+reg   cpu_reset = 1'b1;
+logic cpu_reset_new;
+
+always_comb begin
+    casez ({cpu_reset, reset | game_core_reset, cpu_pulse})
+        3'b100:  cpu_reset_new = cpu_reset;
+        3'b101:  cpu_reset_new = 1'b0;
+        3'b01?:  cpu_reset_new = 1'b1;
+        default: cpu_reset_new = reset | game_core_reset;
+    endcase
+end
+
+always_ff @(posedge system_clk) begin
+    cpu_reset <= cpu_reset_new;
+end
+
 cpu cpu(
     .clk(system_clk),
     .resume(cpu_pulse),
-    .reset(reset),
-    .code_addr(program_memory_addr_bus),
-    .instruction(program_memory_data_bus),
+    .reset(cpu_reset),
+    .code_addr(program_memory_addr_bus_0),
+    .instruction(program_memory_data_bus_0),
     .mem_addr(cpu_mem_addr),
     .mem_din(data_memory_read_data_bus_0),
     .mem_dout_we(cpu_mem_dout_we),
     .mem_dout(cpu_mem_dout)
 );
 
+
+/* ------------------------------- control core ----------------------------- */
+
+control_core control_core(
+    .clk(system_clk),
+    .reset(reset),
+
+    .game_core_reset(game_core_reset),
+    .control_core_sel(control_core_sel),
+    
+    .buttons(buttons),
+
+    .mem_dout_addr(control_core_mem_dout_addr),
+    .mem_dout(control_core_mem_dout),
+    .mem_dout_we(control_core_mem_dout_we),
+
+    .spi_clk_sd(spi_clk_sd),
+    .spi_mosi_sd(spi_mosi_sd),
+    .spi_miso_sd(spi_miso_sd),
+    .spi_cs_sd(spi_cs_sd),
+
+    .uart_rx(uart_rx),
+    .uart_tx(uart_tx)
+);
 
 /* ---------------------------------- sfx ----------------------------------  */
 
@@ -247,8 +313,10 @@ assign audio_clk_out = audio_clk;
 
 
 /* ----------------------------------- gpu ---------------------------------- */
-wire [15:0]                rgb; // 5 clocks delayed rgb 5 6 5
+wire [15:0]                gpu_rgb; // 5 clocks delayed rgb 5 6 5
+wire [15:0]                rgb = control_core_sel ? DEFAULT_COLOR : gpu_rgb;
 wire [DATA_ADDR_WIDTH-1:0] rc_controller_mem_din_addr;
+
 
 gpu_top gpu_top(
     .clk(system_clk),
@@ -264,7 +332,7 @@ gpu_top gpu_top(
     .vpos(vpos),
     .display_on(dvh_delay[4][2]),
     
-    .rgb(rgb)
+    .rgb(gpu_rgb)
 );
 
 
@@ -308,10 +376,13 @@ hdmi #(
 
 /* ------------------------------- data memory ------------------------------ */
 
+wire control_core_addr_to_data_memory = (control_core_mem_dout_addr >= 24576 && control_core_mem_dout_addr < 32768);
+wire control_core_we_to_data_memory   = control_core_mem_dout_we && control_core_addr_to_data_memory;
+
 /* Data memory buses, cpu port */
-assign data_memory_addr_bus_0       = cpu_mem_addr;
-assign data_memory_write_we_bus_0   = cpu_mem_dout_we;
-assign data_memory_write_data_bus_0 = cpu_mem_dout;
+assign data_memory_addr_bus_0       = control_core_sel ? control_core_mem_dout_addr[12:0] : cpu_mem_addr;
+assign data_memory_write_we_bus_0   = control_core_sel ? control_core_we_to_data_memory   : cpu_mem_dout_we;
+assign data_memory_write_data_bus_0 = control_core_sel ? control_core_mem_dout            : cpu_mem_dout;
 
 /* Data memory buses, peripheral port */
 
@@ -354,10 +425,23 @@ data_memory data_memory(
 
 /* ----------------------------- program memory ----------------------------- */
 
+wire control_core_addr_to_program_memory = (control_core_mem_dout_addr >= 16384 && control_core_mem_dout_addr < 24576);
+wire control_core_we_to_program_memory   = control_core_mem_dout_we && control_core_addr_to_program_memory;
+
+assign program_memory_addr_bus_1 = control_core_mem_dout_addr[12:0];
+assign program_memory_write_we_bus_1 = control_core_we_to_program_memory;
+assign program_memory_write_data_bus_1 = control_core_mem_dout;
+
 program_memory program_memory(
     .clk(system_clk),
-    .mem_dout_addr(program_memory_addr_bus),
-    .mem_dout(program_memory_data_bus)
+    // read port
+    .mem_dout_addr(program_memory_addr_bus_0),
+    .mem_dout(program_memory_data_bus_0),
+
+    // write port
+    .mem_din_addr(program_memory_addr_bus_1),
+    .mem_din(program_memory_write_data_bus_1),
+    .mem_din_we(program_memory_write_we_bus_1)
 );
 
 
@@ -375,10 +459,9 @@ always_ff @(posedge system_clk) begin
     end
 end
 
-
 initial begin
     $dumpfile("dump.vcd");
-    $dumpvars();
+    $dumpvars(1, control_core);
 end
 
 endmodule

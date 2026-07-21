@@ -33,5 +33,11 @@
 ./src/program_memory.sv
 ./src/vga_controller.sv
 ./src/pll_generic.sv
+
+./src/control_core/control_core.sv
+./src/control_core/spi_master.sv
+./src/control_core/uart_loader.sv
+./src/control_core/uart.sv
+
 -Wall
 -I./src/

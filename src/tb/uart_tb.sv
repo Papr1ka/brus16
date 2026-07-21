@@ -60,7 +60,7 @@ module tb_uart_tx;
             $display("FAIL: expected 0 as start bit, got $b", tx);
         end
 
-        expected_bits = {1'b0, 8'd83, 1'b1};
+        expected_bits = {1'b0, 8'b11001010, 1'b1};
         
         for (integer i = 0; i < 10; i = i + 1) begin
             got <= {got[8:0], tx};
@@ -106,7 +106,7 @@ module tb_uart_tx;
             $display("FAIL: expected 0 as start bit, got $b", tx);
         end
 
-        expected_bits = {1'b0, 8'd83, 1'b1};
+        expected_bits = {1'b0, 8'b11001010, 1'b1};
         
         for (integer i = 0; i < 10; i = i + 1) begin
             got <= {got[8:0], tx};

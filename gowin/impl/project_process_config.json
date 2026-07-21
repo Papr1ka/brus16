@@ -65,7 +65,7 @@
  "SECURE_MODE" : false,
  "SECURITY_BIT" : true,
  "SPI_FLASH_ADDR" : "00000000",
- "SSPI" : false,
+ "SSPI" : true,
  "Show_All_Warnings" : false,
  "Synthesis On/Off Implemented as Translate On/Off" : false,
  "Synthesize_tool" : "GowinSyn",

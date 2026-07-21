@@ -14,6 +14,10 @@
         <File path="../src/buttons/button_controller.sv" type="file.verilog" enable="1"/>
         <File path="../src/buttons/buttons_top.sv" type="file.verilog" enable="1"/>
         <File path="../src/buttons/dualshock_spi_master.sv" type="file.verilog" enable="1"/>
+        <File path="../src/control_core/control_core.sv" type="file.verilog" enable="1"/>
+        <File path="../src/control_core/spi_master.sv" type="file.verilog" enable="1"/>
+        <File path="../src/control_core/uart.sv" type="file.verilog" enable="1"/>
+        <File path="../src/control_core/uart_loader.sv" type="file.verilog" enable="1"/>
         <File path="../src/cpu/alu.sv" type="file.verilog" enable="1"/>
         <File path="../src/cpu/cpu.sv" type="file.verilog" enable="1"/>
         <File path="../src/cpu/rstack.sv" type="file.verilog" enable="1"/>

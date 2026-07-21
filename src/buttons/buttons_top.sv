@@ -24,7 +24,7 @@ module buttons_top
     input  wire joystick_miso_1,
     output wire joystick_cs_1,
 `endif
-
+    output wire [15:0]                buttons,
     output wire                       mem_dout_we,
     output wire [DATA_ADDR_WIDTH-1:0] mem_dout_addr,
     output wire [15:0]                mem_dout
@@ -35,6 +35,8 @@ wire [15:0] joystick_buttons_0;
 wire [15:0] joystick_buttons_1;
 wire        data_valid_0;
 wire        data_valid_1;
+
+assign buttons = (~joystick_buttons_0) | (~joystick_buttons_1);
 
 /*
     CHEATSHEET

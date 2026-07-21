@@ -4,7 +4,8 @@
 module data_memory
 #(
     parameter WIDTH = `DATA_ADDR_WIDTH,
-    parameter SIZE  = `DATA_SIZE
+    parameter SIZE  = `DATA_SIZE,
+    parameter ROM_CORE = 0
 )
 (
     input  wire             clk,
@@ -61,10 +62,18 @@ end
 
 initial begin
 `ifdef SIM
-    $readmemh("./firm/data.hex", data);
+    if (ROM_CORE) begin
+        $readmemh("./firm/data_rom.hex", data);    
+    end else begin
+        $readmemh("./firm/data.hex", data);
+    end
 `endif
 `ifndef SIM
-    $readmemh("../firm/data.hex", data);
+    if (ROM_CORE) begin
+        $readmemh("../firm/data_rom.hex", data);
+    end else begin
+        $readmemh("../firm/data.hex", data);
+    end
 `endif
 end
 
