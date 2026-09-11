@@ -1,3 +1,5 @@
+`include "constants.svh"
+
 module sine_table
 #(
     parameter WIDTH = 10,

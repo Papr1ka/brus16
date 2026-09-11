@@ -32,7 +32,7 @@ module sfx_top #(
     output wire                       audio_clk       // audio clk, 44100 Hz
 );
 
-localparam PROCESS_CLOCKS_PER_SAMPLE = 96;
+localparam PROCESS_CLOCKS_PER_SAMPLE = 80;
 
 wire dma_start;
 wire process_en;
@@ -50,7 +50,7 @@ sfx_controller #(
     .audio_clk(audio_clk)
 );
 
-// current OSC data
+// current OSC data (buffer!)
 wire [15:0] curr_amp;
 wire [15:0] curr_target_amp;
 wire [15:0] curr_decay;
@@ -79,11 +79,7 @@ sfx_dma #(
     .shift(dma_shift),
     .mem_dout(dma_mem_dout),
     .mem_dout_addr(dma_mem_dout_addr),
-    .mem_dout_we(dma_mem_dout_we),
-
-    .curr_target_amp(curr_target_amp),
-    .curr_amp(curr_amp),
-    .curr_phase(curr_phase)
+    .mem_dout_we(dma_mem_dout_we)
 );
 
 // process memory interface
@@ -130,16 +126,23 @@ wire        sfx_mem_din_we   = process_en ? process_mem_dout_we   : dma_mem_dout
 
 /*
 OSC mem (shift registers):
-                     BUFF             OSC_16,        ..., OSC_1
-addr: 0, amp        [amp_buff,        amp_16,        ..., amp_1]
-addr: 1, target_amp [target_amp_buff, target_amp_16, ..., target_amp_1]
-addr: 2, decay      [decay_buff,      decay_16,      ..., decay_1]
-addr: 3, step       [step_buff,       step_16,       ..., step_1]
-addr: 4, phase      [phase_buff,      phase_16,      ..., phase_1]
-write only to buff, cyclic shift right
+                     OSC_16,        ..., OSC_2,        OSC_1/OSC_buff
+addr: 0, amp        [amp_16,        ..., amp_2,        -> amp_1]
+                                                       -> amp_buff
+addr: 1, target_amp [target_amp_16, ..., target_amp_2, -> target_amp_1]
+                                                       -> target_amp_buff
+addr: 2, decay      [decay_16,      ..., decay_2,      -> decay_1]
+                                                       -> decay_buff
+addr: 3, step       [step_16,       ..., step_2,       -> step_1]
+                                                       -> step_buff
+addr: 4, phase      [phase_16,      ..., phase_2,      -> phase_1]
+                                                       -> phase_buff
+OSC_2 moves to both OSC_1 and OSC_buff.
+OSC_buff moves to OSC_16.
+write only to buff, cyclic shift right.
 */
 sfx_mem #(
-    .VOICES(VOICES + 1)
+    .VOICES(VOICES)
 ) sfx_mem(
     .clk(clk),
     .shift(sfx_shift),
@@ -148,11 +151,11 @@ sfx_mem #(
     .mem_din_addr(sfx_mem_din_addr),
     .mem_din_we(sfx_mem_din_we),
 
-    .curr_amp(curr_amp),
-    .curr_target_amp(curr_target_amp),
-    .curr_decay(curr_decay),
-    .curr_step(curr_step),
-    .curr_phase(curr_phase)
+    .curr_amp_buff(curr_amp),
+    .curr_target_amp_buff(curr_target_amp),
+    .curr_decay_buff(curr_decay),
+    .curr_step_buff(curr_step),
+    .curr_phase_buff(curr_phase)
 );
 
 always_ff @(posedge clk) begin

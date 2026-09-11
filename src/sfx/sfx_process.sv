@@ -28,16 +28,15 @@ module sfx_process #(
 
 // stage after last shift counter
 /*
-6 clocks:
-0: copy  curr    OSC step
+5 clocks:
+0: calc (wait for data update in registers)
 1: write updated OSC phase
 2: write updated OSC target_amp
 3: write updated OSC amp
-4: copy  curr    OSC decay
-5: shift
+4: shift
 */
-localparam CLOCKS_PER_OSC = 6;
-
+localparam CLOCKS_PER_OSC = 5;
+ 
 reg  [2:0] stage_counter;
 wire [2:0] stage_counter_new = (stage_counter == (CLOCKS_PER_OSC-1)) ? 0 : stage_counter + 1;
 assign     shift             = (stage_counter == (CLOCKS_PER_OSC-1));
@@ -66,7 +65,7 @@ reg  [15:0] amp_diff;
 reg  [9:0]  pos;
 wire [15:0] sin_wave;
 
-reg [31:0] acc_diff;
+reg  [31:0] acc_diff;
 
 sine_table sine_table(
     .clk(clk),
@@ -100,27 +99,23 @@ wire [15:0] sample_new = $signed(limited_left) > $signed(32767) ? 16'(32767) : 1
 // sfx memory bus logic
 always_comb begin
     case (stage_counter)
-        0:       mem_dout = curr_step;
         1:       mem_dout = curr_phase_updated;
         2:       mem_dout = curr_target_amp_updated;
         3:       mem_dout = curr_amp_updated;
-        4:       mem_dout = curr_decay;
         default: mem_dout = 0;
     endcase
 end
 
 always_comb begin
     case (stage_counter)
-        0:       mem_dout_addr = 3;
         1:       mem_dout_addr = 4;
         2:       mem_dout_addr = 1;
         3:       mem_dout_addr = 0;
-        4:       mem_dout_addr = 2;
         default: mem_dout_addr = 0;
     endcase
 end
 
-assign mem_dout_we = (stage_counter <= 4);
+assign mem_dout_we = (stage_counter > 0 && stage_counter <= 3);
 
 
 always_ff @(posedge clk) begin

@@ -460,8 +460,10 @@ always_ff @(posedge system_clk) begin
 end
 
 initial begin
+`ifdef VCD
     $dumpfile("dump.vcd");
-    $dumpvars(1, control_core);
+    $dumpvars(0, brus16_top);
+`endif
 end
 
 endmodule

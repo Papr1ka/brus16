@@ -42,7 +42,7 @@ def unsigned(logic_array, placeholder=-99999999):
     else:
         return placeholder
 
-def to_list(regfile, length=17, bits=16):
+def to_list(regfile, length=16, bits=16):
     array = []
     packed_array = regfile.value
     for i in range(length, 0, -1):
@@ -54,7 +54,7 @@ def log_debug(dut):
     string = "" \
     "amp=[{amp}]\ntarget_amp=[{target_amp}]\ndecay=[{decay}]\nstep=[{step}]\nphase=[{phase}]\n" \
     "curr_amp=[{curr_amp}] curr_target_amp=[{curr_target_amp}] curr_decay=[{curr_decay}] curr_step=[{curr_step}] curr_phase=[{curr_phase}] \n" \
-    "din_addr={din_addr} din={din} state={state} reading_abs={reading_abs} abs_amp={abs_amp} abs_step={abs_step}\n" \
+    "din_addr={din_addr} din={din} state_counter={state_counter} reading_abs={reading_abs} abs_amp={abs_amp} abs_step={abs_step}\n" \
     "shift={shift} mem_din={mem_din} mem_din_addr={mem_din_addr} mem_din_we={mem_din_we}\n" \
     "sample={sample} sample_out={sample_out} sample_valid={sample_valid} stage_counter={stage_counter} acc={acc} acc_diff={acc_diff} decay_counter={decay_counter} shift_counter={shift_counter} phase_upd={phase_upd} target_amp_upd={target_amp_upd} amp_upd={amp_upd} pos={pos} sine_wave={sine_wave}\n" \
     "reset={reset} copy={copy} sample_counter={sample_counter} process_en={process_en} dma_start={dma_start}\n\n".format(
@@ -72,7 +72,7 @@ def log_debug(dut):
 
         din_addr=unsigned(dut.sfx.sfx_dma.mem_din_addr.value),
         din=unsigned(dut.sfx.sfx_dma.mem_din.value),
-        state=unsigned(dut.sfx.sfx_dma.state.value),
+        state_counter=unsigned(dut.sfx.sfx_dma.state_counter.value),
         reading_abs=unsigned(dut.sfx.sfx_dma.reading_abs.value),
         abs_amp=unsigned(dut.sfx.sfx_dma.abs_amp.value),
         abs_step=unsigned(dut.sfx.sfx_dma.abs_step.value),
@@ -223,7 +223,7 @@ async def test_sfx(dut):
         dut.memory.data[7728 + i + 3].value = voice[2]
         i += 4
 
-    logger.debug("STATE:\n" \
+    logger.debug("state_counter:\n" \
             "target_amps={target_amps}\n" \
             "periods={periods}\n" \
             "amps={amps}\n" \
@@ -282,9 +282,10 @@ async def test_sfx(dut):
         )
         # amp and phase may be random
         assert actual[1:-1] == expected[1:-1], f"{i}, actual: {actual} != expected: {expected}"
+        if i == len(sfx_mem) - 1:
+            dut.sfx.sfx_shift.value = 0
         await RisingEdge(dut.clk)
     
-    dut.sfx.sfx_shift.value = 0
     await RisingEdge(dut.clk)
 
     SAMPLES = 15
@@ -302,10 +303,10 @@ async def test_sfx(dut):
         expected_sample = update_audio(voices, target_amps, amps, phases, periods, is_decay)
 
         for _ in range(16):
-            for i in range(6):
+            for i in range(5):
                 await RisingEdge(dut.clk)
         
-        logger.debug("STATE:\n" \
+        logger.debug("state_counter:\n" \
             "target_amps={target_amps}\n" \
             "periods={periods}\n" \
             "amps={amps}\n" \

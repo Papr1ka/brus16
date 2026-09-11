@@ -9,6 +9,7 @@
 
 // `define SIM // Uncomment for simulation (Icarus/Verilator)
 // `define DISABLE_CONTROLLERS // Uncomment to disable the button controller and it's inputs
+// `define VCD // Uncomment to enable VCD output for simulation
 
 `define DS2_CLK_RATIO 750
 `define RESET_COUNTER_WIDTH 5 // 2^n Global reset duration to be sure
