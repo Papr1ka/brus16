@@ -179,7 +179,7 @@ end
 always_comb begin
     casez ({cmd_type, opcode})
         6'b1_10_???: rstack_top_new = pc_plus_1; // CALL
-        default:     rstack_top_new = DATA_ADDR_WIDTH'('x);
+        default:     rstack_top_new = CODE_ADDR_WIDTH'('x);
     endcase
 end
 

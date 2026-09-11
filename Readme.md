@@ -60,6 +60,7 @@ If desired, the project can be adapted relatively quickly for another board.
 
 system_clk clock frequency = **25.2 MHz**.
 
+
 ### Write games to SD card
 
 1. Make sure your SD card is SDHC or SDXC.
@@ -91,6 +92,8 @@ To nagivate, use `select` and `start` buttons on any connected DualShock2 Joysti
 
 If you **don't have an SD card**, just ignore this option.
 There is an old variant, described in the next section.
+
+> If the games don't change, try using USB 1 or USB 2 *instead of USB 3*. If that doesn't help, you can check the output from the UART COM port at baudrate 115200. It is recommended to set implicit CR and LF in PuTTY.
 
 ### Build firmware for a new game
 

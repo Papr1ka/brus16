@@ -1,15 +1,19 @@
+/*
+    Sine table, rom, sync read, 1024 @ 16 bit
+*/
+
 `include "constants.svh"
 
 module sine_table
 #(
-    parameter WIDTH = 10,
+    parameter ADDR_WIDTH = 10,
     parameter SIZE  = 1024
 )
 (
-    input  wire             clk,
+    input  wire                  clk,
     // read
-    input  wire [WIDTH-1:0] mem_dout_addr,
-    output reg  [15:0]      mem_dout
+    input  wire [ADDR_WIDTH-1:0] mem_dout_addr,
+    output reg  [15:0]           mem_dout
 );
 
 reg [15:0] data [SIZE-1:0];

@@ -1,3 +1,21 @@
+/*
+OSC mem (shift registers):
+                     OSC_16,        ..., OSC_2,        OSC_1/OSC_buff
+addr: 0, amp        [amp_16,        ..., amp_2,        -> amp_1]
+                                                       -> amp_buff
+addr: 1, target_amp [target_amp_16, ..., target_amp_2, -> target_amp_1]
+                                                       -> target_amp_buff
+addr: 2, decay      [decay_16,      ..., decay_2,      -> decay_1]
+                                                       -> decay_buff
+addr: 3, step       [step_16,       ..., step_2,       -> step_1]
+                                                       -> step_buff
+addr: 4, phase      [phase_16,      ..., phase_2,      -> phase_1]
+                                                       -> phase_buff
+OSC_2 moves to both OSC_1 and OSC_buff.
+OSC_buff moves to OSC_16.
+write only to buff, cyclic shift right.
+*/
+
 module sfx_mem #(
     parameter VOICES = 16
 ) (
@@ -7,13 +25,6 @@ module sfx_mem #(
     input wire  [15:0] mem_din,
     input wire  [2:0]  mem_din_addr,
     input wire         mem_din_we,
-
-    // // OSC_1
-    // output wire [15:0] curr_amp,
-    // output wire [15:0] curr_target_amp,
-    // output wire [15:0] curr_decay,
-    // output wire [15:0] curr_step,
-    // output wire [15:0] curr_phase
 
     // OSC_BUFF
     output reg [15:0] curr_amp_buff,
@@ -30,20 +41,6 @@ reg [VOICES-1:0] [15:0] decay;
 reg [VOICES-1:0] [15:0] step;
 reg [VOICES-1:0] [15:0] phase;
 
-// // OSC_1
-// assign curr_amp        = amp       [0];
-// assign curr_target_amp = target_amp[0];
-// assign curr_decay      = decay     [0];
-// assign curr_step       = step      [0];
-// assign curr_phase      = phase     [0];
-
-//                         \/ Input override \/
-// Buffer, path: (OSC_2 ->       OSC_buff       -> OSC_16)
-// reg [15:0] amp_buff;
-// reg [15:0] target_amp_buff;
-// reg [15:0] decay_buff;
-// reg [15:0] step_buff;
-// reg [15:0] phase_buff;
 
 always_ff @(posedge clk) begin
     if (shift) begin

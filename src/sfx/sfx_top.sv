@@ -32,7 +32,7 @@ module sfx_top #(
     output wire                       audio_clk       // audio clk, 44100 Hz
 );
 
-localparam PROCESS_CLOCKS_PER_SAMPLE = 80;
+localparam PROCESS_CLOCKS_PER_SAMPLE = 64;
 
 wire dma_start;
 wire process_en;
@@ -124,23 +124,6 @@ wire [15:0] sfx_mem_din      = process_en ? process_mem_dout      : dma_mem_dout
 wire [2:0]  sfx_mem_din_addr = process_en ? process_mem_dout_addr : dma_mem_dout_addr;
 wire        sfx_mem_din_we   = process_en ? process_mem_dout_we   : dma_mem_dout_we;
 
-/*
-OSC mem (shift registers):
-                     OSC_16,        ..., OSC_2,        OSC_1/OSC_buff
-addr: 0, amp        [amp_16,        ..., amp_2,        -> amp_1]
-                                                       -> amp_buff
-addr: 1, target_amp [target_amp_16, ..., target_amp_2, -> target_amp_1]
-                                                       -> target_amp_buff
-addr: 2, decay      [decay_16,      ..., decay_2,      -> decay_1]
-                                                       -> decay_buff
-addr: 3, step       [step_16,       ..., step_2,       -> step_1]
-                                                       -> step_buff
-addr: 4, phase      [phase_16,      ..., phase_2,      -> phase_1]
-                                                       -> phase_buff
-OSC_2 moves to both OSC_1 and OSC_buff.
-OSC_buff moves to OSC_16.
-write only to buff, cyclic shift right.
-*/
 sfx_mem #(
     .VOICES(VOICES)
 ) sfx_mem(

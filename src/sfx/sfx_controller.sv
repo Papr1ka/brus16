@@ -1,7 +1,7 @@
 `include "constants.svh"
 
 module sfx_controller #(
-    parameter PROCESS_CLOCKS_PER_SAMPLE = 96
+    parameter PROCESS_CLOCKS_PER_SAMPLE = 64
 ) (
     input  wire clk,
     input  wire reset,
@@ -35,7 +35,7 @@ reg  [9:0] sample_counter;
 wire [9:0] sample_counter_new = reset_acc ? 0 : sample_counter + 1;
 
 // there is 735-736 clocks to process 1 sample
-// 0-95 clocks -> sfx_process work
+// 0-63 clocks -> sfx_process work
 assign process_en = sample_counter < PROCESS_CLOCKS_PER_SAMPLE;
 // 1 time per frame
 // 734 processed + last sample processed (sample_counter >= PROCESS_CLOCKS_PER_SAMPLE) + copy time -> sfx_dma work

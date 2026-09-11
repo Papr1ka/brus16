@@ -54,9 +54,9 @@ def log_debug(dut):
     string = "" \
     "amp=[{amp}]\ntarget_amp=[{target_amp}]\ndecay=[{decay}]\nstep=[{step}]\nphase=[{phase}]\n" \
     "curr_amp=[{curr_amp}] curr_target_amp=[{curr_target_amp}] curr_decay=[{curr_decay}] curr_step=[{curr_step}] curr_phase=[{curr_phase}] \n" \
-    "din_addr={din_addr} din={din} state_counter={state_counter} reading_abs={reading_abs} abs_amp={abs_amp} abs_step={abs_step}\n" \
+    "din_addr={din_addr} din={din} state_counter={state_counter} wait_for_start={wait_for_start} wait_for_reset={wait_for_reset} reading_abs={reading_abs} abs_amp={abs_amp} abs_step={abs_step}\n" \
     "shift={shift} mem_din={mem_din} mem_din_addr={mem_din_addr} mem_din_we={mem_din_we}\n" \
-    "sample={sample} sample_out={sample_out} sample_valid={sample_valid} stage_counter={stage_counter} acc={acc} acc_diff={acc_diff} decay_counter={decay_counter} shift_counter={shift_counter} phase_upd={phase_upd} target_amp_upd={target_amp_upd} amp_upd={amp_upd} pos={pos} sine_wave={sine_wave}\n" \
+    "acc={acc} sample={sample} sample_out={sample_out} sample_valid={sample_valid} stage_counter={stage_counter} acc={acc} acc_diff={acc_diff} decay_counter={decay_counter} shift_counter={shift_counter} phase_upd={phase_upd} target_amp_upd={target_amp_upd} amp_upd={amp_upd} pos={pos} sine_wave={sine_wave}\n" \
     "reset={reset} copy={copy} sample_counter={sample_counter} process_en={process_en} dma_start={dma_start}\n\n".format(
         amp=to_list(dut.sfx.sfx_mem.amp),
         target_amp=to_list(dut.sfx.sfx_mem.target_amp),
@@ -73,11 +73,13 @@ def log_debug(dut):
         din_addr=unsigned(dut.sfx.sfx_dma.mem_din_addr.value),
         din=unsigned(dut.sfx.sfx_dma.mem_din.value),
         state_counter=unsigned(dut.sfx.sfx_dma.state_counter.value),
+        wait_for_start=str(dut.sfx.sfx_dma.wait_for_start.value),
+        wait_for_reset=str(dut.sfx.sfx_dma.wait_for_reset.value),
         reading_abs=unsigned(dut.sfx.sfx_dma.reading_abs.value),
         abs_amp=unsigned(dut.sfx.sfx_dma.abs_amp.value),
         abs_step=unsigned(dut.sfx.sfx_dma.abs_step.value),
 
-        shift=int(dut.sfx.sfx_shift.value),
+        shift=str(dut.sfx.sfx_shift.value),
         mem_din=unsigned(dut.sfx.sfx_mem_din.value),
         mem_din_addr=unsigned(dut.sfx.sfx_mem_din_addr.value),
         mem_din_we=int(dut.sfx.sfx_mem_din_we.value),
@@ -182,6 +184,7 @@ def update_audio(voices, target_amps, amps, phases, periods, is_decay):
         index = (phases[v] >> TABLE_BITS) & (TABLE_SIZE - 1)
         val = sine_table[index]
         acc += (val * amps[v]) >> AMP_BITS
+        logger.info(f"\nACC: {acc}\n")
         phases[v] = (phases[v] + periods[v]) & 0xffff
         if is_decay:
             target_amps[v] = (target_amps[v] * decay) >> AMP_BITS
@@ -303,8 +306,10 @@ async def test_sfx(dut):
         expected_sample = update_audio(voices, target_amps, amps, phases, periods, is_decay)
 
         for _ in range(16):
-            for i in range(5):
+            for i in range(4):
                 await RisingEdge(dut.clk)
+
+        await RisingEdge(dut.clk) # extra clock to wait for sample update (pipeline)
         
         logger.debug("state_counter:\n" \
             "target_amps={target_amps}\n" \
